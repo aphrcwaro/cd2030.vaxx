@@ -1,0 +1,10 @@
+Translator              Translator R6 Class
+create_translation_file
+                        Create translation file
+init_i18n               Creates new i18n Translator object
+translate_with_google_cloud
+                        This provides functions for automatic
+                        translations with online APIs Translate with
+                        Google cloud
+update_lang             Update language (i18n) in UI
+usei18n                 Use i18n in UI
