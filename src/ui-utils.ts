@@ -32,12 +32,14 @@ export const IPC_CHANNELS = {
   // or reuse SET_ERROR_MESSAGE as you are currently doing for general errors.
   // For distinct handling:
   R_PROCESS_CRASHED: 'r-process-crashed',
+  GET_VERSION: 'get-version',
 };
 
 // Preload script functionality
 export function exposeUiApi() {
   const uiApi: IUiApi = {
     retry: async () =>  await ipcRenderer.invoke(IPC_CHANNELS.RETRY_START_SHINY),
+    getVersion: async () => await ipcRenderer.invoke(IPC_CHANNELS.GET_VERSION),
     // You might also expose a way to set loading messages if needed from renderer
     // setLoadingMessage: (msg: string) => ipcRenderer.send(IPC_CHANNELS.SET_LOADING_MESSAGE, msg),
   };

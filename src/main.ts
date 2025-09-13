@@ -69,3 +69,5 @@ ipcMain.handle(IPC_CHANNELS.RETRY_START_SHINY, async (event: IpcMainInvokeEvent)
     await rShinyManager.startAndServe(window);
   }
 });
+
+ipcMain.handle(IPC_CHANNELS.GET_VERSION, () => app.getVersion())
