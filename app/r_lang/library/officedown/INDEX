@@ -1,0 +1,4 @@
+knit_print_block        Force Block Printing while Knitting
+knit_print_run          Force Run Printing while Knitting
+rdocx_document          Advanced R Markdown Word Format
+rpptx_document          Advanced R Markdown PowerPoint Format
