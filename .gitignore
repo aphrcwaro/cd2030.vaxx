@@ -92,6 +92,7 @@ typings/
 out/
 
 
-app/r_lang/library
-
+app/r_lang/library/sf
+app/r_lang/library/cd2030.rmncah
+app/r_lang/library/[a-u]*
 
