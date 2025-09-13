@@ -38,8 +38,7 @@ export const IPC_CHANNELS = {
 // Preload script functionality
 export function exposeUiApi() {
   const uiApi: IUiApi = {
-    retry: async () =>  await ipcRenderer.invoke(IPC_CHANNELS.RETRY_START_SHINY),
-    getVersion: async () => await ipcRenderer.invoke(IPC_CHANNELS.GET_VERSION),
+    retry: async () =>  await ipcRenderer.invoke(IPC_CHANNELS.RETRY_START_SHINY)
     // You might also expose a way to set loading messages if needed from renderer
     // setLoadingMessage: (msg: string) => ipcRenderer.send(IPC_CHANNELS.SET_LOADING_MESSAGE, msg),
   };

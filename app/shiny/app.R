@@ -92,9 +92,11 @@ source('modules/4_subnational_target.R')
 i18n <- init_i18n(translation_json_path = 'translation/translation.json')
 i18n$set_translation_language ('en')
 
+version <- getOption("app.version", "dev")
+
 ui <- dashboardPage(
   skin = 'green',
-  header = dashboardHeader(title = HTML(paste0('VAXX<sup>v2.0.0-dev</sup>'))),
+  header = dashboardHeader(title = HTML(paste0('VAXX<sup>', version, '</sup>'))),
   sidebar = dashboardSidebar(
     usei18n(i18n),
     selectInput(
@@ -345,7 +347,7 @@ server <- function(input, output, session) {
     # Dynamically update the header
     header <- htmltools::tagQuery(
       dashboardHeader(
-        title = HTML(paste0('VAXX<sup>v2.0.0-dev</sup>')),
+        title = HTML(paste0('VAXX<sup>', version, '</sup>')),
         saveCacheUI('save_cache'),
         downloadReportUI('download_report', i18n)
       )

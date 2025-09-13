@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import net from 'node:net';
 import { execa } from 'execa';
 import { showCrashPage, showErrorPage, showLoadingPage } from './ui-utils';
@@ -59,7 +59,11 @@ class RShinyManager {
     private async startRAndShinyProcess(window: BrowserWindow, port: number): Promise<void> {
         const r = resolvePortableR();
         const shinyDir = assetPath('shiny');
-        const expr = `shiny::runApp('${this.toPosix(shinyDir)}', host='127.0.0.1', port=${port})`;
+        const version = app.getVersion()
+        const expr = `
+            options(app.version='${version.replace(/'/g, "\\'")}')
+            shiny::runApp('${this.toPosix(shinyDir)}', host='127.0.0.1', port=${port})
+        `;
 
         const utf8Env = {
             LANG: 'en_US.UTF-8',
