@@ -1,7 +1,7 @@
 {
   "name": "cd2030.vaxx",
   "productName": "Vaxx",
-  "version": "2.0.0-dev",
+  "version": "2.0.0-beta.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "repository": {
