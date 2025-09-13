@@ -1,0 +1,49 @@
+{
+  "name": "cd2030.vaxx",
+  "productName": "Vaxx",
+  "version": "2.0.0-dev",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aphrcwaro/cd2030.vaxx.git"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "David Kariuki",
+    "email": "16348353+damurka@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.9.0",
+    "@electron-forge/maker-deb": "^7.9.0",
+    "@electron-forge/maker-rpm": "^7.9.0",
+    "@electron-forge/maker-squirrel": "^7.9.0",
+    "@electron-forge/maker-zip": "^7.9.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
+    "@electron-forge/plugin-fuses": "^7.9.0",
+    "@electron-forge/plugin-vite": "^7.9.0",
+    "@electron/fuses": "^1.8.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "electron": "38.1.0",
+    "electron-wix-msi": "^5.1.3",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
+    "execa": "^9.6.0",
+    "typescript": "~4.5.4",
+    "vite": "^5.4.20"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "update-electron-app": "^3.1.1"
+  }
+}
