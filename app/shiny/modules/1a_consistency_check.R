@@ -1,10 +1,10 @@
 consistencyCheckUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('consistency_checks'), i18n$t("title_consistency"), i18n = i18n),
-    contentBody(
-      tabBox(
+  countdownDashboard(
+    dashboardId =ns('consistency_checks'),
+    dashboardTitle = i18n$t('title_consistency'),
+    i18n = i18n,tabBox(
         title = i18n$t("title_consistency_checks"),
         width = 12,
         tabPanel(
@@ -31,7 +31,6 @@ consistencyCheckUI <- function(id, i18n) {
           )
         )
       )
-    )
   )
 }
 
@@ -103,7 +102,7 @@ consistencyCheckServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'consistency_checks',
         cache = cache,
         path = 'numerator-assessment',

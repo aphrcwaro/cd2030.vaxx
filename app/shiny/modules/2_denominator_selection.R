@@ -1,12 +1,12 @@
 denominatorSelectionUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('denominator_selection'),
     dashboardTitle = i18n$t('title_denominator_selection'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n)),
       column(3, denominatorInputUI(ns('maternal_denominator'), i18n))
@@ -138,7 +138,7 @@ denominatorSelectionServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'denominator_selection',
         cache = cache,
         path = 'denominator-assessment',

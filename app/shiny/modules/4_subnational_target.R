@@ -1,12 +1,12 @@
 subnationalTargetUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('low_reporting'),
     dashboardTitle = i18n$t('title_global_coverage'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n)),
       column(3, regionInputUI(ns('region'), i18n))
@@ -23,7 +23,7 @@ subnationalTargetUI <- function(id, i18n) {
 
     box(
       title = i18n$t('title_district_low_reporting'),
-      status = 'primary',
+      status = 'success',
       collapsible = TRUE,
       width = 6,
       fluidRow(
@@ -121,7 +121,7 @@ subnationalTargetServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'low_reporting',
         cache = cache,
         path = 'subnational-global-coverage',

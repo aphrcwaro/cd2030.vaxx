@@ -1,12 +1,12 @@
 equityUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('national_inequality'),
     dashboardTitle = i18n$t("title_equity_assessment"),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t("title_analysis_options"),
       column(3, selectizeInput(ns('type'), label = i18n$t("title_equity_type"),
                                choices = c('Area' = 'area',
@@ -141,7 +141,7 @@ equityServer <- function(id, cache, i18n) {
         plot_function = function(plot) plot
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'national_inequality',
         cache = cache,
         path = 'national-inequality',

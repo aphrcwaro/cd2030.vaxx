@@ -1,23 +1,21 @@
 dataCompletenessUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('data_completeness'), i18n$t('title_completeness'), i18n = i18n),
-    contentBody(
-      box(
-        title = i18n$t('title_completeness_options'),
-        status = 'primary',
-        solidHeader = TRUE,
-        width = 12,
-        fluidRow(
-          column(3, selectizeInput(ns('indicator'),
+  countdownDashboard(
+    dashboardId = ns('outlier_detection'),
+    dashboardTitle = i18n$t('title_outlier'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_completeness_options'),
+      column(3, selectizeInput(ns('indicator'),
                                    label = i18n$t('title_indicator'),
                                    choice = c('Select Indicator' = '', get_all_indicators()))),
-          column(3, adminLevelInputUI(ns('admin_level'), i18n)),
-          column(3, regionInputUI(ns('region'), i18n))
-        )
-      ),
-      tabBox(
+      column(3, adminLevelInputUI(ns('admin_level'), i18n)),
+      column(3, regionInputUI(ns('region'), i18n))
+    ),
+
+    tabBox(
         title = tags$span(icon('chart-line'), i18n$t('title_completeness_indicators')),
         width = 12,
 
@@ -46,7 +44,7 @@ dataCompletenessUI <- function(id, i18n) {
       ),
       box(
         title = i18n$t('title_districts_with_missing_data'),
-        status = 'primary',
+        status = 'success',
         width = 6,
         fluidRow(
           column(3, selectizeInput(ns('year'), label = i18n$t('title_year'), choice = NULL)),
@@ -56,7 +54,6 @@ dataCompletenessUI <- function(id, i18n) {
           column(12, withSpinner(reactableOutput(ns('incomplete_district'))))
         )
       )
-    )
   )
 }
 
@@ -213,7 +210,7 @@ dataCompletenessServer <- function(id, cache, i18n) {
         label = 'btn_download_districts'
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'data_completeness',
         cache = cache,
         path = 'numerator-assessment',

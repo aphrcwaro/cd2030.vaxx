@@ -1,14 +1,14 @@
 familyPlanningUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('national_coverage'),
     dashboardTitle = i18n$t("title_fpet"),
     i18n = i18n,
 
     include_report = TRUE,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(
         12,
@@ -98,7 +98,7 @@ familyPlanningServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'national_coverage',
         cache = cache,
         path = 'denominator-assessment',

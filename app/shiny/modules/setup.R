@@ -5,13 +5,14 @@ source('modules/setup/survey_setup.R')
 setupUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('analysis_setup'), i18n$t("title_setup"), i18n = i18n),
-    contentBody(
-      nationalRatesUI(ns('national_rates'), i18n),
-      surveySetupUI(ns('survey_setup'), i18n),
-      fileUploadUI(ns('file_uploads'), i18n)
-    )
+  countdownDashboard(
+    dashboardId = ns('analysis_setup'),
+    dashboardTitle = i18n$t('title_setup'),
+    i18n = i18n,
+
+    nationalRatesUI(ns('national_rates'), i18n),
+    surveySetupUI(ns('survey_setup'), i18n),
+    fileUploadUI(ns('file_uploads'), i18n)
   )
 }
 
@@ -26,7 +27,7 @@ setupServer <- function(id, cache, i18n) {
       fileUploadServer('file_uploads', cache, i18n)
       surveySetupServer('survey_setup', cache, i18n)
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'analysis_setup',
         cache = cache,
         path = 'denominator-assessment',

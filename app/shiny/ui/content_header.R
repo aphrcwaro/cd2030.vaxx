@@ -1,4 +1,4 @@
-contentHeader <- function(id, title, i18n, include_report = FALSE, include_notes = FALSE, include_help = TRUE) {
+countdownHeader <- function(id, title, i18n, include_report = FALSE, include_notes = FALSE, include_help = TRUE) {
   ns <- NS(id)
   div(
     class = 'content-header',
@@ -12,7 +12,7 @@ contentHeader <- function(id, title, i18n, include_report = FALSE, include_notes
   )
 }
 
-contentHeaderServer <- function(id, cache, path, section = NULL, i18n) {
+countdownHeaderServer <- function(id, cache, path, section = NULL, i18n) {
   stopifnot(is.reactive(cache))
 
   moduleServer(

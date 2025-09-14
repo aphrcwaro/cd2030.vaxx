@@ -1,27 +1,24 @@
 overallScoreUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('data_quality'), i18n$t("title_overall"), i18n = i18n, include_report = TRUE),
-    contentBody(
-      box(
-        title = i18n$t("title_overall_score_options"),
-        status = 'primary',
-        solidHeader = TRUE,
-        width = 12,
-        fluidRow(
-          column(3, regionInputUI(ns('region'), i18n))
-        )
-      ),
-      box(
+  countdownDashboard(
+    dashboardId = ns('data_quality'),
+    dashboardTitle = i18n$t('title_overall'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_overall_score_options'),
+      column(3, regionInputUI(ns('region'), i18n))
+    ),
+
+    box(
         title = i18n$t("title_overall"),
-        status = 'primary',
+        status = 'success',
         width = 12,
         fluidRow(
           column(12, withSpinner(uiOutput(ns('overall_score'))))
         )
       )
-    )
   )
 }
 
@@ -95,7 +92,7 @@ overallScoreServer <- function(id, cache, i18n) {
         HTML(as.character(dt_html))
       })
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'data_quality',
         cache = cache,
         path = 'numerator-assessment',

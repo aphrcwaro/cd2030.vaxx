@@ -7,7 +7,7 @@ fileUploadUI <- function(id, i18n) {
 
   box(
     title = i18n$t('title_upload_survey'),
-    status = 'primary',
+    status = 'success',
     solidHeader = TRUE,
     width = 12,
 

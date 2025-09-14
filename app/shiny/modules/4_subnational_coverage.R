@@ -1,12 +1,12 @@
 subnationalCoverageUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('subnational_coverage'),
     dashboardTitle = i18n$t('title_subnational_coverage'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, adminLevelInputUI(ns('admin_level'), i18n)),
       column(3, regionInputUI(ns('region'), i18n)),
@@ -135,7 +135,7 @@ subnationalCoverageServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'subnational_coverage',
         cache = cache,
         path = 'subnational-coverage',

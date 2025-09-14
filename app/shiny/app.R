@@ -198,7 +198,7 @@ ui <- dashboardPage(
     useHostess(),
 
     waiterShowOnLoad(
-      color = '#f2f8ee',
+      color = '#ffffff',
       html = tagList(
         hostess_loader(
           'loader',

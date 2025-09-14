@@ -1,7 +1,7 @@
 adjustmentChangesUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('adjustment'),
     dashboardTitle = i18n$t('title_adjustment_changes'),
     i18n = i18n,
@@ -117,7 +117,7 @@ adjustmentChangesServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'adjustment',
         cache = cache,
         path = 'numerator-adjustments',

@@ -1,10 +1,12 @@
 removeYearsUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('remove_years'), i18n$t("btn_remove_years"), i18n = i18n),
-    contentBody(
-      fluidRow(
+  countdownDashboard(
+    dashboardId = ns('remove_years'),
+    dashboardTitle = i18n$t('btn_remove_years'),
+    i18n = i18n,
+
+    fluidRow(
         column(
           8,
           offset = 2,
@@ -43,7 +45,6 @@ removeYearsUI <- function(id, i18n) {
           )
         )
       )
-    )
   )
 }
 
@@ -95,7 +96,7 @@ removeYearsServer <- function(id, cache, i18n) {
         cache()$set_excluded_years(as.numeric(input$year_to_remove))
       })
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'remove_years',
         cache = cache,
         path = 'numerator-adjustments',

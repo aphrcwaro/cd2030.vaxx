@@ -1,12 +1,12 @@
 subnationalInequalityUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('subnational_inequality'),
     dashboardTitle = i18n$t('title_subnational_inequality'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n)),
       column(3, regionInputUI(ns('region'), i18n))
@@ -132,7 +132,7 @@ subnationalInequalityServer <- function(id, cache, i18n) {
         sheet_name = reactive(paste0(input$indicator, ' Inequality'))
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'subnational_inequality',
         cache = cache,
         path = 'subnational-inequality',

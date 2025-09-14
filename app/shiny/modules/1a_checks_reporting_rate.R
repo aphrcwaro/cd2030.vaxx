@@ -1,29 +1,24 @@
 reportingRateUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('reporting_rate'), i18n$t("title_reporting"), i18n = i18n),
-    contentBody(
-      box(
-        title = i18n$t("title_reporting_rate_options"),
-        status = 'primary',
-        solidHeader = TRUE,
-        width = 12,
-        fluidRow(
-          # TODO: to include translation
-          column(3, selectInput(ns('indicator'),
-                                label = i18n$t("title_indicator"),
-                                choices = c('ANC' = 'anc_rr',
-                                            'Institutional Delivery' = 'idelv_rr',
-                                            'Vaccination' = 'vacc_rr',
-                                            'OPD' = 'opd_rr',
-                                            'IPD' = 'ipd_rr'))),
-          column(3, numericInput(ns('threshold'), label = i18n$t("title_performance_threshold"), value = 90)),
-          column(3, adminLevelInputUI(ns('admin_level'), i18n)),
-          column(3, regionInputUI(ns('region'), i18n))
-        )
-      ),
-      tabBox(
+  countdownDashboard(
+    dashboardId = ns('reporting_rate'),
+    dashboardTitle = i18n$t('title_reporting_rate'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_reporting_rate_options'),
+      column(3, selectInput(ns('indicator'),
+                              label = i18n$t("title_indicator"),
+                              choices = c('ANC' = 'anc_rr',
+                                          'Institutional Delivery' = 'idelv_rr',
+                                          'Vaccination' = 'vacc_rr'))),
+        column(3, numericInput(ns('threshold'), label = i18n$t("title_performance_threshold"), value = 90)),
+        column(3, adminLevelInputUI(ns('admin_level'), i18n)),
+        column(3, regionInputUI(ns('region'), i18n))
+    ),
+
+    tabBox(
         title = i18n$t("title_subnational_reporting_rate"),
         width = 12,
 
@@ -47,7 +42,7 @@ reportingRateUI <- function(id, i18n) {
       ),
       box(
         title = uiOutput(ns('district_rr_title')),
-        status = 'primary',
+        status = 'success',
         collapsible = TRUE,
         width = 6,
         fluidRow(
@@ -59,7 +54,7 @@ reportingRateUI <- function(id, i18n) {
       box(
         title = i18n$t("title_subnational_low_reporting"),
         width = 6,
-        status = 'primary',
+        status = 'success',
         fluidRow(
           column(3, selectizeInput(ns('year'),
                                    label = i18n$t("title_year"),
@@ -68,7 +63,6 @@ reportingRateUI <- function(id, i18n) {
           column(12, withSpinner(reactableOutput(ns('low_reporting'))))
         )
       )
-    )
   )
 }
 
@@ -285,7 +279,7 @@ reportingRateServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'reporting_rate',
         cache = cache,
         path = 'numerator-assessment',

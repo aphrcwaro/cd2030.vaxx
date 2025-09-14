@@ -1,19 +1,18 @@
 derivedCoverageUI <- function(id, i18n) {
   ns <- NS(id)
-  tagList(
-    contentHeader(ns('derived_coverage'), i18n$t("title_derived_coverage"), i18n = i18n),
-    contentBody(
-      box(
-        title = i18n$t("title_analysis_options"),
-        status = 'primary',
-        width = 12,
-        solidHeader = TRUE,
-        fluidRow(
-          column(3, adminLevelInputUI(ns('admin_level'), i18n, include_national = TRUE)),
-          column(3, uiOutput(ns('region_ui')))
-        )
-      ),
-      tabBox(
+
+  countdownDashboard(
+    dashboardId = ns('derived_coverage'),
+    dashboardTitle = i18n$t('title_derived_coverage'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_analysis_options'),
+      column(3, adminLevelInputUI(ns('admin_level'), i18n, include_national = TRUE)),
+      column(3, uiOutput(ns('region_ui')))
+    ),
+
+    tabBox(
         title = i18n$t("title_derived_coverage"),
         width = 12,
         tabPanel(
@@ -64,7 +63,6 @@ derivedCoverageUI <- function(id, i18n) {
           )
         )
       )
-    )
   )
 }
 
@@ -222,7 +220,7 @@ derivedCoverageServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'derived_coverage',
         cache = cache,
         path = 'denominator-assessment',

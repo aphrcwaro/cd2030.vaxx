@@ -1,10 +1,12 @@
 denominatorAssessmentUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('denominator_assessment'), i18n$t("title_denominator_assessment"), i18n = i18n),
-    contentBody(
-      tabBox(
+  countdownDashboard(
+    dashboardId = ns('denominator_assessment'),
+    dashboardTitle = i18n$t('title_denominator_assessment'),
+    i18n = i18n,
+
+    tabBox(
         title = i18n$t("title_denominator_assessment"),
         width = 12,
         tabPanel(
@@ -23,7 +25,6 @@ denominatorAssessmentUI <- function(id, i18n) {
           )
         )
       )
-    )
   )
 }
 
@@ -76,7 +77,7 @@ denominatorAssessmentServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'denominator_assessment',
         cache = cache,
         path = 'denominator-assessment',

@@ -1,12 +1,12 @@
 nationalCoverageUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('national_coverage'),
     dashboardTitle = i18n$t('title_national_coverage'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n))
     ),
@@ -130,7 +130,7 @@ nationalCoverageServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'national_coverage',
         cache = cache,
         path = 'national-coverage',

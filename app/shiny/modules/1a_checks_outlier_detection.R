@@ -1,23 +1,21 @@
 outlierDetectionUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('outlier_detection'), i18n$t('title_outlier'), i18n = i18n),
-    contentBody(
-      box(
-        title = 'Outlier Options',
-        status = 'success',
-        solidHeader = TRUE,
-        width = 12,
-        fluidRow(
-          column(3, selectizeInput(ns('indicator'),
+  countdownDashboard(
+    dashboardId = ns('outlier_detection'),
+    dashboardTitle = i18n$t('title_outlier'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_reporting_rate_options'),
+      column(3, selectizeInput(ns('indicator'),
                                    label = i18n$t('title_indicator'),
                                    choice = c('Select Indicator' = '', get_all_indicators()))),
           column(3, adminLevelInputUI(ns('admin_level'), i18n)),
           column(3, regionInputUI(ns('region'), i18n))
-        )
-      ),
-      tabBox(
+    ),
+
+    tabBox(
         title = tags$span(icon('chart-line'), i18n$t('title_indicators_with_outlier')),
         width = 12,
 
@@ -48,7 +46,7 @@ outlierDetectionUI <- function(id, i18n) {
       ),
       box(
         title = i18n$t('title_district_outliers'),
-        status = 'primary',
+        status = 'success',
         collapsible = TRUE,
         width = 6,
         fluidRow(
@@ -59,7 +57,7 @@ outlierDetectionUI <- function(id, i18n) {
       ),
       box(
         title = i18n$t('title_district_trends'),
-        status = 'primary',
+        status = 'success',
         collapsible = TRUE,
         width = 6,
         fluidRow(
@@ -67,7 +65,6 @@ outlierDetectionUI <- function(id, i18n) {
           column(12, withSpinner(plotCustomOutput(ns('district_trend'))))
         )
       )
-    )
   )
 }
 
@@ -239,7 +236,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
         label = 'btn_download_outlier'
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'outlier_detection',
         cache = cache,
         path = 'numerator-assessment',

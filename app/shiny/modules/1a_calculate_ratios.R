@@ -1,36 +1,33 @@
 calculateRatiosUI <- function(id, i18n) {
   ns <- NS(id)
 
-  tagList(
-    contentHeader(ns('ratios'), i18n$t("title_calculate_ratios"), i18n = i18n),
-    contentBody(
-      box(
-        title = i18n$t("title_ratio_options"),
-        solidHeader = TRUE,
-        status = 'success',
-        width = 12,
-        fluidRow(
-          column(3, offset = 1, numericInput(ns('anc1_coverage'),
+  countdownDashboard(
+    dashboardId = ns('ratios'),
+    dashboardTitle = i18n$t('title_calculate_ratios'),
+    i18n = i18n,
+
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_ratio_options'),
+      column(3, offset = 1, numericInput(ns('anc1_coverage'),
                                  i18n$t("title_anc1_coverage"),
                                  min = 0, max = 100, value = NA, step = 1)),
-          column(3, numericInput(ns('penta1_coverage'),
+      column(3, numericInput(ns('penta1_coverage'),
                                  i18n$t("title_penta1_coverage"),
                                  min = 0, max = 100, value = NA, step = 1)),
-          column(3, numericInput(ns('penta3_coverage'),
+      column(3, numericInput(ns('penta3_coverage'),
                                  i18n$t("title_penta3_coverage_pct"),
                                  min = 0, max = 100, value = NA, step = 1))
-        )
-      ),
-      box(
+    ),
+
+    box(
         title = i18n$t("title_ratio_plots"),
-        status = 'primary',
+        status = 'success',
         width = 12,
         fluidRow(
           column(12, plotCustomOutput(ns('ratios_plot'))),
           column(4, downloadButtonUI(ns('ratio_plot_download')))
         )
       )
-    )
   )
 }
 
@@ -98,7 +95,7 @@ calculateRatiosServer <- function(id, cache, i18n) {
         }
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'ratios',
         cache = cache,
         path = 'numerator-assessment',

@@ -2,33 +2,30 @@ dataAjustmentUI <- function(id, i18n) {
   ns <- NS(id)
 
   k_factor_options <- c(0, 0.25, 0.5, 0.75, 1)
-  tagList(
-    contentHeader(ns('data_adjustment'), i18n$t("title_adjustment"), i18n = i18n),
-    contentBody(
-      fluidRow(
+
+  countdownDashboard(
+    dashboardId = ns('data_adjustment'),
+    dashboardTitle = i18n$t('title_adjustment'),
+    i18n = i18n,
+
+    fluidRow(
         column(
           8,
           offset = 2,
           box(
             title = i18n$t("title_factors"),
-            status = 'primary',
+            status = 'success',
             solidHeader = TRUE,
             width = 12,
             fluidRow(
-              column(2, selectizeInput(ns('k_anc'),
+              column(4, selectizeInput(ns('k_anc'),
                                        label = i18n$t("title_anc_factor"),
                                        choices = k_factor_options)),
-              column(2, selectizeInput(ns('k_delivery'),
+              column(4, selectizeInput(ns('k_delivery'),
                                        label = i18n$t("title_delivery_factor"),
                                        choices = k_factor_options)),
-              column(2, selectizeInput(ns('k_vaccines'),
+              column(4, selectizeInput(ns('k_vaccines'),
                                        label = i18n$t("title_vaccines_factor"),
-                                       choices = k_factor_options)),
-              column(2, selectizeInput(ns('k_opd'),
-                                       label = i18n$t("title_opd_factor"),
-                                       choices = k_factor_options)),
-              column(2, selectizeInput(ns('k_ipd'),
-                                       label = i18n$t("title_ipd_factor"),
                                        choices = k_factor_options))
             )
           )
@@ -60,7 +57,6 @@ dataAjustmentUI <- function(id, i18n) {
           )
         )
       )
-    )
   )
 }
 
@@ -94,15 +90,13 @@ dataAdjustmentServer <- function(id, cache, i18n) {
         state$loaded <- FALSE
       })
 
-      observeEvent(c(input$k_anc, input$k_delivery, input$k_vaccines, input$k_opd, input$k_ipd), {
+      observeEvent(c(input$k_anc, input$k_delivery, input$k_vaccines), {
         req(cache())
 
         k <- k_factors()
         k['anc'] <- as.numeric(input$k_anc)
         k['idelv'] <- as.numeric(input$k_delivery)
         k['vacc'] <- as.numeric(input$k_vaccines)
-        k['opd'] <- as.numeric(input$k_opd)
-        k['ipd'] <- as.numeric(input$k_ipd)
 
         cache()$set_k_factors(k)
       })
@@ -114,8 +108,6 @@ dataAdjustmentServer <- function(id, cache, i18n) {
         updateSelectInput(session, 'k_anc', selected = as.character(unname(k['anc'])))
         updateSelectInput(session, 'k_delivery', selected = as.character(unname(k['idelv'])))
         updateSelectInput(session, 'k_vaccines', selected = as.character(unname(k['vacc'])))
-        updateSelectInput(session, 'k_opd', selected = as.character(unname(k['opd'])))
-        updateSelectInput(session, 'k_ipd', selected = as.character(unname(k['ipd'])))
 
         if (cache()$adjusted_flag) {
           dt <- data() %>%
@@ -156,7 +148,7 @@ dataAdjustmentServer <- function(id, cache, i18n) {
         label = "btn_download_adjusted_dataset"
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'data_adjustment',
         cache = cache,
         path = 'numerator-adjustments',

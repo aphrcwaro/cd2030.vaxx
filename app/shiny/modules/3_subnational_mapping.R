@@ -1,12 +1,12 @@
 subnationalMappingUI <- function(id, i18n) {
   ns <- NS(id)
 
-  contentDashboard(
+  countdownDashboard(
     dashboardId = ns('subnational_mapping'),
     dashboardTitle = i18n$t('title_subnational_mapping'),
     i18n = i18n,
 
-    optionsHeader = contentOptions(
+    countdownOptions = countdownOptions(
       title = i18n$t('title_analysis_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n)),
       column(3, selectizeInput(ns('years'), label = i18n$t("title_select_years"), choice = NULL, multiple = TRUE)),
@@ -160,7 +160,7 @@ subnationalMappingServer <- function(id, cache, i18n) {
         i18n = i18n
       )
 
-      contentHeaderServer(
+      countdownHeaderServer(
         'subnational_mapping',
         cache = cache,
         path = 'national-subnational-mapping',

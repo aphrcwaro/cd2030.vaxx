@@ -2,108 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta
-    http-equiv="Content-Security-Policy"
-    content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Loading…</title>
+  <title>Countdown to 2030 • Loader</title>
   <style>
     :root{
-      --bg:#f2f8ee;
       --ink:#183018;
-      --accent:#7bc148;
-      --muted:#5a885a;
+      --accent:#2ea84e;
+      --muted:#4e6b4e;
+      --intro:1s;
+      --pad-left:290px;       /* read from .wrap */
+      --title-size:60px;      /* set by JS from .row’s computed size */
     }
-    html,body{height:100%;margin:0}
-    body{
-      background:var(--bg);
-      display:grid;
-      place-items:center;
-      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-      color:var(--ink);
+
+    html,body{height:100%;margin:0;background:#fff;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
+
+    /* your wrap (as provided) */
+    .wrap { 
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -webkit-flex-flow: row wrap;
+      -ms-flex-flow: row wrap;
+      flex-flow: row wrap;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
+      padding: 0 0 0 290px;
+      margin: 0;
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      z-index: 900;
+      -webkit-perspective: 500px;
+      perspective: 500px;
+      -webkit-perspective-origin: calc(50% + 120px) 50%;
+      perspective-origin: calc(50% + 120px) 50%;
     }
-    .wrap{ text-align:center; padding:16px 20px; border-radius:16px; }
-    .row{
+
+    /* centers visually despite the left padding on .wrap */
+    .shim{
+      transform: translateX(calc(var(--pad-left) / -2));
       display:flex;
-      gap:0.14em;
-      justify-content:center;
-      align-items:flex-end;
-      flex-wrap:wrap;
+      flex-direction:column;
+      align-items:center;
+      gap:22px;
+      width:fit-content;
     }
+
+    /* headline box: width equals word width */
+    .headline{ position:relative; display:inline-block }
+
+    /* your row (as provided) */
+    .row { 
+      text-align: center;
+      font: 60px / 1 'TeXGyreAdventorBold';
+      text-transform: none;
+      white-space: nowrap;
+      animation: tracking-in-contract-bck var(--intro) cubic-bezier(.68,-.55,.265,1.55) both;
+    }
+    /* add stronger, widely-installed fallbacks + style */
+    .row{
+      font-family: 'TeXGyreAdventorBold','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+      font-style: italic;
+      font-weight: 700;
+      letter-spacing:.01em;
+    }
+
+    /* letters pop after the word entrance */
     .letter{
-      font-weight:800;
-      font-size:clamp(22px,4.6vw,44px);
-      letter-spacing:0.02em;
       line-height:1;
       color:var(--muted);
       opacity:.35;
-      transform:translateY(6px) scale(.98);
-      animation: pop 1.2s ease-in-out infinite;
-      animation-delay: calc(var(--i) * 90ms);
+      transform:translateY(3px) scale(.995);
+      animation: pop 1.05s ease-in-out infinite;
+      animation-delay: calc(var(--intro) + var(--i) * 70ms);
     }
-    .letter.dot{ width:.28em }
-    .n{ color:var(--ink) }
-    .num{ color:var(--accent) }
+    .ink{ color:var(--ink) }
+    .accent{ color:var(--accent) }
 
+    @keyframes tracking-in-contract-bck{
+      0%{ letter-spacing:.8em; transform:translateZ(300px); opacity:0 }
+      40%{ opacity:.6 }
+      100%{ transform:translateZ(0); opacity:1 }
+    }
     @keyframes pop{
-      0%   { opacity:.35; transform:translateY(6px) scale(.98) }
-      35%  { opacity:1;   transform:translateY(0)   scale(1.04) }
+      0%   { opacity:.35; transform:translateY(3px) scale(.995) }
+      35%  { opacity:1;   transform:translateY(0)   scale(1.03) }
       70%  { opacity:.75; transform:translateY(0)   scale(1.00) }
-      100% { opacity:.35; transform:translateY(6px) scale(.98) }
+      100% { opacity:.35; transform:translateY(3px) scale(.995) }
     }
 
-    /* thin progress accent under text */
+    /* fixed-length green line under the word */
     .bar{
-      width:min(360px,70vw);
+      position:absolute;
+      left:0; right:0;                  /* width = 100% of .headline */
+      top: calc(100% + 10px);
       height:4px;
-      background:linear-gradient(90deg,var(--accent),#5db33f,var(--accent));
+      background:linear-gradient(90deg,#1f9441,var(--accent),#1f9441);
       background-size:200% 100%;
       border-radius:999px;
-      margin:14px auto 0;
-      animation: sweep 2.2s ease-in-out infinite;
-      opacity:.9;
+      opacity:0;
+      transform:translateX(24px);       /* slide only, no width scaling */
+      animation:
+        barIn var(--intro) ease-out forwards,
+        sweep 2.2s ease-in-out infinite;
+      animation-delay: 0s, 0s;          /* runs during word animation */
     }
-    @keyframes sweep{
-      0%{ background-position:0% 0 }
-      100%{ background-position:200% 0 }
+    @keyframes barIn{ to { transform:translateX(0); opacity:.95 } }
+    @keyframes sweep{ 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+    /* bigger, proportional subtitle with better serif stack */
+    .subtitle{
+      font-family: Georgia, 'Palatino Linotype','Book Antiqua',Palatino,serif;
+      font-style: italic;
+      font-weight:600;
+      font-size: calc(var(--title-size) * 0.38);  /* ~23px when title is 60px */
+      line-height:1.25;
+      color:var(--muted);
+      text-align:center;
+      opacity:0;
+      transform:translateY(6px);
+      animation: subIn .6s ease-out forwards;
+      animation-delay: calc(var(--intro) + .4s);
     }
+    @keyframes subIn{ to{ opacity:1; transform:none } }
 
     @media (prefers-reduced-motion:reduce){
-      .letter,.bar{ animation:none }
-      .letter{ opacity:.8; transform:none }
+      .row{ animation:none }
+      .letter,.bar,.subtitle{ animation:none }
+      .letter{ opacity:.85; transform:none }
+      .bar{ opacity:.95; transform:none }
+      .subtitle{ opacity:1; transform:none }
     }
   </style>
 </head>
 <body>
   <div class="wrap" aria-live="polite">
-    <div class="row" id="word" aria-label="Countdown 2030"></div>
-    <div class="bar" aria-hidden="true"></div>
+    <div class="shim">
+      <div class="headline">
+        <div class="row" id="word" aria-label="Countdown to 2030"></div>
+        <div class="bar" aria-hidden="true"></div>
+      </div>
+      <div class="subtitle" aria-hidden="true">Vaccination</div>
+    </div>
   </div>
 
   <script>
-    // Build "Countdown 2030" one-letter spans with staggered animation
-    const text = "Countdown 2030";
-    const row = document.getElementById('word');
+    const text = "Countdown to 2030";
+    const row  = document.getElementById('word');
+    const wrap = document.querySelector('.wrap');
+
+    // Build word: "Countdown" ink, "to 2030" green
+    const toIdx   = text.indexOf(" to ");
+    const toStart = toIdx + 1;
+    const toEnd   = toStart + 2;
 
     [...text].forEach((ch, idx) => {
       const span = document.createElement('span');
       span.className = 'letter';
-
-      // style numbers and the letter "n" a hair darker for contrast, optional
-      if (/\d/.test(ch)) span.classList.add('num');
-      if (ch.toLowerCase() === 'n') span.classList.add('n');
-
-      // keep spaces as thin flex gaps
-      if (ch === ' ') {
-        span.textContent = '';
-        span.style.width = '0.5em';
-      } else {
-        span.textContent = ch;
-      }
-
+      if (/\d/.test(ch) || (idx >= toStart && idx < toEnd)) span.classList.add('accent');
+      else if (ch !== ' ') span.classList.add('ink');
+      else span.style.width = '0.45em';
+      span.textContent = ch === ' ' ? '' : ch;
       span.style.setProperty('--i', idx);
       row.appendChild(span);
     });
+
+    // Centering compensation + proportional subtitle
+    const pad = parseFloat(getComputedStyle(wrap).paddingLeft)||0;
+    document.documentElement.style.setProperty('--pad-left', pad + 'px');
+    const titlePx = parseFloat(getComputedStyle(row).fontSize)||60;
+    document.documentElement.style.setProperty('--title-size', titlePx + 'px');
   </script>
 </body>
 </html>
