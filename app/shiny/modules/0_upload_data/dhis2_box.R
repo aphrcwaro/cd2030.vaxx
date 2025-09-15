@@ -45,7 +45,7 @@ dhis2BoxServer <- function(id, i18n) {
       dhis2_data <- reactiveVal()
 
       countries_df <- reactive({
-        cd2030.rmncah:::countries %>%
+        cd2030.core:::countries %>%
           filter(!is.na(dhis2_url))
       })
 

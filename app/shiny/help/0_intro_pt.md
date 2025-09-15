@@ -13,9 +13,9 @@ O Countdown to 2030 para a Saúde das Mulheres, Crianças e Adolescentes (O Coun
 
 Para mais informações sobre a iniciativa Countdown to 2030, visite: [O site do Countdown](https://www.countdown2030.org/about)
 
-## Sobre o pacote R `cd2030.rmncah`
+## Sobre o pacote R `cd2030.core`
 
-O pacote R cd2030.rmncah e o aplicativo Shiny foram desenvolvidos para apoiar a geração de evidências e a análise dos indicadores SRMNIA.
+O pacote R cd2030.core e o aplicativo Shiny foram desenvolvidos para apoiar a geração de evidências e a análise dos indicadores SRMNIA.
 
 **Principais funcionalidades incluem:**
 

@@ -226,7 +226,7 @@ fileUploadServer <- function(id, cache, i18n) {
             file_path <- .x$datapath
 
             tryCatch(
-              cd2030.rmncah:::check_file_path(file_path),
+              cd2030.core:::check_file_path(file_path),
               error = function(e) {
                 selected_dir_box$add_message(clean_error_message(e), 'error')
                 return()

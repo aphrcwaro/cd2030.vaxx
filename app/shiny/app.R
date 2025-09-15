@@ -32,7 +32,7 @@ pacman::p_load(
   rlang,
   # sf,
   shiny.i18n,
-  stringr ,
+  stringr,
   officer,
   officedown,
   waiter,
