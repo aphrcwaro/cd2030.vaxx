@@ -13,7 +13,7 @@ pacman::p_load(
   shinycssloaders,
   shinyFiles,
   shinyjs,
-  cd2030.rmncah,
+  cd2030.core,
   dplyr,
   future,
   htmltools,
@@ -29,6 +29,7 @@ pacman::p_load(
   reactable,
   tidyr,
   markdown,
+  rlang,
   # sf,
   shiny.i18n,
   stringr ,
@@ -83,7 +84,6 @@ source('modules/3_national_inequality.R')
 source('modules/3_subnational_mapping.R')
 source('modules/3_national_target.R')
 source('modules/3_equity.R')
-source('modules/3_family_planning.R')
 
 source('modules/4_subnational_coverage.R')
 source('modules/4_subnational_inequality.R')
@@ -96,6 +96,7 @@ version <- getOption("app.version", "dev")
 
 ui <- dashboardPage(
   skin = 'green',
+  title = 'Vaxx',
   header = dashboardHeader(title = HTML(paste0('VAXX<sup>', version, '</sup>'))),
   sidebar = dashboardSidebar(
     usei18n(i18n),

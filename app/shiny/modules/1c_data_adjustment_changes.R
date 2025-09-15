@@ -14,9 +14,8 @@ adjustmentChangesUI <- function(id, i18n) {
 
       tabPanel(title = i18n$t("opt_live_births"), downloadCoverageUI(ns('live_births'))),
       tabPanel(title = i18n$t("opt_penta1"), downloadCoverageUI(ns('penta1'))),
-      tabPanel(title = i18n$t("opt_anc1"), downloadCoverageUI(ns('anc1'))),
-      tabPanel(title = i18n$t("opt_ideliv"), downloadCoverageUI(ns('ideliv'))),
-      tabPanel(title = i18n$t("opt_opd_under5"), downloadCoverageUI(ns('opd_total'))),
+      tabPanel(title = i18n$t("opt_bcg"), downloadCoverageUI(ns('bcg'))),
+      tabPanel(title = i18n$t("opt_measles"), downloadCoverageUI(ns('measles1'))),
       tabPanel(
         title = i18n$t("opt_custom_check"),
         fluidRow(
@@ -57,12 +56,41 @@ adjustmentChangesServer <- function(id, cache, i18n) {
         data() %>%
           generate_adjustment_values(adjustment = 'custom', k_factors = k_factors())
       })
+      
+      livebirth_adjustments <- reactive({
+        req(adjustments())
+        adjustments() %>% 
+          filter_adjustment_value('instlivebirths')
+      })
+      
+      penta1_adjustments <- reactive({
+        req(adjustments())
+        adjustments() %>% 
+          filter_adjustment_value('penta1')
+      })
+      
+      bcg_adjustments <- reactive({
+        req(adjustments())
+        adjustments() %>% 
+          filter_adjustment_value('bcg')
+      })
+      
+      measles1_adjustments <- reactive({
+        req(adjustments())
+        adjustments() %>% 
+          filter_adjustment_value('measles1')
+      })
+      
+      custom_adjustments <- reactive({
+        req(adjustments(), input$indicator)
+        adjustments() %>% 
+          filter_adjustment_value(input$indicator)
+      })
 
       downloadCoverageServer(
         id = 'live_births',
         filename = reactive('live_births'),
-        data_fn = adjustments,
-        indicator = 'instlivebirths',
+        data_fn = livebirth_adjustments,
         title = i18n$t("figure_live_births_outlier"),
         sheet_name = reactive(i18n$t("opt_live_births")),
         i18n = i18n
@@ -71,48 +99,34 @@ adjustmentChangesServer <- function(id, cache, i18n) {
       downloadCoverageServer(
         id = 'penta1',
         filename = reactive('penta1'),
-        data_fn = adjustments,
-        indicator = 'penta1',
+        data_fn = penta1_adjustments,
         title = i18n$t("figure_penta_outlier"),
         sheet_name = reactive(i18n$t("opt_penta1")),
         i18n = i18n
       )
 
       downloadCoverageServer(
-        id = 'anc1',
-        filename = reactive('anc1'),
-        data_fn = adjustments,
-        indicator = 'anc1',
-        title = i18n$t("figure_anc1_outlier"),
-        sheet_name = reactive(i18n$t("opt_anc1")),
+        id = 'bcg',
+        filename = reactive('bcg'),
+        data_fn = bcg_adjustments,
+        title = i18n$t("figure_bcg_outlier"),
+        sheet_name = reactive(i18n$t("opt_bcg")),
         i18n = i18n
       )
 
       downloadCoverageServer(
-        id = 'ideliv',
-        filename = reactive('ideliv'),
-        data_fn = adjustments,
-        indicator = 'instdeliveries',
-        title = i18n$t("figure_ideliv_outlier"),
-        sheet_name = reactive(i18n$t("opt_ideliv")),
-        i18n = i18n
-      )
-
-      downloadCoverageServer(
-        id = 'opd_total',
-        filename = reactive('opd_total'),
-        data_fn = adjustments,
-        indicator = 'opd_total',
-        title = i18n$t("figure_opd_total_outlier"),
-        sheet_name = reactive(i18n$t("opt_opd_under5")),
+        id = 'measles1',
+        filename = reactive('measles1'),
+        data_fn = measles1_adjustments,
+        title = i18n$t("figure_mcv1_outlier"),
+        sheet_name = reactive(i18n$t("opt_measles")),
         i18n = i18n
       )
 
       downloadCoverageServer(
         id = 'custom',
         filename = reactive(paste0(input$indicator, '_plot')),
-        data_fn = adjustments,
-        indicator = input$indicator,
+        data_fn = custom_adjustments,
         sheet_name = reactive(i18n$t("opt_custom_check")),
         i18n = i18n
       )

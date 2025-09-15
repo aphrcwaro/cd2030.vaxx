@@ -13,7 +13,7 @@ fileUploadUI <- function(id, i18n) {
 
     fluidRow(
       column(
-        4,
+        6,
         fileInput(
           inputId = ns('un_data'),
           label = i18n$t('title_upload_un_estimates'),
@@ -25,19 +25,7 @@ fileUploadUI <- function(id, i18n) {
         messageBoxUI(ns('un_feedback'))
       ),
       column(
-        4,
-        fileInput(
-          inputId = ns('un_mortality_data'),
-          label = i18n$t('title_upload_un_mortality'),
-          buttonLabel = i18n$t('btn_browse_or_drop'),
-          placeholder = 'Supported formats: .dta',
-          accept = '.dta'
-        ),
-
-        messageBoxUI(ns('un_mortality_feedback'))
-      ),
-      column(
-        4,
+        6,
         fileInput(
           inputId = ns('wuenic_data'),
           label = i18n$t('title_upload_wuenic'),
@@ -83,7 +71,6 @@ fileUploadServer <- function(id, cache, i18n) {
     module = function(input, output, session) {
 
       un_message_box <- messageBoxServer('un_feedback', i18n = i18n)
-      un_mortality_message_box <- messageBoxServer('un_mortality_feedback', i18n = i18n)
       wuenic_message_box <- messageBoxServer('wuenic_feedback', i18n = i18n)
       survey_message_box <- messageBoxServer('survey_feedback', i18n = i18n)
       map_message_box <- messageBoxServer('map_feedback', i18n = i18n)
@@ -126,22 +113,6 @@ fileUploadServer <- function(id, cache, i18n) {
         })
       })
 
-      observeEvent(input$un_mortality_data, {
-        req(data(), input$un_mortality_data)
-        file_name <- input$un_mortality_data$name
-
-        tryCatch({
-          mort <- load_un_mortality_data(path = input$un_mortality_data$datapath,
-                                         country_iso = country_iso())
-          cache()$set_un_mortality_estimates(mort)
-          un_mortality_message_box$update_message('msg_upload_success', 'success', list(file_name = file_name))
-        },
-        error = function(e) {
-          print(e)
-          un_mortality_message_box$update_message('error_upload_failed_unsupported_format', 'error')
-        })
-      })
-
       observeEvent(data(), {
         req(data())
         state$loaded <- FALSE
@@ -153,18 +124,6 @@ fileUploadServer <- function(id, cache, i18n) {
         }
         if (is.null(cache()$wuenic_estimates)) {
           shinyjs::reset('wuenic_data')
-        }
-        if (is.null(cache()$un_mortality_estimates)) {
-          shinyjs::reset('un_mortality_data')
-        }
-      })
-
-      observe({
-        req(data(), !state$loaded)
-        if (is.null(input$un_mortality_data$name) && !is.null(cache()$un_mortality_estimates)) {
-          un_mortality_message_box$update_message('msg_cache_loaded', 'success')
-        } else {
-          un_mortality_message_box$update_message('msg_awaiting_upload', 'info')
         }
       })
 

@@ -39,6 +39,8 @@ uploadBoxServer <- function(id, i18n) {
 
       cache <- eventReactive(input$hfd_file, {
         req(input$hfd_file)
+        
+        print(input$hfd_file)
 
         file_path <- input$hfd_file$datapath
         file_name <- input$hfd_file$name
@@ -51,26 +53,9 @@ uploadBoxServer <- function(id, i18n) {
         }
 
         tryCatch({
-          dt <- if (file_type %in% c('xls', 'xlsx')) {
-            load_excel_data(file_path)
-          } else if (file_type == 'dta') {
-            load_data(file_path)
-          } else {
-            NULL
-          }
-
-          rds_path <- if (file_type == 'rds') {
-            file_path
-          } else {
-            NULL
-          }
-
+          cache_instance <- load_cache_data(file_path, 'vaccine')$reactive()
+          
           messageBox$update_message('msg_upload_success', 'success', list(file_name = file_name))
-
-          cache_instance <- init_CacheConnection(
-            countdown_data = dt,
-            rds_path = rds_path
-          )$reactive()
 
           cache_instance()
         },

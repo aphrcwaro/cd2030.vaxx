@@ -1,0 +1,167 @@
+---
+title: "Data Quality for `r params$country` --- Countdown Analysis"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: report-template.docx
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+params:
+  cache: NULL
+  country: NULL
+  adminlevel_1: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  fig.width=7, 
+  fig.height=5, 
+  dpi=1200
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+adminlevel_1 <- params$adminlevel_1
+
+data <- cache$countdown_data
+country <- cache$country
+threshold <- cache$performance_threshold
+```
+
+## 1. Health Facility Data Quality Assessment {-}
+
+### Background
+
+Routinely reported health facility data are an important data source for health
+indicators. The data are reported by health facilities on events such as immunizations
+given, or live births attended. As with any data, quality is an issue. Data are checked
+to consider completeness of reporting by health facilities, identify extreme outliers
+and internal consistency. 
+
+### Data Quality Sumary Table
+
+```{r}
+years <- unique(data$year)
+
+data %>%
+	calculate_overall_score(threshold, region = adminlevel_1) %>%
+	mutate(
+		type = case_when(
+			no %in% c("1a", "1b", "1c") ~ '1. Completeness of monthly facility reporting (mean of ANC, delivery, immunization, OPD)',
+			no %in% c("2a", "2b") ~ '2. Extreme outliers (mean of ANC, delivery, immunization, OPD)',
+			no %in% c("3a", "3b",'3c', '3d', '4') ~ '3. Consistency of annual reporting'
+		)
+	) %>%
+	as_grouped_data(groups = 'type') %>%
+	as_flextable() %>%
+	bold(j = 1, i = ~ !is.na(type), bold = TRUE, part = "body") %>%
+	bold(i = ~ is.na(type) & no =='4', bold = TRUE, part = "body") %>%
+	bold(part = "header", bold = TRUE) %>%
+	colformat_double(i = ~ is.na(type) & !no %in% c("3a", "3b"), j = as.character(years), digits = 0, big.mark = ",") %>%
+	colformat_double(i = ~ is.na(type) & no %in% c("3a", "3b"), j = as.character(years), digits = 2) %>%
+	bg(
+		i = ~ is.na(type) & !no %in% c("3a", "3b"),
+		j = as.character(years),
+		bg = function(x) {
+			result <- map_chr(as.list(x), ~ {
+				if (is.na(.x) || is.null(.x)) {
+					return("transparent")
+				} else if (.x >= threshold) {
+					return("seagreen")
+				} else if (.x >= 70 && .x < threshold) {
+					return("yellow")
+				} else if (.x < 70) {
+					return("red")
+				} else {
+					return("transparent")
+				}
+			})
+			return(result)
+		},
+		part = "body"
+	) %>%
+	bg(
+		i = ~ !is.na(type), part = "body",
+		bg = 'lightgoldenrodyellow'
+	) %>%
+	theme_vanilla() %>%
+	autofit()
+```
+
+### District Reporting Rates
+
+```{r district-reporting-rates}
+plot(calculate_district_reporting_rate(data, threshold, region = adminlevel_1)) +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+Make a statement about the data quality overall score and trend: is it good, is it going in the right direction?
+
+Interpret the completeness of reporting data: is it good, going in the right direction?
+
+Interpret the data on extreme outliers: is it good , are districts doing well?
+
+Interpret the consistency of the reported data for ANC1 and penta1 at the national level; same for penta1 and penta3
+
+Interpret the data on the percent of districts that have ANC1 to penta1 ratios within the expected range; same for penta1 to penta3
+
+---
+
+:::
+
+
+\newpage
+
+### ANC1/Penta1 and Penta/Penta3 Ratios
+
+```{r}
+plot(calculate_ratios_summary(data, region = adminlevel_1)) +
+  cd_report_theme()
+```
+
+```{r}
+plot_comparison_anc1_penta1(data) +
+  cd_report_theme()
+```
+
+```{r}
+plot_comparison_penta1_penta3(data) +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+Interpret the consistency of the reported data for ANC1 and penta1 at the national level; same for penta1 and penta3
+
+Interpret the data on the percent of districts that have ANC1 to penta1 ratios within the expected range; same for penta1 to penta3
+
+---
+
+:::

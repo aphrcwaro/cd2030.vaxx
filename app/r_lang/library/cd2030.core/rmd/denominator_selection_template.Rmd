@@ -1,0 +1,131 @@
+---
+title: "Denominator Selection for `r params$country` --- Countdown Analysis"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: report-template.docx
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+params:
+  cache: NULL
+  country: NULL
+  adminlevel_1: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  fig.width=7, 
+  fig.height=5, 
+  dpi=1200
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+
+data <- cache$countdown_data
+adjusted_data <- cache$adjusted_data
+k_factors <- cache$k_factors
+un_estimates <- cache$un_estimates
+survey_estimates <- cache$survey_estimates
+```
+
+## Health facility data denominator assessment: DHIS2, UN Population and livebirths projections {-}
+
+### Background
+
+Service coverage is defined as the population who received the service divided by 
+the population who need the services: the denominator. The quality of the population 
+projections in DHIS2 is assessed through consistency over time and comparison with 
+the UN projections.
+
+
+### Total Population Projections: DHIS2 and UN Populations
+
+```{r}
+plot(prepare_population_metrics(adjusted_data, un_estimates = un_estimates), metric = 'population') +
+  cd_report_theme()
+```
+
+### Live Births Projections: DHIS2 and UN Live births
+
+```{r}
+plot(prepare_population_metrics(adjusted_data, un_estimates = un_estimates), metric = 'births') +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+The interpretation should focus on the extent to which the DHIS2 projections are considered robust which is the case when: 1) the DHIS2 total population projection is consistent over time with regular population growth 2) the DHIS2 total live birth projection consistent over time (regular trend) 3) the projected numbers of total population and live births are close to the UN population projection 4) the DHIS2 population projections are consistent with UN estimates for crude birth rate and crude death rate. 
+
+Make your overall conclusion about the quality of the DHIS2 projection, especially live births
+
+---
+
+:::
+
+
+## Selection of the best denominator {-}
+
+### Background
+
+The best performing denominator for coverage analysis with facility data is selected by comparing how close the different denominator methods are to survey coverage for a nearby year. This is done at the national and subnational levels (using the median difference with the survey).
+
+### Denominators selection based on Penta3 Coverage
+
+```{r}
+indicator_coverage <- cache$calculate_indicator_coverage('national')
+
+indicator_coverage %>% 
+  filter_indicator_coverage('penta3', unname(survey_estimates['penta3']), cache$survey_year) %>% 
+  plot() +
+  cd_report_theme()
+
+```
+
+
+### Denominator selection based on Institutional Delivery
+
+```{r}
+indicator_coverage %>% 
+  filter_indicator_coverage('instdeliveries', unname(survey_estimates['ideliv']), cache$survey_year) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+Which denominator methods performed best at the national level for the two indicators?
+
+Which indicator performed best at the subnational level for the two indicators?
+
+What selection is made for the indicators in the coverage analyses?
+
+---
+
+:::
+

@@ -1,0 +1,310 @@
+---
+title: "Sub-National Statistical Profile: `r params$adminlevel_1`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: subnational-one-pager-template.docx
+    page_margins:
+      bottom: 0.1
+      top: 0.1
+      right: 0.1
+      left: 0.1
+      gutter: 0
+      header: 0
+      footer: 0
+    page_size:
+      height: 8.3
+      width: 11.7
+      orient: "landscape"
+      unit: "in"
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+    number_sections: false
+    keep_tex: true
+    includes:
+      in_header: |
+        \usepackage[a4paper, margin=0.2in, bottom=0.1in, top=0in, right=0.2in, left=0.2in, includehead, includefoot]
+        
+params:
+  cache: NULL
+  country: NULL
+  adminlevel_1: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  dpi=300
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(flextable)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+adminlevel_1 <- params$adminlevel_1
+
+threshold <- cache$performance_threshold
+data <- cache$countdown_data
+country <- cache$country
+last_year <- robust_max(data$year)
+admin1_cov <- cache$calculate_coverage('adminlevel_1')
+admin2_cov <- cache$calculate_coverage('district') %>% 
+  filter(adminlevel_1 == !!adminlevel_1)
+
+plot_subnational_comparison <- function(.data, indicator = c('penta3', 'instdeliveries'), denominator = c('penta1', 'anc1', 'dhis2', 'penta1derived'), last_year) {
+  check_required(.data)
+  indicator <- arg_match(indicator)
+  indicator_col <- sym(paste0('cov_', indicator, '_', denominator))
+  
+  # Color palette
+  category_colors <- c(
+    "Lower than average" = "#145374",
+    "Average" = "#45A9E3",
+    "Higher than average" = "#A9DCFA"
+  )
+  
+  df <- admin1_cov %>% 
+    filter(year == last_year) %>% 
+    select(adminlevel_1, !!indicator_col) %>% 
+    arrange(!!indicator_col) %>% 
+    mutate(
+      category = case_when(
+        !!indicator_col <= quantile(!!indicator_col, 0.33, na.rm = TRUE) ~ "Lower than average",
+        !!indicator_col <= quantile(!!indicator_col, 0.66, na.rm = TRUE) ~ "Average",
+        TRUE ~ "Higher than average"
+      )
+    ) 
+  
+  cat_positions <- df %>%
+    mutate(x = as.numeric(factor(adminlevel_1, levels = adminlevel_1))) %>%
+    summarise(x = mean(x), .by = category)
+
+  df %>% 
+    ggplot(aes(x = factor(adminlevel_1, levels = adminlevel_1), y = !!indicator_col, fill = category)) +
+    geom_col(width = 1) +
+    geom_col(
+      data = filter(df, adminlevel_1 == !!adminlevel_1),
+      aes(x = adminlevel_1),
+      fill = "yellow", color = "black", width = 1, size = 0.5
+    ) +
+    geom_text(
+      data = filter(df, adminlevel_1 == !!adminlevel_1),
+      aes(x = adminlevel_1, y = !!indicator_col / 2, label = adminlevel_1), 
+      vjust = 0.5, angle = 90, hjust = 0.5,  # Center vertically and horizontally
+      fontface = "bold", color = "black",
+      size = 3
+    ) +
+  
+    geom_label(
+      data = cat_positions,
+      aes(x = x, y = 10, label = category),
+      inherit.aes = FALSE,
+      size = 3,
+      fill = "white",
+      color = "black",
+      label.size = 0
+    ) +
+    
+    scale_fill_manual(values = category_colors) +
+    scale_y_continuous(limits = c(0, 105), expand = c(0, 0)) +
+    labs(
+      title = str_glue("{str_to_title(indicator)} immunization, by region, {country}, {last_year} (HMIS)"),
+      x = NULL, y = NULL
+    ) +
+    cd_report_theme(base_size = 7) +
+    theme(
+      panel.grid = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      legend.position = "none",
+      legend.title = element_blank(),
+      # legend.margin = margin(0, 0, -10, 0),
+      plot.margin = margin(0, 0, 0, 0)
+    )
+}
+```
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=3.6, fig.height=1.5}
+
+cov <- cache$calculate_indicator_coverage('district') %>% 
+  filter(adminlevel_1 == !!adminlevel_1, year == last_year) 
+
+pop_cov <- cov %>% 
+  # select(district, totunder1_dhis2, totinftpenta_penta1, totinftpenta_penta1derived)
+  select(district, totunder1_dhis2)
+
+table_data <- data %>%
+  filter(adminlevel_1 == !!adminlevel_1, year == last_year) %>%
+  distinct(district, total_pop, live_births) %>%
+  # distinct(district, total_pop) %>%
+  left_join(pop_cov, join_by(district)) %>%
+  mutate(across(where(is.numeric), ~ round(.x)))
+
+totals <- table_data %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE)) %>%
+  mutate(district = !!adminlevel_1)
+  
+bind_rows(totals, table_data) %>% 
+  relocate(district) %>% 
+  flextable() %>%
+  set_header_labels(
+    district = "District",
+    total_pop = "Population",
+    live_births = "Live Births",
+    totunder1_dhis2 = 'Under 1'
+  ) %>%
+  fontsize(part = 'body', size = 7) %>%
+  bold(part = "header", bold = TRUE) %>%
+  fontsize(part = 'header', size = 7) %>%
+  bold(i = 1, part = "body") %>% 
+  autofit() %>% 
+  fit_to_width(max_width = 3.6)
+
+run_columnbreak()
+```
+
+```{r, fig.width=3.6, fig.height=1.5}
+admin1_cov %>% 
+  filter_coverage('penta3', denominator = cache$get_denominator('penta3'), region = adminlevel_1) %>% 
+  plot() +
+  cd_report_theme(base_size = 7) +
+  theme(
+    legend.position = 'none',
+    plot.margin = margin(0, 0, 0, 0)
+  )
+
+run_columnbreak()
+```
+
+```{r, fig.width=3.6, fig.height=1.5}
+admin1_cov %>% 
+  filter_coverage('instdeliveries', denominator = cache$get_denominator('instdeliveries'), region = adminlevel_1) %>% 
+  plot() +
+  cd_report_theme(base_size = 7) +
+  theme(
+    legend.position = 'none',
+    plot.margin = margin(0, 0, 0, 0)
+  )
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [3.63,3.63,3.63], space: 0.2, sep: false}--->
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=3.6, fig.height=2.5}
+years <- unique(data$year)
+
+data %>%
+	calculate_overall_score(threshold, region = adminlevel_1) %>%
+  filter(!no %in% c('3a', '3b')) %>%
+	mutate(
+		type = case_when(
+			no %in% c("1a", "1b", "1c") ~ '1. Completeness of monthly facility reporting',
+			no %in% c("2a", "2b") ~ '2. Extreme outliers (ANC, delivery, immunization, OPD)',
+			no %in% c("3a", "3b",'3c', '3d', '4') ~ '3. Consistency of annual reporting'
+		),
+		`Data Quality Metrics` = case_when(
+      str_detect(`Data Quality Metrics`, 'facility reports') ~ '% of expected monthly reports',
+      str_detect(`Data Quality Metrics`, 'completeness') ~ '% of districts with complete report >= 90%',
+      str_detect(`Data Quality Metrics`, 'missing') ~ '% of districts with no missing values',
+      str_detect(`Data Quality Metrics`, 'outliers \\(national\\)') ~ '% of values not extreme outliers',
+      str_detect(`Data Quality Metrics`, 'outliers in') ~ '% of districts with no extreme outliers',
+      str_detect(`Data Quality Metrics`, 'anc1/penta1') ~ '% district with anc1/penta1 in expected',
+      str_detect(`Data Quality Metrics`, 'penta1/penta3') ~ '% district with penta1/penta3 in expected',
+      .default = `Data Quality Metrics`
+    )
+	) %>%
+	as_grouped_data(groups = 'type') %>%
+	as_flextable() %>%
+  bold(part = "header", bold = TRUE) %>%
+  fontsize(part = 'header', size = 9) %>%
+	bold(j = 1, i = ~ !is.na(type), bold = TRUE, part = "body") %>%
+	bold(i = ~ is.na(type) & no =='4', bold = TRUE, part = "body") %>%
+	colformat_double(i = ~ is.na(type) & !no %in% c("3a", "3b"), j = as.character(years),
+	                 digits = 0, big.mark = ",") %>%
+	colformat_double(i = ~ is.na(type) & no %in% c("3a", "3b"), j = as.character(years),
+	                 digits = 2) %>%
+  bg(
+  	i = ~ is.na(type) & !no %in% c("3a", "3b"),
+  	j = as.character(years),
+  	bg = function(x) {
+  		case_when(
+  		  is.na(x) | is.null(x) ~ "transparent",
+  		  x >= threshold ~ "seagreen",
+  		  x >= 70 & x < threshold ~ "yellow",
+  		  x < 70 ~ "red",
+  		  .default = "transparent" # Default case for anything else
+  		 )
+  	},
+  	part = "body"
+  ) %>%
+	bg(
+		i = ~ !is.na(type), 
+		part = "body",
+		bg = 'lightgoldenrodyellow'
+	) %>%
+  fontsize(size = 9, part = 'body') %>%
+	theme_vanilla() %>%
+	autofit() %>%
+  fit_to_width(max_width = 3.6)
+
+run_columnbreak()
+```
+```{r, fig.width=3.6, fig.height=2.5}
+plot_subnational_comparison(admin1_cov, 'penta3', denominator = cache$get_denominator('penta3'), last_year = last_year)
+run_columnbreak()
+```
+```{r, fig.width=3.6, fig.height=2.5}
+plot_subnational_comparison(admin1_cov, 'instdeliveries', denominator = cache$get_denominator('instdeliveries'), last_year = last_year)
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [3.63,3.63,3.63], space: 0.2, sep: false}--->
+
+```{r, fig.height=2.8}
+anc4_cov <- paste0('cov_anc4_', cache$get_denominator('anc4'))
+anc1_cov <- paste0('cov_anc_1trimeter_', cache$get_denominator('anc_1trimeter'))
+births_cov <- paste0('cov_instlivebirths_', cache$get_denominator('instlivebirths'))
+cs_cov <- paste0('cov_csection_', cache$get_denominator('csection'))
+pnc_cov <- paste0('cov_pnc48h_', cache$get_denominator('pnc48h'))
+penta3_cov <- paste0('cov_penta3_', cache$get_denominator('penta3'))
+mcv1_cov <- paste0('cov_measles1_', cache$get_denominator('measles1'))
+opd_cov <- paste0('cov_opd_under5_', cache$get_denominator('opd_under5'))
+
+cov %>% 
+  select(district, any_of(c(anc4_cov, anc1_cov, births_cov, cs_cov, pnc_cov, penta3_cov, mcv1_cov, opd_cov))) %>% 
+  arrange(district) %>% 
+  mutate(across(-district, round, digits = 1)) %>% 
+  flextable() %>%
+  set_header_labels(
+    values = list2(
+      !!anc4_cov := "ANC 4",
+      !!anc1_cov := "ANC 1st Trimester",
+      !!births_cov := "Institutional Live Births",
+      !!cs_cov := "C-Section",
+      !!pnc_cov := "PNC 48h",
+      !!penta3_cov := "Penta 3",
+      !!mcv1_cov := "MCV 1",
+      !!opd_cov := "OPD Under 5"
+    )
+  ) %>%
+  fontsize(part = 'body', size = 7) %>%
+  bold(part = "header", bold = TRUE) %>%
+  fontsize(part = 'header', size = 7) %>%
+  autofit()
+```

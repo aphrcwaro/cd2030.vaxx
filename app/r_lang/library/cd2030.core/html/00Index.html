@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Data Loading, Validation, and Reporting for Countdown 2030</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> Data Loading, Validation, and Reporting for Countdown 2030
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;cd2030.core&rsquo; version 1.0.0.9000</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<p style="text-align: center;">
+<a href="#A">A</a>
+<a href="#C">C</a>
+<a href="#E">E</a>
+<a href="#F">F</a>
+<a href="#G">G</a>
+<a href="#I">I</a>
+<a href="#L">L</a>
+<a href="#N">N</a>
+<a href="#P">P</a>
+<a href="#R">R</a>
+<a href="#S">S</a>
+<a href="#T">T</a>
+<a href="#W">W</a>
+</p>
+
+
+<h2><a id="A">-- A --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="add_mad_med_columns.html">add_mad_med_columns</a></td>
+<td>Add Median and MAD Columns for Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="add_missing_column.html">add_missing_column</a></td>
+<td>Add Missing Value Flags to Health Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="add_outlier5std_column.html">add_outlier5std_column</a></td>
+<td>Add Outlier Flags Based on 5-MAD Bounds</td></tr>
+<tr><td style="width: 25%;"><a href="adjust_service_data.html">adjust_service_data</a></td>
+<td>Adjust Service Data for Coverage Analysis</td></tr>
+</table>
+
+<h2><a id="C">-- C --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="calculate_average_reporting_rate.html">calculate_average_reporting_rate</a></td>
+<td>Reporting Rate Summary by Administrative Level</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_completeness_summary.html">calculate_completeness_summary</a></td>
+<td>Summarize Data Completeness by Year</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_coverage.html">calculate_coverage</a></td>
+<td>Combine Immunization Coverage Data</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_derived_coverage.html">calculate_derived_coverage</a></td>
+<td>Generate Coverage Data with Derived Denominators</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_district_completeness_summary.html">calculate_district_completeness_summary</a></td>
+<td>District-Level Completeness Summary</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_district_outlier_summary.html">calculate_district_outlier_summary</a></td>
+<td>District-Level Outlier Summary by Year</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_district_ratios_summary.html">calculate_district_ratios_summary</a></td>
+<td>Calculate District Adequacy Summary</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_district_reporting_rate.html">calculate_district_reporting_rate</a></td>
+<td>District-Level Reporting Rates by Year</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_health_system_comparison.html">calculate_health_system_comparison</a></td>
+<td>Compare Health System Metrics Across Levels</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_health_system_metrics.html">calculate_health_system_metrics</a></td>
+<td>Calculate Health System Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_indicator_coverage.html">calculate_indicator_coverage</a></td>
+<td>Calculate Health Coverage Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_inequality.html">calculate_inequality</a></td>
+<td>Analyze Subnational Health Coverage Data with Inequality Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_outliers_summary.html">calculate_outliers_summary</a></td>
+<td>Annual Summary of Outlier-Free Reporting Rates</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_overall_score.html">calculate_overall_score</a></td>
+<td>Calculate Overall Quality Score for Data Quality Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_ratios_summary.html">calculate_ratios_summary</a></td>
+<td>Calculate Yearly Indicator Ratios Summary with Expected Ratios</td></tr>
+<tr><td style="width: 25%;"><a href="calculate_threshold.html">calculate_threshold</a></td>
+<td>Calculate Dropout Coverage for Health Indicators Below a Threshold</td></tr>
+<tr><td style="width: 25%;"><a href="clean_error_message.html">clean_error_message</a></td>
+<td>Clean and Validate Error Messages</td></tr>
+<tr><td style="width: 25%;"><a href="compute_indicator_numerator.html">compute_indicator_numerator</a></td>
+<td>Compute Aggregated Numerators for Health Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="compute_service_utilization.html">compute_service_utilization</a></td>
+<td>Compute Service Utilization Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="create_mortality_ratios.html">create_mortality_ratios</a></td>
+<td>Extract Latest Mortality Ratios for UN Comparison</td></tr>
+<tr><td style="width: 25%;"><a href="create_mortality_summary.html">create_mortality_summary</a></td>
+<td>Create Mortality Summary Object</td></tr>
+</table>
+
+<h2><a id="E">-- E --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="equiplot.html">equiplot</a></td>
+<td>Create Dot Plots for Equity Analysis</td></tr>
+<tr><td style="width: 25%;"><a href="equiplot_area.html">equiplot_area</a></td>
+<td>A Specialized Dot Plot for Area of Residence Analysis</td></tr>
+<tr><td style="width: 25%;"><a href="equiplot_education.html">equiplot_education</a></td>
+<td>A Specialized Dot Plot for Maternal Education Analysis</td></tr>
+<tr><td style="width: 25%;"><a href="equiplot_wealth.html">equiplot_wealth</a></td>
+<td>A Specialized Dot Plot for Wealth Quintile Analysis</td></tr>
+</table>
+
+<h2><a id="F">-- F --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="filter_adjustment_value.html">filter_adjustment_value</a></td>
+<td>Filter one indicator’s adjustment values</td></tr>
+<tr><td style="width: 25%;"><a href="filter_coverage.html">filter_coverage</a></td>
+<td>Filter and Reshape Coverage Data</td></tr>
+<tr><td style="width: 25%;"><a href="filter_high_performers.html">filter_high_performers</a></td>
+<td>Filter High-Performing Areas by Coverage</td></tr>
+<tr><td style="width: 25%;"><a href="filter_indicator_coverage.html">filter_indicator_coverage</a></td>
+<td>Filter Indicator Coverage for Plotting</td></tr>
+<tr><td style="width: 25%;"><a href="filter_inequality.html">filter_inequality</a></td>
+<td>Filter Subnational Inequality Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="filter_mapping_data.html">filter_mapping_data</a></td>
+<td>Filter Mapping Data for Specific Indicator and Denominator</td></tr>
+<tr><td style="width: 25%;"><a href="filter_mortality_summary.html">filter_mortality_summary</a></td>
+<td>Filter and Prepare Mortality Rate Data for Mapping</td></tr>
+<tr><td style="width: 25%;"><a href="filter_out_years.html">filter_out_years</a></td>
+<td>Filter Dataset by Removing Specified Years</td></tr>
+<tr><td style="width: 25%;"><a href="filter_service_utilization.html">filter_service_utilization</a></td>
+<td>Filter and Prepare Service Utilization Data for Mapping</td></tr>
+<tr><td style="width: 25%;"><a href="filter_service_utilization_map.html">filter_service_utilization_map</a></td>
+<td>Filter Service Utilization Data for a Specific Region and Indicator</td></tr>
+</table>
+
+<h2><a id="G">-- G --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="generate_adjustment_values.html">generate_adjustment_values</a></td>
+<td>Generate Adjusted and Unadjusted Service Counts by Year</td></tr>
+<tr><td style="width: 25%;"><a href="generate_fpet_summary.html">generate_fpet_summary</a></td>
+<td>Load and Generate FPET Output</td></tr>
+<tr><td style="width: 25%;"><a href="generate_report.html">generate_report</a></td>
+<td>Generate and Export Checks Report</td></tr>
+<tr><td style="width: 25%;"><a href="get_admin_columns.html">get_admin_columns</a></td>
+<td>Determine Grouping Columns for Administrative Levels</td></tr>
+<tr><td style="width: 25%;"><a href="get_all_indicators.html">get_all_indicators</a></td>
+<td>Get All Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="get_country_iso3.html">get_country_iso3</a></td>
+<td>Get Country ISO3 Code</td></tr>
+<tr><td style="width: 25%;"><a href="get_country_name.html">get_country_name</a></td>
+<td>Get Country Name</td></tr>
+<tr><td style="width: 25%;"><a href="get_country_shapefile.html">get_country_shapefile</a></td>
+<td>Load Country Shapefile for Mapping</td></tr>
+<tr><td style="width: 25%;"><a href="get_dhis2_hfd.html">get_dhis2_hfd</a></td>
+<td>Retrieve DHIS2 Health Facility Data</td></tr>
+<tr><td style="width: 25%;"><a href="get_excel_version.html">get_excel_version</a></td>
+<td>Format Service Utilization Data for Excel Export</td></tr>
+<tr><td style="width: 25%;"><a href="get_indicator_groups.html">get_indicator_groups</a></td>
+<td>Get Indicator Groups</td></tr>
+<tr><td style="width: 25%;"><a href="get_indicator_group_names.html">get_indicator_group_names</a></td>
+<td>Get Indicator Group Names</td></tr>
+<tr><td style="width: 25%;"><a href="get_indicator_without_opd_ipd.html">get_indicator_without_opd_ipd</a></td>
+<td>Get Indicators excluding indicators without denominator</td></tr>
+<tr><td style="width: 25%;"><a href="get_mapping_data.html">get_mapping_data</a></td>
+<td>Get Mapping Data for Subnational Coverage Analysis</td></tr>
+<tr><td style="width: 25%;"><a href="get_named_indicators.html">get_named_indicators</a></td>
+<td>Get Named Indicator Vector</td></tr>
+<tr><td style="width: 25%;"><a href="get_plot_admin_column.html">get_plot_admin_column</a></td>
+<td>Determine the Administrative Column to Use for Plotting</td></tr>
+<tr><td style="width: 25%;"><a href="get_population_column.html">get_population_column</a></td>
+<td>Get Population Denominator Column Based on Indicator Only</td></tr>
+<tr><td style="width: 25%;"><a href="get_selected_group.html">get_selected_group</a></td>
+<td>Get selected group</td></tr>
+</table>
+
+<h2><a id="I">-- I --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="init_CacheConnection.html">init_CacheConnection</a></td>
+<td>Create a CacheConnection Object</td></tr>
+<tr><td style="width: 25%;"><a href="interpret.html">interpret</a></td>
+<td>Generic Interpretation Method</td></tr>
+<tr><td style="width: 25%;"><a href="interpret.cd_fpet.html">interpret.cd_fpet</a></td>
+<td>Interpret FPET Results with Emphasis on Current Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="is_maternal_indicator.html">is_maternal_indicator</a></td>
+<td>Detemine if an indicator is maternal indicator</td></tr>
+</table>
+
+<h2><a id="L">-- L --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="list_outlier_units.html">list_outlier_units</a></td>
+<td>Identify Monthly Outliers for a Single Indicator</td></tr>
+<tr><td style="width: 25%;"><a href="load_cache_data.html">load_cache_data</a></td>
+<td>Load Processed Countdown 2030 Data from RDS or DTA File</td></tr>
+<tr><td style="width: 25%;"><a href="load_csection_estimates.html">load_csection_estimates</a></td>
+<td>Load C-section Share Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="load_data.html">load_data</a></td>
+<td>Load Processed Countdown 2030 Data from RDS or DTA File</td></tr>
+<tr><td style="width: 25%;"><a href="load_equity_data.html">load_equity_data</a></td>
+<td>Load and Filter Equity Data</td></tr>
+<tr><td style="width: 25%;"><a href="load_fpet_data.html">load_fpet_data</a></td>
+<td>Load FPET Data from CSV File or Use Provided Data</td></tr>
+<tr><td style="width: 25%;"><a href="load_private_sector_data.html">load_private_sector_data</a></td>
+<td>Load and Prepare Private Sector Data</td></tr>
+<tr><td style="width: 25%;"><a href="load_survey_data.html">load_survey_data</a></td>
+<td>Load and Process Survey Data</td></tr>
+<tr><td style="width: 25%;"><a href="load_un_estimates.html">load_un_estimates</a></td>
+<td>Load UN Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="load_un_mortality_data.html">load_un_mortality_data</a></td>
+<td>Load and Filter UN Mortality Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="load_wuenic_data.html">load_wuenic_data</a></td>
+<td>Load WUENIC Immunization Data</td></tr>
+<tr><td style="width: 25%;"><a href="cd2030-configuration.html">local_cd_quiet</a></td>
+<td>Execute Code in Quiet Mode</td></tr>
+</table>
+
+<h2><a id="N">-- N --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="new_countdown.html">new_countdown</a></td>
+<td>Create Countdown 2030 Data Object</td></tr>
+</table>
+
+<h2><a id="P">-- P --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="plot.cd_adjustment_values_filtered.html">plot.cd_adjustment_values_filtered</a></td>
+<td>Plot Adjusted vs. Unadjusted Data for Health Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_average_reporting_rate.html">plot.cd_average_reporting_rate</a></td>
+<td>Plot Sub-National Reporting Rates by Year and Unit</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_completeness_summary.html">plot.cd_completeness_summary</a></td>
+<td>Plot Missing Summary</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_coverage_filtered.html">plot.cd_coverage_filtered</a></td>
+<td>Plot National Coverage Data</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_derived_coverage.html">plot.cd_derived_coverage</a></td>
+<td>Plot Derived vs Traditional Coverage Over Time</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_district_reporting_rate.html">plot.cd_district_reporting_rate</a></td>
+<td>Plot District Reporting Rate Summary</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_fpet.html">plot.cd_fpet</a></td>
+<td>Plot FPET Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_health_system_comparison.html">plot.cd_health_system_comparison</a></td>
+<td>Compare District vs Admin 1 Health Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_health_system_metric.html">plot.cd_health_system_metric</a></td>
+<td>Plot Health Metrics for Admin 1 Units</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_indicator_coverage.html">plot.cd_indicator_coverage</a></td>
+<td>Plot National Denominators and Coverage Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_indicator_coverage_filtered.html">plot.cd_indicator_coverage_filtered</a></td>
+<td>Plot Coverage by Denominator Source with Survey Reference</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_inequality_filtered.html">plot.cd_inequality_filtered</a></td>
+<td>Plot Subnational Health Coverage Analysis</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_mapping_filtered.html">plot.cd_mapping_filtered</a></td>
+<td>Plot Subnational Coverage Maps by Indicator</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_mortality_ratio_summarised.html">plot.cd_mortality_ratio_summarised</a></td>
+<td>Plot Completeness of Facility Reporting Ratios</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_mortality_summary.html">plot.cd_mortality_summary</a></td>
+<td>Plot Mortality Rate Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_mortality_summary_filtered.html">plot.cd_mortality_summary_filtered</a></td>
+<td>Plot Filtered Institutional Mortality Rates</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_outlier.html">plot.cd_outlier</a></td>
+<td>Visualize Summary of Outlier Detection</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_outlier_list.html">plot.cd_outlier_list</a></td>
+<td>Plot Outlier Time Series for a Region</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_population_metrics.html">plot.cd_population_metrics</a></td>
+<td>Plot National Population or Births Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_private_sector_plot_data.html">plot.cd_private_sector_plot_data</a></td>
+<td>Plot Private Sector Prevalence by Sector and Area/National Level</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_ratios_summary.html">plot.cd_ratios_summary</a></td>
+<td>Plot Ratios Summary for Indicator Ratios Summary Object</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_service_utilization_filtered.html">plot.cd_service_utilization_filtered</a></td>
+<td>Plot Filtered Service Utilization Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="plot.cd_service_utilization_map.html">plot.cd_service_utilization_map</a></td>
+<td>Plot Service Utilization Indicators</td></tr>
+<tr><td style="width: 25%;"><a href="internal_consistency.html">plot_comparison</a></td>
+<td>Internal Consistency Plot Functions for Indicator Comparisons</td></tr>
+<tr><td style="width: 25%;"><a href="plot_comparison.cd_data.html">plot_comparison.cd_data</a></td>
+<td>Plot Comparison with Linear Fit and R-squared</td></tr>
+<tr><td style="width: 25%;"><a href="internal_consistency.html">plot_comparison_anc1_penta1</a></td>
+<td>Internal Consistency Plot Functions for Indicator Comparisons</td></tr>
+<tr><td style="width: 25%;"><a href="internal_consistency.html">plot_comparison_opv1_opv3</a></td>
+<td>Internal Consistency Plot Functions for Indicator Comparisons</td></tr>
+<tr><td style="width: 25%;"><a href="internal_consistency.html">plot_comparison_penta1_penta3</a></td>
+<td>Internal Consistency Plot Functions for Indicator Comparisons</td></tr>
+<tr><td style="width: 25%;"><a href="plot_line_graph.html">plot_line_graph</a></td>
+<td>Plot Line Graph for Multiple Series with Dynamic Y-axis Scaling</td></tr>
+<tr><td style="width: 25%;"><a href="plot_national_health_metric.html">plot_national_health_metric</a></td>
+<td>Plot National Health System Metrics</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_population_metrics.html">prepare_population_metrics</a></td>
+<td>Compute Population Metrics for DHIS-2 and UN Data</td></tr>
+<tr><td style="width: 25%;"><a href="prepare_private_sector_plot_data.html">prepare_private_sector_plot_data</a></td>
+<td>Prepare Private Sector Plot Data</td></tr>
+<tr><td style="width: 25%;"><a href="print.cd_data.html">print.cd_data</a></td>
+<td>Print Method for 'cd_data' Class</td></tr>
+</table>
+
+<h2><a id="R">-- R --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="register_indicator_group.html">register_indicator_group</a></td>
+<td>Register or replace an indicator-group override</td></tr>
+<tr><td style="width: 25%;"><a href="reset_indicator_group.html">reset_indicator_group</a></td>
+<td>Reset an override</td></tr>
+<tr><td style="width: 25%;"><a href="robust_max.html">robust_max</a></td>
+<td>Robust Maximum Value Calculation</td></tr>
+</table>
+
+<h2><a id="S">-- S --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="save_data.html">save_data</a></td>
+<td>Save Processed Countdown 2030 Data to File</td></tr>
+<tr><td style="width: 25%;"><a href="save_dhis2_excel.html">save_dhis2_excel</a></td>
+<td>Save DHIS2 Data to an Excel Workbook</td></tr>
+<tr><td style="width: 25%;"><a href="save_dhis2_master_data.html">save_dhis2_master_data</a></td>
+<td>Create a Master Dataset from DHIS2 Data</td></tr>
+<tr><td style="width: 25%;"><a href="set_selected_group.html">set_selected_group</a></td>
+<td>Set selected group</td></tr>
+<tr><td style="width: 25%;"><a href="summarise_completeness_ratio.html">summarise_completeness_ratio</a></td>
+<td>Summarize Completeness-Adjusted Mortality Ratio</td></tr>
+</table>
+
+<h2><a id="T">-- T --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_adjustment_values.html">tbl_sum.cd_adjustment_values</a></td>
+<td>Summary for 'cd_adjustment_values' Objects</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_average_reporting_rate.html">tbl_sum.cd_average_reporting_rate</a></td>
+<td>Summary for Average Reporting Rates by Year</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_completeness_summary.html">tbl_sum.cd_completeness_summary</a></td>
+<td>Summary for 'cd_completeness_summary'</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_district_completeness_summary.html">tbl_sum.cd_district_completeness_summary</a></td>
+<td>Summary for 'cd_district_completeness_summary'</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_district_outliers_summary.html">tbl_sum.cd_district_outliers_summary</a></td>
+<td>Summary for 'cd_district_outliers_summary'</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_district_ratios_summary.html">tbl_sum.cd_district_ratios_summary</a></td>
+<td>Summary for 'cd_district_ratios_summary' Object</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_district_reporting_rate.html">tbl_sum.cd_district_reporting_rate</a></td>
+<td>Summary for District-Level Reporting Rates by Year</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_indicator_coverage.html">tbl_sum.cd_indicator_coverage</a></td>
+<td>Table Summary for National Coverage Estimates</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_national_denominators.html">tbl_sum.cd_national_denominators</a></td>
+<td>Summarize National Denominators Data</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_outliers_summary.html">tbl_sum.cd_outliers_summary</a></td>
+<td>Summary for 'cd_outliers_summary'</td></tr>
+<tr><td style="width: 25%;"><a href="tbl_sum.cd_ratios_summary.html">tbl_sum.cd_ratios_summary</a></td>
+<td>Summary for 'cd_ratios_summary' Object</td></tr>
+</table>
+
+<h2><a id="W">-- W --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="cd2030-configuration.html">with_cd_quiet</a></td>
+<td>Execute Code in Quiet Mode</td></tr>
+</table>
+</div></body></html>

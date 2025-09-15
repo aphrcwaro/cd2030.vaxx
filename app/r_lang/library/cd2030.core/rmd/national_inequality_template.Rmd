@@ -1,0 +1,194 @@
+---
+title: "National Inequality for `r params$country` --- Countdown Analysis"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: report-template.docx
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+params:
+  cache: NULL
+  country: NULL
+  adminlevel_1: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  fig.width=7, 
+  fig.height=5, 
+  dpi=1200
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+```
+
+## Admin Level 1  Inequality trends {-}
+
+### Background
+
+Monitoring the coverage of interventions is a critical and direct output of health 
+systems. It is most useful if the national plan has meaningful targets. Both health 
+facility and survey data need to be used.
+
+### Regional coverage distribution: Institutional deliveries by admin1
+
+```{r}
+admin_level_1_inequality <- cache$calculate_inequality('adminlevel_1')
+
+admin_level_1_inequality %>% 
+  filter_inequality('instdeliveries') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r}
+admin_level_1_mapping <- cache$get_mapping_data('adminlevel_1')
+min_year <- min(admin_level_1_mapping$year)
+max_year <- robust_max(admin_level_1_mapping$year)
+
+years <- if (is.null(cache$mapping_years)) c(min_year, max_year) else cache$mapping_years
+
+admin_level_1_mapping %>% 
+  filter_mapping_data('instdeliveries', denominator = cache$maternal_denominator,
+                      palette = 'Blues', plot_year = years) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.cap='Institutioinal Deliveries coverage by wealth, recent surveys'}
+equiplot_wealth(cache$wiq_survey, 'instdeliveries') +
+  cd_report_theme()
+```
+
+```{r, fig.cap='Institutioinal Deliveries coverage by maternal education, recent surveys'}
+equiplot_education(cache$education_survey, 'instdeliveries') +
+  cd_report_theme()
+```
+
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. The interpretation should focus on whether inequalities have reduced over time and to what extent global targets for subnational coverage have been met.
+
+The  Countdown Composite Coverage Index (CCI) is used to provide a broad overview of inequalities. The CCI combines 9 indicators in the program areas of family planning, maternal and newborn care, immunization and treatment of sick children.
+
+Wealth: are the gaps between the rich and poor large, have they changed over time? What pattern of inequality (bottom, linear, top)?
+Education: are the gaps in coverage by mother’s education large, have they changed over time? How should this be interpreted in relation to increasing levels of female education?
+
+---
+
+:::
+
+## Regional coverage distribution: Penta3 coverage by admin1
+
+```{r}
+admin_level_1_inequality %>% 
+  filter_inequality('penta3') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r}
+admin_level_1_mapping %>% 
+  filter_mapping_data('penta3', denominator = cache$denominator,
+                      palette = 'Blues', plot_year = years) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.cap='Fig 4g: Pentavalent 3 coverage by wealth, recent surveys'}
+equiplot_wealth(cache$wiq_survey, 'penta3') +
+  cd_report_theme()
+```
+
+```{r, fig.cap='Fig 4g: Pentavalent 3 coverage by maternal education, recent surveys'}
+equiplot_education(cache$education_survey, 'penta3') +
+  cd_report_theme()
+```
+
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. The interpretation should focus on whether inequalities have reduced over time and to what extent global targets for subnational coverage have been met.
+
+The  Countdown Composite Coverage Index (CCI) is used to provide a broad overview of inequalities. The CCI combines 9 indicators in the program areas of family planning, maternal and newborn care, immunization and treatment of sick children.
+
+Wealth: are the gaps between the rich and poor large, have they changed over time? What pattern of inequality (bottom, linear, top)?
+Education: are the gaps in coverage by mother’s education large, have they changed over time? How should this be interpreted in relation to increasing levels of female education?
+
+
+---
+
+:::
+
+## District Inequality trends {-}
+
+### Background
+
+Monitoring the coverage of interventions is a critical and direct output of health 
+systems. It is most useful if the national plan has meaningful targets. Both health 
+facility and survey data need to be used.
+
+### Regional coverage distribution: Institutional deliveries by District
+
+```{r}
+district_inequality <- cache$calculate_inequality('district')
+
+district_inequality %>% 
+  filter_inequality('instdeliveries') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+### Regional coverage distribution: Penta 3 by District
+
+```{r}
+district_inequality %>% 
+  filter_inequality('penta3') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. The interpretation should focus on whether inequalities have reduced over time and to what extent global targets for subnational coverage have been met.
+
+---
+
+:::

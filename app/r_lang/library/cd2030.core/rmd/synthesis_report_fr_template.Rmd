@@ -1,0 +1,753 @@
+---
+title: "`r params$country`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: synthesis-template.docx
+    page_size:
+      height: 22.0
+      width: 13.93
+      orient: "portrait"
+      unit: "in"
+    page_margins:
+      bottom: 0.5
+      top: 0.5
+      right: 0.5
+      left: 0.5
+      gutter: 0
+      header: 0
+      footer: 0
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+params:
+  cache: NULL
+  adminlevel_1: NULL
+  country: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  # fig.width=7, 
+  # fig.height=5, 
+  dpi=300
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+data <- cache$countdown_data
+adjusted_data <- cache$adjusted_data
+country <- cache$country
+threshold <- cache$performance_threshold
+un_estimates <- cache$un_estimates
+survey_estimates <- cache$survey_estimates
+```
+
+### Analyse des indicateurs de santé reproductive, maternelle, néonatale, infantile et adolescente pour 2019-2024 : Synthèse du chartbook
+### Réunion Annuelle Pays (CAM), Nairobi, 16-20 Juin 2025
+### Countdown 2030 en partenariat avec le ministère de la Santé du Kenya, le Mécanisme de financement mondial, l'OMS, l'OOAS et l'UNICEF
+
+> Noms et affiliation des équipes d'analyse par pays
+
+# PRINCIPAUX RESULTATS
+
+## 1. Évaluation de la qualité des données des établissements de santé : numérateurs et dénominateurs
+
+**NUMERATEURS:** Les données de routine des établissements de santé constituent une source de données importante pour les indicateurs de santé. Les données sont rapportées par les établissements de santé sur des événements tels que les vaccinations administrées ou les naissances vivantes assistées. Comme pour toutes les données, la qualité est un problème. Les données sont évaluées en fonction de l'exhaustivité des rapports par les établissements de santé, des valeurs aberrantes extrêmes et de la cohérence interne. Les données sont ajustées avant d'être utilisées pour calculer les statistiques.
+
+#### Résumé de la qualité des données déclarées par les établissements de santé, DHIS2, 2019-2024
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=8}
+years <- unique(data$year)
+
+data %>%
+	calculate_overall_score(threshold) %>%
+	mutate(
+		type = case_when(
+			no %in% c("1a", "1b", "1c") ~ '1. Completeness of monthly facility reporting (mean of ANC, delivery, immunization, OPD)',
+			no %in% c("2a", "2b") ~ '2. Extreme outliers (mean of ANC, delivery, immunization, OPD)',
+			no %in% c("3a", "3b",'3c', '3d', '4') ~ '3. Consistency of annual reporting'
+		)
+	) %>%
+	as_grouped_data(groups = 'type') %>%
+	as_flextable() %>%
+	bold(j = 1, i = ~ !is.na(type), bold = TRUE, part = "body") %>%
+	bold(i = ~ is.na(type) & no =='4', bold = TRUE, part = "body") %>%
+	bold(part = "header", bold = TRUE) %>%
+	colformat_double(i = ~ is.na(type) & !no %in% c("3a", "3b"), j = as.character(years), digits = 0, big.mark = ",") %>%
+	colformat_double(i = ~ is.na(type) & no %in% c("3a", "3b"), j = as.character(years), digits = 2) %>%
+	bg(
+		i = ~ is.na(type) & !no %in% c("3a", "3b"),
+		j = as.character(years),
+		bg = function(x) {
+			result <- map_chr(as.list(x), ~ {
+				if (is.na(.x) || is.null(.x)) {
+					return("transparent")
+				} else if (.x >= threshold) {
+					return("seagreen")
+				} else if (.x >= 70 && .x < threshold) {
+					return("yellow")
+				} else if (.x < 70) {
+					return("red")
+				} else {
+					return("transparent")
+				}
+			})
+			return(result)
+		},
+		part = "body"
+	) %>%
+	bg(
+		i = ~ !is.na(type), part = "body",
+		bg = 'lightgoldenrodyellow'
+	) %>%
+	theme_vanilla() %>%
+  autofit() %>% 
+	fit_to_width(max_width = 8)
+
+run_columnbreak()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quelle est la qualité globale des données telle qu'évaluée par le score annuel global de qualité des données ?
+- Y a-t-il un modèle de qualité des données par année pour lequel il y a une explication ??
+- Y a-t-il certaines régions ou autres unités infranationales qui posent un problème particulier ?
+- Y a-t-il certains formulaires ou services (p. ex., soins prénatals, travail et accouchement, vaccination) qui posent problème ? Un ajustement a-t-il été effectué en raison de rapports incomplets (fournir le k value) ?
+- Y a-t-il une bonne cohérence entre les nombres rapportés de CPN1 et de penta1 ? Si non, quelle pourrait être l'explication?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [8,4], space: 0.2, sep: false}--->
+
+<!---BLOCK_MULTICOL_START--->
+
+Numérateur: Qualité des données des établissements - exemple 1 Expliquer l'observation sur la qualité des données (une section)
+
+```{r, fig.width=6.3, fig.height=3.5}
+plot_comparison_anc1_penta1(data) +
+  cd_report_theme()
+
+run_columnbreak()
+```
+ Numérateur: qualité des données de l'établissement - exemple 2 Expliquer l'observation sur la qualité des données (une section)
+
+```{r , fig.width=6.3, fig.height=3.5}
+plot(calculate_district_reporting_rate(data, threshold, region = adminlevel_1)) +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+
+**DENOMINATEURS:** La couverture des services est définie comme la population qui a reçu le service (numérateur) divisée par la population qui a besoin des services : (le dénominateur). Nous testons quatre options de mesures du dénominateur en utilisant les naissances vivantes en établissement et la couverture vaccinale Penta-3 (Figures 2c et 2d). La qualité des projections démographiques dans le DHIS2 est évaluée par la cohérence dans le temps et la comparaison avec les projections de l'ONU. Deux dénominateurs sont également calculés à l'aide du service quasi universel, à savoir CPN-1 et Penta-1. La plus plausible est identifiée pour être utilisée pour générer d'autres statistiques.
+
+<!---BLOCK_MULTICOL_START--->
+```{r, fig.width=4.2}
+plot(prepare_population_metrics(adjusted_data, un_estimates = un_estimates), metric = 'births') +
+  cd_report_theme()
+
+run_columnbreak()
+```
+**Accouchements en établissement**
+```{r, fig.width=4.2}
+indicator_coverage <- cache$calculate_indicator_coverage('national')
+indicator_coverage %>% 
+  filter_indicator_coverage('instdeliveries', unname(survey_estimates['ideliv']), cache$survey_year) %>% 
+  plot() +
+  cd_report_theme()
+run_columnbreak()
+```
+**Penta 3**
+```{r, fig.width=4.2}
+indicator_coverage %>% 
+  filter_indicator_coverage('penta3', unname(survey_estimates['penta3']), cache$survey_year) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Dans quelle mesure les projections nationales des naissances s'alignent-elles sur les projections de l'ONU ??
+- Quelles méthodes de dénominateur ont donné les meilleurs résultats au niveau national pour la couverture des naissances vivantes et la couverture penta3 ? Et au niveau infranational pour les deux indicateurs?
+- Quels dénominateurs sont retenus pour les indicateurs maternels (accouchements) et vaccinaux (penta3) dans les analyses de couverture?
+
+:::
+
+`r run_pagebreak()`
+
+## 2. Tendances de la couverture nationale : données des établissements et enquêtes 
+
+#### Soins prénatals: CPN4, CPN Visite précoce, premier trimestre de la grossesse
+
+<!---BLOCK_MULTICOL_START--->
+
+**CPN 4**
+```{r, fig.width=6.3, fig.height=3}
+coverage <- cache$calculate_coverage('national')
+
+coverage %>%
+  filter_coverage('anc4', denominator = cache$get_denominator('anc4')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Visite précoce CPN**
+```{r, fig.width=6.3, fig.height=3}
+coverage %>%
+  filter_coverage('anc_1trimester', denominator = cache$get_denominator('anc_1trimester')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Les niveaux et les tendances sont-ils plausibles ? Y a-t-il une bonne cohérence entre les données de l'établissement et celles de l'enquête ?
+
+:::
+
+#### Accouchements institutionnels
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3, fig.height=3}
+coverage %>%
+  filter_coverage('instdeliveries', denominator = cache$get_denominator('instdeliveries')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Les niveaux et les tendances sont-ils plausibles ? Y a-t-il une bonne cohérence entre les données de l'établissement et celles de l'enquête ?
+- Comment la couverture se comporte-t-elle par rapport aux cibles ? S'agit-il d'une tendance positive ? 
+
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+#### Immunisation : Penta 3, Rougeole 1
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3, fig.height=3}
+coverage %>%
+  filter_coverage('penta3', denominator = cache$get_denominator('penta3')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.width=6.3, fig.height=3}
+coverage %>%
+  filter_coverage('measles1', denominator = cache$get_denominator('measles1')) %>% 
+  plot() +
+  cd_report_theme()
+
+run_columnbreak()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Les niveaux et les tendances sont-ils plausibles ? Y a-t-il une bonne cohérence entre les données de l'établissement et celles de l'enquête ? Comment les résultats se comparent-ils aux estimations de l'ONU ? (WUENIC)?
+- Comment la couverture se comporte-t-elle par rapport aux cibles ? S'agit-il d'une tendance positive ? 
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+#### Pourcentage de districts atteignant des objectifs de couverture élevée
+
+<!---BLOCK_MULTICOL_START--->
+
+**CPN 4**
+```{r, fig.width=4.2, fig.height=3}
+indicator_coverage <- cache$calculate_indicator_coverage('district')
+
+indicator_coverage %>%
+  calculate_threshold(indicator = 'anc4', denominator = cache$maternal_denominator) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Indicateurs de la santé de l'enfant**
+```{r, fig.width=4.2, fig.height=3}
+indicator_coverage %>%
+  calculate_threshold(indicator = 'vaccine', denominator = cache$denominator) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- La proportion de districts qui ont atteint l'objectif a-t-elle varié au fil du temps ?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+
+`r run_pagebreak()`
+
+## 3. Equité
+
+#### Équité selon la richesse, le niveau de scolarité, la résidence rurale-urbaine (d'après les enquêtes)
+
+**Accouchements en établissement**
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+equiplot_area(cache$area_survey, 'instlivebirths') +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+equiplot_wealth(cache$wiq_survey, 'instlivebirths') +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+equiplot_education(cache$education_survey, 'instlivebirths') +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+**Penta 3e Dose**
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+equiplot_area(cache$area_survey, 'penta3') +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+equiplot_wealth(cache$wiq_survey, 'penta3') +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+equiplot_education(cache$education_survey, 'penta3') +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Pouvez-vous observer des différences systématiques, comme le fait que des groupes spécifiques soient constamment laissés pour compte ?
+- Y a-t-il des modèles observables d'inégalité (p. ex., linéaire, concentrée en haut ou en bas) ? Si oui, quelles stratégies potentielles pourraient être mises en œuvre pour réduire ces inégalités?
+- Tous les sous-groupes connaissent-ils des augmentations ou des diminutions de la couverture ou de la prévalence au même rythme ?
+- Les inégalités évoluent-elles au fil du temps ?
+
+:::
+
+#### Inégalités géographiques : données des établissements de santé
+
+<!---BLOCK_MULTICOL_START--->
+
+**Accouchements institutionnels**
+```{r, fig.width=6.3}
+admin_level_1_inequality <- cache$calculate_inequality('adminlevel_1')
+
+admin_level_1_inequality %>% 
+  filter_inequality('instdeliveries') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Penta 3e Dose**
+
+```{r, fig.width=6.3}
+admin_level_1_inequality %>% 
+  filter_inequality('penta3') %>% 
+  plot() +
+  cd_report_theme()
+```
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=3.1}
+admin_level_1_mapping <- cache$get_mapping_data('adminlevel_1')
+max_year <- robust_max(admin_level_1_mapping$year)
+
+admin_level_1_mapping %>% 
+  filter_mapping_data('instdeliveries', denominator = cache$maternal_denominator,
+                      palette = 'Greens', plot_year = max_year) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.width=3.1}
+admin_level_1_mapping %>% 
+  filter_mapping_data('penta3', denominator = cache$maternal_denominator,
+                      palette = 'Blues', plot_year = max_year) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Comment la couverture a-t-elle évolué au fil du temps ?
+- Y a-t-il eu un changement dans les inégalités ? Les points de données sont-ils de plus ou moins dispersés au fil du temps ? Les estimations de l'écart absolu moyen par rapport à la médiane (MADM) évoluent-elles au cours de la période ?
+- Quelles sont les régions ou les districts les plus performants et les moins performants ?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [3.183, 3.183, 6.365], space: 0.2, sep: false}--->
+
+`r run_pagebreak()`
+
+## 4. Mortalité en établissement
+
+#### Tendances de la mortalité en établissement (iMMR, iSBR)
+
+<!---BLOCK_MULTICOL_START--->
+
+**iMMR**
+```{r, fig.width=4.2}
+mortality_summary <- cache$create_mortality_summary()
+plot(mortality_summary, indicator = 'mmr_inst') +
+  cd_report_theme()
+```
+
+**iSBR**
+```{r, fig.width=4.2}
+plot(mortality_summary, indicator = 'sbr_inst') +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Que peut-on dire du niveau et de la tendance ? Est-ce conforme à ce qui est attendu sur la base des estimations de l'ONU ?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+#### Mortalité en établissement par unités admin1 
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+max_year <- robust_max(mortality_summary$year)
+min_year <- min(mortality_summary$year, na.rm = TRUE)
+
+mmr_inst <- mortality_summary %>% 
+  cache$filter_mortality_summary('mmr', map_years = c(min_year, max_year))
+
+plot(mmr_inst) +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+sbr_inst <- mortality_summary %>% 
+  cache$filter_mortality_summary('sbr', map_years = c(min_year, max_year))
+
+plot(sbr_inst) +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quelles sont les 3 régions avec les iMMR les plus élevées et les régions avec les iMMR et iSBR les plus basses ? (nom avec niveau) Est-ce comme prévu ou cela suggère-t-il des problèmes de qualité des données?
+- S'agit-il de régions plus avancées où l'on s'attend à ce que la mortalité soit plus faible ou de régions moins développées où la mortalité est faible, ce qui pourrait être le signe d'une sous-déclaration majeure des décès)
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+
+#### Métriques de qualité des données
+
+Rapport mortinatalité / décès maternels dans les établissements de santé au niveau national
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3}
+plot(mortality_summary, indicator = 'ratio_md_sb') +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Un ratio plausible est de l'ordre de 5 à 25 mortinaissances par décès maternel. Le ratio national se situe-t-il dans la fourchette attendue?
+- Que peut-on dire des régions du top 3 et des 3 dernières régions?
+- Si le ratio est supérieur à 25, cela peut signifier que les décès maternels sont plus sous-déclarés que les mortinaissances. S'il est inférieur à 5, les mortinaissances sont probablement sous-déclarées. Si le ratio se situe à l'intérieur de la fourchette, les rapports peuvent être bons si les niveaux de mortalité se situent dans la fourchette prévue. Si ce n'est pas le cas, les décès maternels et les mortinaissances sont sous-déclarés.
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+Estimation de la complétude de la déclaration des décès maternels et des mortinaissances dans les établissements
+
+<!---BLOCK_MULTICOL_START--->
+```{r, fig.width=6.3}
+mortality_ratio <- mortality_summary %>% 
+  cache$create_mortality_ratios()
+
+plot(cache$summarise_completeness_ratio(mortality_ratio, 'mmr')) +
+  cd_report_theme()
+```
+
+```{r, fig.width=6.3}
+plot(cache$summarise_completeness_ratio(mortality_ratio, 'sbr')) +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- 1.	Commentez la complétude de la déclaration du TMM et du SBR institutionnels sur la base du TMM de la population et du ratio communauté/établissement
+
+:::
+
+`r run_pagebreak()`
+
+## 5. Utilisation des services de santé curative pour les enfants malades
+
+#### Utilisation des services ambulatoires et hospitaliers
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3}
+service_utilization <- cache$compute_service_utilization('national')
+service_utilization %>% 
+  filter_service_utilization_map('opd') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.width=6.3}
+service_utilization %>% 
+  filter_service_utilization_map('ipd') %>% 
+  plot() +
+  cd_report_theme()
+
+run_columnbreak()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quel est le nombre de visites ambulatoires (OPD) par enfant et par an en 2024 et la tendance au fil du temps ? Est-ce inférieur à 1 visite par an, ce qui suggère un faible accès?
+- Que peut-on dire de la qualité des données pour les visites OPD & IPD ? Y a-t-il une cohérence entre les chiffres déclarés d'une année à l'autre ??
+- Quel est le nombre de visites hospitaliers (IPD) pour 100 enfants par an entre 2019 et 2024, est-ce en augmentation ? Est-ce inférieur à 2 pour 100 enfants de moins de cinq ans, ce qui suggère un faible accès?
+- Que peut-on dire des visites et des admissions de l'OPD par région/province en 2024 ? Quelle est l'ampleur de la différence entre les régions au top et celles laissées pour compte?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+#### Utilisation des services au niveau régional et provincial
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+admin1_service_utilization <- cache$compute_service_utilization('adminlevel_1')
+max_year <- robust_max(admin1_service_utilization$year)
+
+admin1_filtered <- admin1_service_utilization %>% 
+  cache$filter_service_utilization(indicator = 'opd', map_years = max_year)
+plot(admin1_filtered) +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+admin1_filtered <- admin1_service_utilization %>% 
+  cache$filter_service_utilization(indicator = 'ipd', map_years = max_year)
+plot(admin1_filtered) +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quelles sont les 3 régions avec les taux OPD et IPD les plus élevés et les 3 régions avec les plus bas (nom de la région avec valeurs) ? Pour quelle raison ? Problèmes potentiels liés aux données?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+<!---BLOCK_MULTICOL_START--->
+
+#### Taux de létalité parmi les admissions de moins de 5 ans
+
+```{r, fig.width=6.3}
+service_utilization %>% 
+  filter_service_utilization_map('cfr') %>% 
+  plot() +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quel est le taux de létalité chez les enfants de moins de cinq ans admis ? Quelles sont les tendances?
+- Qu'est-ce que cela dit de la qualité des soins?
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+`r run_pagebreak()`
+
+## 6. Progrès et performance du système de santé
+
+#### Intrants du système de santé
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3}
+national_metrics <- calculate_health_system_metrics(data, 'national')
+plot_national_health_metric(national_metrics, 'density') +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Que peut-on dire des intrants du système national de santé ? Comment se comparent-ils aux indices de référence ? Densité des établissements de santé (Critère : 2) Densité des lits (Critère : 25) Densité du personnel de santé (Critère : 23 – nécessaire pour réaliser des progrès majeurs dans la réduction de la mortalité maternelle et infantile grâce à un taux élevé de personnel qualifié (OMS). 44,5 pour 10 000 habitants pour parvenir à la couverture sanitaire universelle
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+#### Intrants du système de santé par région/province
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+subnational_metrics <- calculate_health_system_metrics(data, 'adminlevel_1')
+
+plot(subnational_metrics, indicator = 'ratio_fac_pop',
+        national_score = national_metrics$ratio_fac_pop,
+        target = 2) +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+plot(subnational_metrics, indicator = 'ratio_hos_pop',
+        national_score = national_metrics$ratio_hos_pop,
+        target = 2) +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+plot(subnational_metrics, indicator = 'ratio_hstaff_pop',
+        national_score = national_metrics$ratio_hstaff_pop,
+        target = 23) +
+  cd_report_theme()
+```
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->
+
+::: {custom-style="Style1"}
+
+- Comment le nombre d'établissements de santé varie-t-il selon les unités admin1 ?
+- Comment la densité hospitalière varie-t-elle selon les unités admin1 ?
+- Comment la densité du personnel de santé varie-t-elle selon les unités admnin1 ?
+- Quelles sont les unités admin1 au top et celles laissées pour compte ? Sont-elles cohérentes pour tous les indicateurs? 
+
+:::
+
+#### Extrants des systèmes de santé par intrants au niveau infranational
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=6.3}
+comparison <- cache$calculate_health_system_comparison()
+plot(comparison, indicator = 'cov_instdeliveries_hstaff',
+        denominator = cache$maternal_denominator) +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- L'interprétation doit se concentrer sur la validité de l'image obtenue. Cela peut être postulé si cela confirme certaines attentes, comme le font les régions plus développées qui se supportent mieux
+- Décrire les régions/provinces les moins performantes
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [6.365, 6.365], space: 0.2, sep: false}--->
+
+#### Secteur privé et services SRMNIA
+
+<!---BLOCK_MULTICOL_START--->
+
+```{r, fig.width=4.2}
+prepare_private_sector_plot_data(cache$sector_national_estimates, cache$csection_national_estimates) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+```{r, fig.width=4.2}
+prepare_private_sector_plot_data(cache$sector_area_estimates, cache$csection_area_estimates) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+::: {custom-style="Style1"}
+
+**Interprétations**
+
+- Quels indicateurs ont la part privée la plus élevée?
+- Y a-t-il des différences entre les zones rurales et urbaines ??
+
+
+:::
+
+<!---BLOCK_MULTICOL_STOP{widths: [4.243,4.243,4.243], space: 0.2, sep: false}--->

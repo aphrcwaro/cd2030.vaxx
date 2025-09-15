@@ -11,7 +11,7 @@ renderCustomPlot <- function(expr) {
 
   # Convert expression to a function
   func <- tryCatch({
-    rlang::as_function(rlang::enquo(expr))
+    as_function(enquo(expr))
   }, error = function(e) {
     function() generate_error_plot(paste('Error parsing expression:', clean_error_message(e)))
   })
@@ -19,7 +19,7 @@ renderCustomPlot <- function(expr) {
   renderPlot({
     # Evaluate the data from func
     check_data <- tryCatch(
-      rlang::eval_tidy(rlang::enquo(expr)),
+      eval_tidy(enquo(expr)),
       error = function(e) e
     )
 

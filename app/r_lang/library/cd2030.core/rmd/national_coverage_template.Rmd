@@ -1,0 +1,255 @@
+---
+title: "National Coverage for `r params$country` --- Countdown Analysis"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: kate
+  officedown::rdocx_document:
+    reference_docx: report-template.docx
+  pdf_document:
+    toc: false
+    latex_engine: lualatex
+params:
+  cache: NULL
+  country: NULL
+  adminlevel_1: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  include = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  error = TRUE,
+  fig.width=7, 
+  fig.height=5, 
+  dpi=1200
+)
+
+library(cd2030.rmncah)
+library(dplyr)
+library(purrr)
+library(reactable)
+library(officedown)
+library(officer)
+
+cache <- params$cache
+
+adjusted_data <- cache$adjusted_data
+denominator <- cache$denominator
+```
+
+## 5. National Estimates: National Vaccination Coverage trends {-}
+
+### Background
+
+Monitoring the coverage of interventions is a critical and direct output of health 
+systems. It is most useful if the national plan has meaningful targets. Both health 
+facility and survey data need to be used.
+
+### ANC Indicators
+
+**Coverage Trends for ANC4**
+
+```{r}
+national_coverage <- cache$calculate_coverage('national')
+
+national_coverage %>% 
+  filter_coverage('anc4', denominator = cache$get_denominator('anc4')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Coverage Trends for ANC First Trimeter**
+```{r}
+national_coverage %>% 
+  filter_coverage('anc_1trimester', denominator = cache$get_denominator('anc_1trimester')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. How does the coverage perform compared to the targets? Is this a positive trend? Are there explanations for the observed levels and trends?
+
+---
+
+
+### Delivery Care
+
+**Coverage Trends for live births**
+
+```{r}
+national_coverage %>% 
+  filter_coverage('instlivebirths', denominator = cache$get_denominator('instlivebirths')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Coverage Trends for Instituational Deliveries**
+
+```{r}
+national_coverage %>% 
+  filter_coverage('instdeliveries', denominator = cache$get_denominator('instdeliveries')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. How does the coverage perform compared to the targets? Is this a positive trend? Are there explanations for the observed levels and trends?
+
+---
+
+### Postnatal Indicators
+
+**Coverage Trends for Postnatal Care**
+```{r}
+national_coverage %>% 
+  filter_coverage('pnc48h', denominator = cache$get_denominator('pnc48h')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Coverage Trends for Low Birth Weight**
+
+```{r}
+national_coverage %>% 
+  filter_coverage('low_bweight', denominator = cache$get_denominator('low_bweight')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. How does the coverage perform compared to the targets? Is this a positive trend? Are there explanations for the observed levels and trends?
+
+---
+
+:::
+
+
+### Vaccines
+
+**Coverage Trends for Penta 3**
+```{r}
+national_coverage %>% 
+  filter_coverage('penta3', denominator = cache$get_denominator('penta3')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+**Coverage Trends for Measles 1**
+```{r}
+national_coverage %>% 
+  filter_coverage('measles1', denominator = cache$get_denominator('measles1')) %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+First address data quality: Are the levels and trends plausible? Is there good consistency between the facility and survey data? 
+
+Then, interpret the data if there is sufficient confidence in the observed levels and trends. How does the coverage perform compared to the targets? Is this a positive trend? Are there explanations for the observed levels and trends?
+
+---
+
+:::
+
+## National coverage trends: family planning
+
+### Background
+
+Monitoring progress in the uptake and equitable access to family planning services is central to achieving global health and development goals, particularly the Sustainable Development Goal (SDG) 3.7.1, which aims to ensure universal access to sexual and reproductive healthcare services, including for family planning, by 2030. Two key indicators commonly used to assess family planning performance are the Prevalence of Modern Contraceptive Methods (mCPR) and the Percentage of Demand for Family Planning Satisfied with a Modern Method. These indicators not only reflect the extent of contraceptive use among women of reproductive age, particularly those currently married or in union, but also signal the health system’s responsiveness to reproductive intentions and rights. The modern contraceptive prevalence rate (mCPR) indicates the percentage of women utilizing any contemporary method of contraception, providing a direct measure of family planning adoption. In contrast, demand satisfied with a modern method accounts for both current use and unmet need, thereby offering a more comprehensive measure of whether women's reproductive health needs are being fulfilled. Together, these indicators provide insight into both supply- and demand-side dynamics within the family planning landscape. 
+Analyzing trends in mCPR and demand satisfied over time allows policymakers, researchers, and program implementers to identify whether countries are making adequate progress, facing stagnation, or experiencing disparities in access. The Family Planning Estimation Tool (FPET), developed by Track20, uses Bayesian modeling to generate national estimates and projections, accommodating irregular survey intervals and enabling tracking toward 2030 targets. However, while aggregate trends are useful, interpreting the relationship between mCPR and demand satisfied is particularly crucial: a scenario where mCPR increases but demand satisfied does not may suggest persistent inequities, service delivery gaps, or a growing unmet need among specific subgroups.
+
+```{r}
+cache$fpet_data %>% 
+  generate_fpet_summary() %>% 
+  plot() +
+  cd_report_theme()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+-	What are the overall trends observed over time for both indicators?
+Examine whether there is consistent progress in the prevalence of modern contraceptive methods (mCPR) and the proportion of demand satisfied with a modern method. Are the trends linear, exponential, or showing signs of stagnation or reversal?
+-	How does the country's performance align with national or global targets (e.g., SDG 3.7.1)?
+Assess whether the observed trajectory suggests that the country is on track to meet the Sustainable Development Goal (SDG) target 3.7.1 by 2030, which aims to ensure universal access to sexual and reproductive health-care services, including for family planning.
+-	What are the implications if mCPR is increasing while demand satisfied with a modern method is not?
+Analyze whether a divergence in these trends may indicate a persistently high level of unmet need for family planning, suggesting that while more women are using modern methods, an even greater proportion are still unable to meet their contraceptive needs.
+
+---
+
+:::
+
+## subnational coverage: assessment of percent of regions that have reached international targets
+
+### Background
+
+The global health community has committed to eliminating preventable maternal and newborn deaths through a series of interconnected targets and strategic frameworks. Two key initiatives—Ending Preventable Maternal Mortality (EPMM) and Every Newborn Action Plan (ENAP)—jointly provide a coordinated roadmap to strengthen health systems, ensure equitable access to quality care, and improve accountability for maternal and newborn outcomes. Central to these frameworks are measurable coverage indicators and time-bound targets that track progress toward universal health coverage and the Sustainable Development Goals (SDGs), particularly SDG 3.1 and 3.2.
+
+#### Maternal
+
+```{r}
+indicator_coverage <- cache$calculate_indicator_coverage('adminlevel_1')
+
+indicator_coverage %>%
+  calculate_threshold(indicator = 'maternal', denominator = cache$maternal_denominator) %>% 
+  plot()
+```
+
+#### Vaccines
+
+```{r}
+indicator_coverage %>%
+  calculate_threshold(indicator = 'vaccine', denominator = cache$denominator) %>% 
+  plot()
+```
+
+#### 📝 Notes 
+
+::: {custom-style="Style1"}
+
+---
+
+- Interpret in line with the expected Subnational targets: 
+ANC 4+ time attendances: at least 80% of the district should have a coverage of at least 70% 
+- Institutional delivery: at least 80% of the district should have a coverage of at least 80%
+- Postnatal care within 48 hours: at least 80% of the district should have a coverage of at least 60%
+- Immunization indicators: at least 80% of the district should have a coverage of at least 90%
+
+---
+
+:::

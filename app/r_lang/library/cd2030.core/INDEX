@@ -1,0 +1,227 @@
+add_mad_med_columns     Add Median and MAD Columns for Indicators
+add_missing_column      Add Missing Value Flags to Health Indicators
+add_outlier5std_column
+                        Add Outlier Flags Based on 5-MAD Bounds
+adjust_service_data     Adjust Service Data for Coverage Analysis
+calculate_average_reporting_rate
+                        Reporting Rate Summary by Administrative Level
+calculate_completeness_summary
+                        Summarize Data Completeness by Year
+calculate_coverage      Combine Immunization Coverage Data
+calculate_derived_coverage
+                        Generate Coverage Data with Derived
+                        Denominators
+calculate_district_completeness_summary
+                        District-Level Completeness Summary
+calculate_district_outlier_summary
+                        District-Level Outlier Summary by Year
+calculate_district_ratios_summary
+                        Calculate District Adequacy Summary
+calculate_district_reporting_rate
+                        District-Level Reporting Rates by Year
+calculate_health_system_comparison
+                        Compare Health System Metrics Across Levels
+calculate_health_system_metrics
+                        Calculate Health System Metrics
+calculate_indicator_coverage
+                        Calculate Health Coverage Indicators
+calculate_inequality    Analyze Subnational Health Coverage Data with
+                        Inequality Metrics
+calculate_outliers_summary
+                        Annual Summary of Outlier-Free Reporting Rates
+calculate_overall_score
+                        Calculate Overall Quality Score for Data
+                        Quality Metrics
+calculate_ratios_summary
+                        Calculate Yearly Indicator Ratios Summary with
+                        Expected Ratios
+calculate_threshold     Calculate Dropout Coverage for Health
+                        Indicators Below a Threshold
+clean_error_message     Clean and Validate Error Messages
+compute_indicator_numerator
+                        Compute Aggregated Numerators for Health
+                        Indicators
+compute_service_utilization
+                        Compute Service Utilization Metrics
+create_mortality_ratios
+                        Extract Latest Mortality Ratios for UN
+                        Comparison
+create_mortality_summary
+                        Create Mortality Summary Object
+equiplot                Create Dot Plots for Equity Analysis
+equiplot_area           A Specialized Dot Plot for Area of Residence
+                        Analysis
+equiplot_education      A Specialized Dot Plot for Maternal Education
+                        Analysis
+equiplot_wealth         A Specialized Dot Plot for Wealth Quintile
+                        Analysis
+filter_adjustment_value
+                        Filter one indicator’s adjustment values
+filter_coverage         Filter and Reshape Coverage Data
+filter_high_performers
+                        Filter High-Performing Areas by Coverage
+filter_indicator_coverage
+                        Filter Indicator Coverage for Plotting
+filter_inequality       Filter Subnational Inequality Metrics
+filter_mapping_data     Filter Mapping Data for Specific Indicator and
+                        Denominator
+filter_mortality_summary
+                        Filter and Prepare Mortality Rate Data for
+                        Mapping
+filter_out_years        Filter Dataset by Removing Specified Years
+filter_service_utilization
+                        Filter and Prepare Service Utilization Data for
+                        Mapping
+filter_service_utilization_map
+                        Filter Service Utilization Data for a Specific
+                        Region and Indicator
+generate_adjustment_values
+                        Generate Adjusted and Unadjusted Service Counts
+                        by Year
+generate_fpet_summary   Load and Generate FPET Output
+generate_report         Generate and Export Checks Report
+get_admin_columns       Determine Grouping Columns for Administrative
+                        Levels
+get_all_indicators      Get All Indicators
+get_country_iso3        Get Country ISO3 Code
+get_country_name        Get Country Name
+get_country_shapefile   Load Country Shapefile for Mapping
+get_dhis2_hfd           Retrieve DHIS2 Health Facility Data
+get_excel_version       Format Service Utilization Data for Excel
+                        Export
+get_indicator_group_names
+                        Get Indicator Group Names
+get_indicator_groups    Get Indicator Groups
+get_indicator_without_opd_ipd
+                        Get Indicators excluding indicators without
+                        denominator
+get_mapping_data        Get Mapping Data for Subnational Coverage
+                        Analysis
+get_named_indicators    Get Named Indicator Vector
+get_plot_admin_column   Determine the Administrative Column to Use for
+                        Plotting
+get_population_column   Get Population Denominator Column Based on
+                        Indicator Only
+get_selected_group      Get selected group
+init_CacheConnection    Create a CacheConnection Object
+interpret               Generic Interpretation Method
+interpret.cd_fpet       Interpret FPET Results with Emphasis on Current
+                        Estimates
+is_maternal_indicator   Detemine if an indicator is maternal indicator
+list_outlier_units      Identify Monthly Outliers for a Single
+                        Indicator
+load_cache_data         Load Processed Countdown 2030 Data from RDS or
+                        DTA File
+load_csection_estimates
+                        Load C-section Share Estimates
+load_data               Load Processed Countdown 2030 Data from RDS or
+                        DTA File
+load_equity_data        Load and Filter Equity Data
+load_fpet_data          Load FPET Data from CSV File or Use Provided
+                        Data
+load_private_sector_data
+                        Load and Prepare Private Sector Data
+load_survey_data        Load and Process Survey Data
+load_un_estimates       Load UN Estimates
+load_un_mortality_data
+                        Load and Filter UN Mortality Estimates
+load_wuenic_data        Load WUENIC Immunization Data
+new_countdown           Create Countdown 2030 Data Object
+plot.cd_adjustment_values_filtered
+                        Plot Adjusted vs. Unadjusted Data for Health
+                        Indicators
+plot.cd_average_reporting_rate
+                        Plot Sub-National Reporting Rates by Year and
+                        Unit
+plot.cd_completeness_summary
+                        Plot Missing Summary
+plot.cd_coverage_filtered
+                        Plot National Coverage Data
+plot.cd_derived_coverage
+                        Plot Derived vs Traditional Coverage Over Time
+plot.cd_district_reporting_rate
+                        Plot District Reporting Rate Summary
+plot.cd_fpet            Plot FPET Estimates
+plot.cd_health_system_comparison
+                        Compare District vs Admin 1 Health Metrics
+plot.cd_health_system_metric
+                        Plot Health Metrics for Admin 1 Units
+plot.cd_indicator_coverage
+                        Plot National Denominators and Coverage
+                        Indicators
+plot.cd_indicator_coverage_filtered
+                        Plot Coverage by Denominator Source with Survey
+                        Reference
+plot.cd_inequality_filtered
+                        Plot Subnational Health Coverage Analysis
+plot.cd_mapping_filtered
+                        Plot Subnational Coverage Maps by Indicator
+plot.cd_mortality_ratio_summarised
+                        Plot Completeness of Facility Reporting Ratios
+plot.cd_mortality_summary
+                        Plot Mortality Rate Indicators
+plot.cd_mortality_summary_filtered
+                        Plot Filtered Institutional Mortality Rates
+plot.cd_outlier         Visualize Summary of Outlier Detection
+plot.cd_outlier_list    Plot Outlier Time Series for a Region
+plot.cd_population_metrics
+                        Plot National Population or Births Metrics
+plot.cd_private_sector_plot_data
+                        Plot Private Sector Prevalence by Sector and
+                        Area/National Level
+plot.cd_ratios_summary
+                        Plot Ratios Summary for Indicator Ratios
+                        Summary Object
+plot.cd_service_utilization_filtered
+                        Plot Filtered Service Utilization Indicators
+plot.cd_service_utilization_map
+                        Plot Service Utilization Indicators
+plot_comparison         Internal Consistency Plot Functions for
+                        Indicator Comparisons
+plot_comparison.cd_data
+                        Plot Comparison with Linear Fit and R-squared
+plot_line_graph         Plot Line Graph for Multiple Series with
+                        Dynamic Y-axis Scaling
+plot_national_health_metric
+                        Plot National Health System Metrics
+prepare_population_metrics
+                        Compute Population Metrics for DHIS-2 and UN
+                        Data
+prepare_private_sector_plot_data
+                        Prepare Private Sector Plot Data
+print.cd_data           Print Method for 'cd_data' Class
+register_indicator_group
+                        Register or replace an indicator-group override
+reset_indicator_group   Reset an override
+robust_max              Robust Maximum Value Calculation
+save_data               Save Processed Countdown 2030 Data to File
+save_dhis2_excel        Save DHIS2 Data to an Excel Workbook
+save_dhis2_master_data
+                        Create a Master Dataset from DHIS2 Data
+set_selected_group      Set selected group
+summarise_completeness_ratio
+                        Summarize Completeness-Adjusted Mortality Ratio
+tbl_sum.cd_adjustment_values
+                        Summary for 'cd_adjustment_values' Objects
+tbl_sum.cd_average_reporting_rate
+                        Summary for Average Reporting Rates by Year
+tbl_sum.cd_completeness_summary
+                        Summary for 'cd_completeness_summary'
+tbl_sum.cd_district_completeness_summary
+                        Summary for 'cd_district_completeness_summary'
+tbl_sum.cd_district_outliers_summary
+                        Summary for 'cd_district_outliers_summary'
+tbl_sum.cd_district_ratios_summary
+                        Summary for 'cd_district_ratios_summary' Object
+tbl_sum.cd_district_reporting_rate
+                        Summary for District-Level Reporting Rates by
+                        Year
+tbl_sum.cd_indicator_coverage
+                        Table Summary for National Coverage Estimates
+tbl_sum.cd_national_denominators
+                        Summarize National Denominators Data
+tbl_sum.cd_outliers_summary
+                        Summary for 'cd_outliers_summary'
+tbl_sum.cd_ratios_summary
+                        Summary for 'cd_ratios_summary' Object
+with_cd_quiet           Execute Code in Quiet Mode
