@@ -1,7 +1,6 @@
 // ui-utils.ts
-import { BrowserWindow, contextBridge, ipcRenderer } from 'electron';
+import { BrowserWindow, ipcRenderer } from 'electron';
 import { assetPath } from './path-utils';
-import { IUiApi } from './types/electron-api.d';
 
 // Main Process helper functions
 export function showLoadingPage(window: BrowserWindow) {
@@ -25,27 +24,15 @@ export function showCrashPage(window: BrowserWindow, error: string) {
 
 // IPC Channel definitions
 export const IPC_CHANNELS = {
-  RETRY_START_SHINY: 'retry-start-shiny',
-  SET_ERROR_MESSAGE: 'set-error-message', // Already used for showing general errors
-  SET_LOADING_MESSAGE: 'set-loading-message',
+  RETRY_START_SHINY: 'cd2030:retry-start-shiny',
+  SET_ERROR_MESSAGE: 'cd2030:set-error-message', // Already used for showing general errors
+  SET_LOADING_MESSAGE: 'cd2030:set-loading-message',
   // Add a specific channel for R process crashes if you want distinct handling
   // or reuse SET_ERROR_MESSAGE as you are currently doing for general errors.
   // For distinct handling:
-  R_PROCESS_CRASHED: 'r-process-crashed',
-  GET_VERSION: 'get-version',
+  R_PROCESS_CRASHED: 'cd2030:r-process-crashed',
+  PICK_FILE: 'cd2030:pick-file',
 };
-
-// Preload script functionality
-export function exposeUiApi() {
-  const uiApi: IUiApi = {
-    retry: async () =>  await ipcRenderer.invoke(IPC_CHANNELS.RETRY_START_SHINY)
-    // You might also expose a way to set loading messages if needed from renderer
-    // setLoadingMessage: (msg: string) => ipcRenderer.send(IPC_CHANNELS.SET_LOADING_MESSAGE, msg),
-  };
-
-  // Expose the API to the renderer process
-  contextBridge.exposeInMainWorld('uiApi', uiApi);
-}
 
 // Renderer script functionality
 export function registerUiListeners(onRetry: () => void) {

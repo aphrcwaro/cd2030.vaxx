@@ -1,68 +1,116 @@
-messageBoxUI <- function(id) {
+messageBoxUI <- function(id, label = NULL, width = NULL) {
   ns <- NS(id)
 
-  uiOutput(ns('message_box'))
+  dep <- htmlDependency(
+    name = "messagebox",
+    version = "0.1.0",
+    src = c(href = "messagebox"),       # place JS at www/messagebox/messagebox.js
+    script = "messagebox.js"
+  )
+
+  ui <- div(
+    id = ns("container"),
+    class = "form-group shiny-input-container",
+    style = if (!is.null(width)) css(width = validateCssUnit(width)),
+
+    if (!is.null(label))
+      tags$label(class = "control-label", `for` = ns("body"), label),
+
+    div(
+      id = ns("body"),
+      class = "shiny-input-wrapper",
+      `aria-live` = "polite",
+      `aria-atomic` = "false",
+
+      tags$div(
+        id = ns("messages"),
+        class = "messages-stack",
+        style = "display:flex; flex-direction:column; gap:8px; max-height:240px; overflow:auto"
+      )
+    ),
+
+    singleton(tags$style(HTML(sprintf("
+      #%s .msg { font-weight:600; border:1px solid; padding:10px; border-radius:4px; white-space:pre-wrap }
+      #%s .msg.info { color:#6c757d; border-color:#6c757d }
+      #%s .msg.success { color:#155724; border-color:#155724 }
+      #%s .msg.error { color:#721c24; border-color:#721c24 }
+      #%s .msg.warning { color:#856404; border-color:#856404 }
+      #%s .help-block { margin-top:5px }
+    ",
+      ns("container"),
+      ns("container"),
+      ns("container"),
+      ns("container"),
+      ns("container"),
+      ns("container")
+    ))))
+  )
+
+  attachDependencies(ui, dep, append = TRUE)
 }
 
-messageBoxServer <- function(id, i18n, default_message = 'msg_awaiting_upload', use_pre = FALSE) {
+messageBoxServer <- function(id, i18n = NULL, default_message = "msg_awaiting_upload", use_pre = FALSE, help_text = NULL) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+    stack_sel <- paste0("#", ns("messages"))
+    statuses <- c("info", "success", "error", "warning")
 
-  moduleServer(
-    id = id,
-    module = function(input, output, session) {
+    tr <- function(key, parameters = NULL) {
+      if (is.null(parameters)) parameters <- list()
+      if (!is.null(i18n) && is.function(i18n$t)) {
+        str_glue_data(parameters, i18n$t(key))
+      } else {
+        str_glue_data(parameters, key)
+      }
+    }
 
-      # Define colors based on status
-      status_colors <- list(
-        info = 'gray',       # Default state
-        success = 'darkgreen',
-        error = 'red',
-        warning = 'orange'
+    send_msg <- function(action, text = NULL, status = "info") {
+      session$sendCustomMessage(
+        "messagebox",
+        list(
+          rootId = ns("body"),
+          action = action,
+          text = text,
+          status = status,
+          usePre = isTRUE(use_pre)
+        )
       )
+    }
 
-      # Store messages as a list. Each message is a list with "text" and "status".
-      # The default is a single message.
-      messages_data <- reactiveVal(list(list(text = default_message, status = "info", parameters = NULL)))
+    make_node <- function(text, status, parameters) {
+      if (!status %in% statuses) stop(tr("error_invalid_status"))
+      tr(text, parameters)
+    }
 
-      # Render the message box UI based on current status
-      output$message_box <- renderUI({
-        msgs <- messages_data()
+    clear_messages <- function() {
+      send_msg("clear")
+    }
 
-        tagList(map(msgs, ~ {
-          colour <- status_colors[[.x$status]]
-          tag_fun <- if (use_pre) tags$pre else tags$div
-          tag_fun(
-            style = paste(
-              'color: ', colour, ';',
-              'font-weight: bold;',
-              'border: 1px solid', colour, ';',
-              'padding: 10px;',
-              'margin-top: 10px;',
-              'border-radius: 5px'
-            ),
-            str_glue_data(.x$parameters, i18n$t(.x$text))
-          )
-        }))
-      })
+    add_message <- function(message, status = "info", parameters = NULL) {
+      txt <- make_node(message, status, parameters)
+      send_msg("add", txt, status)
+    }
 
-      update_message <- function(message, status, parameters = NULL) {
-        if (!status %in% names(status_colors)) {
-          cd_abort('x' = i18n$t("error_invalid_status"))
-        }
+    update_message <- function(message, status = "info", parameters = NULL) {
+      clear_messages()
+      add_message(message, status, parameters)
+    }
 
-        messages_data(list(list(text = message, status = status, parameters = parameters)))
-      }
+    if (!is.null(help_text)) {
+      insertUI(
+        selector  = paste0("#", ns("container")),
+        where     = "beforeEnd",
+        immediate = TRUE,
+        ui        = tags$span(class = "help-block", tr(help_text))
+      )
+    }
 
-      add_message <- function(message, status, parameters = NULL) {
-        if (!status %in% names(status_colors)) {
-          cd_abort(i18n$t("error_invalid_status"))
-        }
-        current <- messages_data()
-        new_message <- list(text = message, status = status, parameters = parameters)
-        messages_data(c(current, list(new_message)))
-      }
+    add_message(default_message, "info")
 
-      return(list(
-        update_message = update_message,
-        add_message = add_message
-      ))
-    })
+    list(
+      add_message = add_message,
+      update_message = update_message,
+      clear_messages = clear_messages
+    )
+  })
 }

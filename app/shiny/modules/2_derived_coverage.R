@@ -51,8 +51,7 @@ derivedCoverageUI <- function(id, i18n) {
         tabPanel(
           i18n$t("opt_custom_check"),
           fluidRow(
-            column(3, selectizeInput(ns('indicator'), label = i18n$t("title_indicator"),
-                                     choices = c('Select' = '', get_indicator_without_opd_ipd())))
+            column(3, indicatorSelect(ns('indicator'), i18n))
           ),
           fluidRow(
             column(12, plotCustomOutput(ns('custom'))),
@@ -74,6 +73,7 @@ derivedCoverageServer <- function(id, cache, i18n) {
     module = function(input, output, session) {
       ns <- session$ns
 
+      indicator <- indicatorSelectServer('indicator', cache)
       admin_level <- adminLevelInputServer('admin_level')
       region <- regionInputServer('region', cache, admin_level, i18n)
 
@@ -103,8 +103,9 @@ derivedCoverageServer <- function(id, cache, i18n) {
       })
 
       custom_data <- reactive({
-        req(populations(), survey_year(), input$indicator)
-        calculate_derived_coverage(populations(), input$indicator, survey_year())
+        req(populations(), survey_year(), indicator())
+        print(indicator())
+        calculate_derived_coverage(populations(), indicator(), survey_year())
       })
 
       output$region_ui <- renderUI({
@@ -202,7 +203,7 @@ derivedCoverageServer <- function(id, cache, i18n) {
 
       downloadPlot(
         id = 'custom_plot',
-        filename = reactive(paste0(input$indicator, '_derived_coverage')),
+        filename = reactive(paste0(indicator(), '_derived_coverage')),
         data = custom_data,
         i18n = i18n,
         plot_function = function() plot(custom_data(), region = region())
@@ -210,11 +211,11 @@ derivedCoverageServer <- function(id, cache, i18n) {
 
       downloadExcel(
         id = 'custom_data',
-        filename = reactive(paste0(input$indicator, '_derived_coverage')),
+        filename = reactive(paste0(indicator(), '_derived_coverage')),
         data = custom_data,
         i18n = i18n,
         excel_write_function = function(wb) {
-          sheet_name_1 <- str_glue_data(list(indicator = input$indicator), i18n$t('sheet_custom_derived_coverage'))
+          sheet_name_1 <- str_glue_data(list(indicator = indicator()), i18n$t('sheet_custom_derived_coverage'))
           addWorksheet(wb, sheet_name_1)
           writeData(wb, sheet = sheet_name_1, custom_data(), startCol = 1, startRow = 1)
         }

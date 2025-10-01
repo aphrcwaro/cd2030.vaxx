@@ -13,12 +13,12 @@ uploadBoxUI <- function(id, i18n) {
     fluidRow(
       column(
         12,
-        fileInput(
-          inputId = ns('hfd_file'),
+        filePickerInput(
+          ns("hfd_file"),
           label = i18n$t('btn_upload_hfd_data'),
           buttonLabel = i18n$t('btn_browse_or_drop'),
-          placeholder = 'Supported formats: .xls, .xlsx, .dta, .rds',
-          accept = c('.xls', '.xlsx', '.dta', '.rds')
+          placeholder = "Supported formats: .xls, .xlsx, .dta, .rds",
+          accept = c(".xls", ".xlsx", ".dta", ".rds")
         ),
 
         messageBoxUI(ns('feedback'))
@@ -40,11 +40,10 @@ uploadBoxServer <- function(id, i18n) {
       cache <- eventReactive(input$hfd_file, {
         req(input$hfd_file)
         
-        print(input$hfd_file)
 
         file_path <- input$hfd_file$datapath
         file_name <- input$hfd_file$name
-        file_type <- tools::file_ext(file_name)
+        file_type <- input$hfd_file$ext
 
         valid_types <- c('xls', 'xlsx', 'dta', 'rds')
         if (!file_type %in% valid_types) {
@@ -53,6 +52,7 @@ uploadBoxServer <- function(id, i18n) {
         }
 
         tryCatch({
+          print(paste0('upload box: ', file_path))
           cache_instance <- load_cache_data(file_path, 'vaccine')$reactive()
           
           messageBox$update_message('msg_upload_success', 'success', list(file_name = file_name))
@@ -61,6 +61,7 @@ uploadBoxServer <- function(id, i18n) {
         },
         error = function(e) {
           clean_message <- clean_error_message(e)
+          print(clean_message)
           messageBox$update_message('error_upload_failed', 'error', list(clean_message = clean_message))
           NULL
         })

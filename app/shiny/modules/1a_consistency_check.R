@@ -24,8 +24,8 @@ consistencyCheckUI <- function(id, i18n) {
         tabPanel(
           i18n$t("opt_custom_check"),
           fluidRow(
-            column(3, selectizeInput(ns('x_axis'), label = i18n$t("title_x_axis"), choices = NULL)),
-            column(3, offset = 1, selectizeInput(ns('y_axis'), label = i18n$t("title_y_axis"), choices = NULL)),
+            column(3, indicatorSelect(ns('x_axis'), i18n, label = 'title_x_axis')),
+            column(3, offset = 1, indicatorSelect(ns('y_axis'), i18n, label = 'title_y_axis')),
             column(12, plotCustomOutput(ns('custom_graph'))),
             column(4, downloadButtonUI(ns('custom_graph_plot')))
           )
@@ -40,20 +40,13 @@ consistencyCheckServer <- function(id, cache, i18n) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
+      
+      x_axis <- indicatorSelectServer('x_axis', cache)
+      y_axis <- indicatorSelectServer('y_axis', cache)
 
       data <- reactive({
         req(cache())
         cache()$countdown_data
-      })
-
-      observe({
-        req(cache())
-
-        all_indicators <- get_all_indicators()
-        all_indicators <- c('Select' = '', all_indicators)
-
-        updateSelectizeInput(session, 'x_axis', choices = all_indicators)
-        updateSelectizeInput(session, 'y_axis', choices = all_indicators)
       })
 
       output$anc1_penta1 <- renderCustomPlot({
@@ -67,9 +60,8 @@ consistencyCheckServer <- function(id, cache, i18n) {
       })
 
       output$custom_graph <- renderCustomPlot({
-        req(data())
-        req(input$x_axis, input$y_axis)
-        plot_comparison(data(), input$x_axis, input$y_axis)
+        req(data(), x_axis(), y_axis())
+        plot_comparison(data(), x_axis(), y_axis())
       })
 
       downloadPlot(
@@ -94,11 +86,11 @@ consistencyCheckServer <- function(id, cache, i18n) {
 
       downloadPlot(
         id = 'custom_graph_plot',
-        filename = reactive(paste0(input$x_axis, '_', input$y_axis, '_plot')),
+        filename = reactive(paste0(x_axis(), '_', y_axis(), '_plot')),
         data = data,
         i18n = i18n,
         plot_function = function(dt) {
-          plot_comparison(dt, input$x_axis, input$y_axis)
+          plot_comparison(dt, x_axis(), y_axis())
         }
       )
 

@@ -51,6 +51,8 @@ source('ui/download/download_button.R')
 source('ui/download/download_coverage.R')
 source('ui/download/download_helper.R')
 source('ui/download_report.R')
+source('ui/file-picker.R')
+source('ui/indicator-select.R')
 source('ui/help_button.R')
 source('ui/message_box.R')
 source('ui/render-plot.R')
@@ -234,6 +236,7 @@ ui <- dashboardPage(
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'rmd-styles.css'),
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'bootstrap-icons.css'),
       tags$script(src = "jquery.slimscroll.min.js"),
+      tags$script(src = "header-brand.js"),
       tags$script(HTML("
         $(function() {
           $('body, html, ' + '.wrapper').css({
@@ -276,8 +279,7 @@ ui <- dashboardPage(
       tabItem(tabName = 'subnational_target', subnationalTargetUI('subnational_target', i18n = i18n)),
       tabItem(tabName = 'subnational_mapping', subnationalMappingUI('subnational_mapping', i18n = i18n)),
       tabItem(tabName = 'equity_assessment', equityUI('equity_assessment', i18n = i18n))
-    ),
-    tags$script(src = 'script.js')
+    )
   )
 )
 
@@ -291,10 +293,7 @@ server <- function(input, output, session) {
     req(cache())
 
     update_lang(cache()$language)
-
-    # shinyjs::delay(500, {
     updateHeader(cache()$country, i18n)
-    # })
   })
 
   observeEvent(input$selected_language, {
@@ -339,32 +338,9 @@ server <- function(input, output, session) {
   }, once = TRUE)
 
   updateHeader <- function(country, i18n) {
-
-    header_title <- div(
-      class = 'navbar-header',
-      h4(HTML(paste0(country, ' &mdash; ', i18n$t('title_countdown'))), class = 'navbar-brand')
-    )
-
-    # Dynamically update the header
-    header <- htmltools::tagQuery(
-      dashboardHeader(
-        title = HTML(paste0('VAXX<sup>', version, '</sup>')),
-        saveCacheUI('save_cache'),
-        downloadReportUI('download_report', i18n)
-      )
-    )
-    header <- header$
-      find('.navbar.navbar-static-top')$      # find the header right side
-      append(header_title)$                     # inject dynamic content
-      allTags()
-
-    removeUI(selector = 'header.main-header', immediate = TRUE)
-
-    # Replace the header in the UI
-    insertUI(
-      selector = 'body',
-      where = 'afterBegin',
-      ui = header
+    session$sendCustomMessage(
+      'setHeaderBrand',
+      list(html = str_glue("{country} &mdash; {i18n$t('title_countdown')}"))
     )
   }
 }

@@ -16,16 +16,12 @@ subnationalInequalityUI <- function(id, i18n) {
       title = i18n$t('title_subnational_inequality'),
       width = 12,
 
-      tabPanel(title = i18n$t("opt_anc4"), downloadCoverageUI(ns('anc4'))),
-      tabPanel(title = i18n$t("opt_ideliv"), downloadCoverageUI(ns('ideliv'))),
-      tabPanel(title = i18n$t("opt_lbw"), downloadCoverageUI(ns('lbw'))),
       tabPanel(title = i18n$t("opt_penta1"), downloadCoverageUI(ns('penta1'))),
       tabPanel(title = i18n$t("opt_mcv1"), downloadCoverageUI(ns('measles1'))),
       tabPanel(
         title = i18n$t("opt_custom_check"),
         fluidRow(
-          column(3, selectizeInput(ns('indicator'), label = i18n$t("title_indicator"),
-                                   choices = c('Select' = '', get_indicator_without_opd_ipd())))
+          column(3, indicatorSelect(ns('indicator'), i18n))
         ),
         downloadCoverageUI(ns('custom'))
       )
@@ -42,28 +38,11 @@ subnationalInequalityServer <- function(id, cache, i18n) {
 
       denominatorInputServer('denominator', cache, i18n)
       region <- regionInputServer('region', cache, reactive('adminlevel_1'), i18n)
+      indicator <- indicatorSelectServer('indicator', cache)
 
       inequalities <- reactive({
         req(cache(), cache()$check_inequality_params, region())
         cache()$calculate_inequality(admin_level = 'adminlevel_1', region = region())
-      })
-
-      anc4_inequality <- reactive({
-        req(inequalities())
-        inequalities() %>%
-          filter_inequality(indicator = 'anc4', denominator = cache()$get_denominator('anc4'))
-      })
-
-      ideliv_inequality <- reactive({
-        req(inequalities())
-        inequalities() %>%
-          filter_inequality(indicator = 'instdeliveries', denominator = cache()$get_denominator('instdeliveries'))
-      })
-
-      lbw_inequality <- reactive({
-        req(inequalities())
-        inequalities() %>%
-          filter_inequality(indicator = 'low_bweight', denominator = cache()$get_denominator('low_bweight'))
       })
 
       penta1_inequality <- reactive({
@@ -79,34 +58,10 @@ subnationalInequalityServer <- function(id, cache, i18n) {
       })
 
       custom_inequality <- reactive({
-        req(inequalities(), input$indicator)
+        req(inequalities(), indicator())
         inequalities() %>%
-          filter_inequality(indicator = input$indicator, denominator = cache()$get_denominator(input$indicator))
+          filter_inequality(indicator = indicator(), denominator = cache()$get_denominator(indicator()))
       })
-
-      downloadCoverageServer(
-        id = 'anc4',
-        filename = reactive(paste0('anc4_admin_level_inequality_', cache()$get_denominator('anc4'))),
-        data_fn = anc4_inequality,
-        i18n = i18n,
-        sheet_name = reactive(i18n$t("title_anc4_inequality"))
-      )
-
-      downloadCoverageServer(
-        id = 'ideliv',
-        filename = reactive(paste0('ideliv_admin_level_inequality_', cache()$get_denominator('instdeliveries'))),
-        data_fn = ideliv_inequality,
-        i18n = i18n,
-        sheet_name = reactive(i18n$t("title_ideliv_inequality"))
-      )
-
-      downloadCoverageServer(
-        id = 'lbw',
-        filename = reactive(paste0('lbw_admin_level_inequality_', cache()$get_denominator('low_bweight'))),
-        data_fn = lbw_inequality,
-        i18n = i18n,
-        sheet_name = reactive(i18n$t("title_lbw_inequality"))
-      )
 
       downloadCoverageServer(
         id = 'measles1',
@@ -126,10 +81,10 @@ subnationalInequalityServer <- function(id, cache, i18n) {
 
       downloadCoverageServer(
         id = 'custom',
-        filename = reactive(paste0(input$indicator, '_admin_level_inequality_', cache()$get_denominator(input$indicator))),
+        filename = reactive(paste0(indicator(), '_admin_level_inequality_', cache()$get_denominator(indicator()))),
         data_fn = custom_inequality,
         i18n = i18n,
-        sheet_name = reactive(paste0(input$indicator, ' Inequality'))
+        sheet_name = reactive(paste0(indicator(), ' Inequality'))
       )
 
       countdownHeaderServer(
