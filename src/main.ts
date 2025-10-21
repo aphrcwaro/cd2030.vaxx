@@ -1,21 +1,24 @@
 import { app, BrowserWindow, dialog, Menu, IpcMainInvokeEvent, MenuItemConstructorOptions, shell } from 'electron';
 import path from 'node:path';
-import { updateElectronApp } from 'update-electron-app';
-import started from 'electron-squirrel-startup';
+import { fileURLToPath } from 'node:url';
 
-import { rShinyManager } from './rshiny';
-import { IPC_CHANNELS } from './ui-utils';
-import { validatedIpcMain } from './ipc-main-utils';
-import { setUnexpectedErrorHandler } from './errors';
-import { LifecycleMainService, LifecycleMainPhase } from './lifecycleMainService';
-import { SaveStrategy, StateService } from './stateService';
+import { rShinyManager } from './rshiny.js';
+import { IPC_CHANNELS } from './ui-utils.js';
+import { validatedIpcMain } from './ipc-main-utils.js';
+import { setUnexpectedErrorHandler } from './errors.js';
+import { LifecycleMainService, LifecycleMainPhase, ShutdownEvent } from './lifecycleMainService.js';
+import { SaveStrategy, StateService } from './stateService.js';
+import type { PickFileOptions } from './typings/electron-api.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- Services --------------------------------------------------------------------------------------------------------
 
 const stateService = new StateService({ saveStrategy: SaveStrategy.DELAYED });
 const lifecycleMainService = new LifecycleMainService(stateService);
 
-lifecycleMainService.onWillShutdown(({ join }) => {
+lifecycleMainService.onWillShutdown(({ join }: ShutdownEvent) => {
     join('rshiny-teardown', (async () => {
         try {
             await rShinyManager.teardown();
@@ -25,7 +28,7 @@ lifecycleMainService.onWillShutdown(({ join }) => {
     })());
 });
 
-setUnexpectedErrorHandler(err => console.error(err));
+setUnexpectedErrorHandler((err: unknown) => console.error(err));
 
 // --- Globals --------------------------------------------------------------------------------------------------------
 
@@ -140,12 +143,8 @@ const createWindow = async (): Promise<void> => {
 
 // --- Startup -------------------------------------------------------------------------------------------------------
 
-if (started) {
-    app.quit();
-}
 
 Menu.setApplicationMenu(null);
-updateElectronApp();
 
 app.on('ready', async () => {
     buildMenu();
@@ -172,7 +171,7 @@ validatedIpcMain.handle(IPC_CHANNELS.RETRY_START_SHINY, async (event: IpcMainInv
     }
 });
 
-validatedIpcMain.handle(IPC_CHANNELS.PICK_FILE, async (event, opts) => {
+validatedIpcMain.handle(IPC_CHANNELS.PICK_FILE, async (event: IpcMainInvokeEvent, opts?: PickFileOptions) => {
     const window = BrowserWindow.fromWebContents(event.sender) || mainWindow;
     if (!window) {
         return null;

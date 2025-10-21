@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { assetPath } from './path-utils';
+import { assetPath } from './path-utils.js';
 
 export function resolvePortableR() {
   const base = assetPath('r_lang');

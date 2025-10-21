@@ -1,6 +1,6 @@
 // ui-utils.ts
-import { BrowserWindow, ipcRenderer } from 'electron';
-import { assetPath } from './path-utils';
+import { BrowserWindow } from 'electron';
+import { assetPath } from './path-utils.js';
 
 // Main Process helper functions
 export function showLoadingPage(window: BrowserWindow) {
@@ -36,6 +36,7 @@ export const IPC_CHANNELS = {
 
 // Renderer script functionality
 export function registerUiListeners(onRetry: () => void) {
+  /*
   // Listener for general error messages sent from the main process
   ipcRenderer.on(IPC_CHANNELS.SET_ERROR_MESSAGE, (event, { error, retryAvailable }) => {
     const errorMessageElement = document.getElementById('error-message');
@@ -69,6 +70,7 @@ export function registerUiListeners(onRetry: () => void) {
         retryButton.style.display = 'block'; // Show retry button
     }
   });
+  */
 
   // Event listener for the retry button click
   document.getElementById('retry-button')?.addEventListener('click', onRetry);

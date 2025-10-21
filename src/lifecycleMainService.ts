@@ -1,9 +1,9 @@
 import { app } from "electron";
-import { Barrier, Promises } from "./async";
-import { Disposable } from "./lifecycle-utils";
-import { Emitter } from "./event";
-import { isMacintosh } from "./platform";
-import { StateService } from "./stateService";
+import { Barrier, Promises } from "./async.js";
+import { Disposable } from "./lifecycle-utils.js";
+import { Emitter } from "./event.js";
+import { isMacintosh } from "./platform.js";
+import { StateService } from "./stateService.js";
 
 export const enum ShutdownReason {
 
@@ -82,7 +82,7 @@ export class LifecycleMainService extends Disposable {
 
     private windowCounter = 0;
 
-    private pendingQuitPromise: Promise<boolean> | undefined = undefined;
+    //private pendingQuitPromise: Promise<boolean> | undefined = undefined;
 	private pendingQuitPromiseResolve: { (veto: boolean): void } | undefined = undefined;
 
 	private pendingWillShutdownPromise: Promise<void> | undefined = undefined;
@@ -185,7 +185,7 @@ export class LifecycleMainService extends Disposable {
 		if (this.pendingQuitPromiseResolve) {
 			this.pendingQuitPromiseResolve(veto);
 			this.pendingQuitPromiseResolve = undefined;
-			this.pendingQuitPromise = undefined;
+			//this.pendingQuitPromise = undefined;
 		}
 	}
 

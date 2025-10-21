@@ -1,13 +1,12 @@
 import { app, BrowserWindow, powerMonitor, powerSaveBlocker } from 'electron';
 import net from 'node:net';
-import { EventEmitter } from 'node:events'
-import type { ChildProcess } from 'node:child_process'; 
-import { execa, ResultPromise , ExecaError  } from 'execa';
-import { IDisposable, Disposable, DisposableStore, toDisposable } from './lifecycle-utils';
+import { EventEmitter } from 'node:events';
+import type { ChildProcess } from 'node:child_process';
+import { execa, ResultPromise, ExecaError } from 'execa';
 
-import { showCrashPage, showErrorPage, showLoadingPage } from './ui-utils';
-import { resolvePortableR } from './r-utils';
-import { assetPath } from './path-utils';
+import { showCrashPage, showErrorPage, showLoadingPage } from './ui-utils.js';
+import { resolvePortableR } from './r-utils.js';
+import { assetPath } from './path-utils.js';
 
 // Configuration interface
 interface ShinyConfig {
@@ -56,10 +55,10 @@ type ExecaProcessType = ChildProcess & ResultPromise;
 class RShinyManager extends EventEmitter {
 
     // Redefine 'on' and 'emit' for type safety
-    on<T extends keyof RShinyManagerEvents>(event: T, listener: RShinyManagerEvents[T]): this {
+    override on<T extends keyof RShinyManagerEvents>(event: T, listener: RShinyManagerEvents[T]): this {
         return super.on(event, listener);
     }
-    emit<T extends keyof RShinyManagerEvents>(event: T, ...args: Parameters<RShinyManagerEvents[T]>): boolean {
+    override emit<T extends keyof RShinyManagerEvents>(event: T, ...args: Parameters<RShinyManagerEvents[T]>): boolean {
         return super.emit(event, ...args);
     }
 
@@ -227,7 +226,7 @@ class RShinyManager extends EventEmitter {
             // Check for both the old isCanceled flag and the new AbortError style
             if (!this.shuttingDown && !error.isCanceled && error.exitCode !== 0) {
                 // This block handles actual crashes, not clean cancellations
-                this.handleCrash(window, error.exitCode, error.signal);
+                this.handleCrash(window, error.exitCode!, error.signal!);
             }
         }).finally(() => {
             this.rProc = undefined;

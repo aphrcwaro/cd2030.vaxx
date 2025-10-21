@@ -1,8 +1,8 @@
 import { app } from 'electron';
 import { promises as fs } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ThrottledDelayer } from './async';
-import { Disposable } from './lifecycle-utils';
+import { ThrottledDelayer } from './async.js';
+import { Disposable } from './lifecycle-utils.js';
 
 type StorageDatabase = Record<string, unknown>;
 

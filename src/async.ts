@@ -1,5 +1,5 @@
-import { CancellationError } from "./errors";
-import { IDisposable } from "./lifecycle-utils";
+import { CancellationError } from "./errors.js";
+import { IDisposable } from "./lifecycle-utils.js";
 
 export const MicrotaskDelay = Symbol('MicrotaskDelay');
 

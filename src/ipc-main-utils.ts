@@ -1,6 +1,6 @@
 import { ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
-import { onUnexpectedError } from './errors';
-import { Event } from './event';
+import { onUnexpectedError } from './errors.js';
+import { Event } from './event.js';
 
 type ipcMainListener = (event: IpcMainEvent, ...args: any[]) => void;
 
