@@ -712,7 +712,7 @@ automatically converted to those of the first argument:</p>
 <code>x</code> after converting <code>x</code> to the units of
 <code>y</code>. Derived units are created where appropriate:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>x <span class="sc">*</span> y</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="do">## Units: [cm*km/h/s]</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="do">## Units: [cm*km/(h*s)]</span></span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="do">## [1] 100 400 900</span></span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>x<span class="sc">^</span><span class="dv">3</span></span>
 <span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="do">## Units: [cm^3/s^3]</span></span>
@@ -720,9 +720,9 @@ automatically converted to those of the first argument:</p>
 <p>and meaningful error messages appear when units are not
 compatible:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>e <span class="ot">=</span> <span class="fu">try</span>(z <span class="ot">&lt;-</span> x <span class="sc">+</span> x <span class="sc">*</span> y)</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">## Error : cannot convert cm*km/h/s into cm/s</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="do">## Error : cannot convert cm*km/(h*s) into cm/s</span></span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">attr</span>(e, <span class="st">&quot;condition&quot;</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## [1] &quot;cannot convert cm*km/h/s into cm/s&quot;</span></span></code></pre></div>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="do">## [1] &quot;cannot convert cm*km/(h*s) into cm/s&quot;</span></span></code></pre></div>
 <p>The full set of methods and method groups for <code>units</code>
 objects is shown by</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">methods</span>(<span class="at">class =</span> <span class="st">&quot;units&quot;</span>)</span>
@@ -730,11 +730,12 @@ objects is shown by</p>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="do">##  [6] [[            [[&lt;-          all.equal     anyDuplicated as.Date      </span></span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="do">## [11] as.POSIXct    as.data.frame as.list       as_units      boxplot      </span></span>
 <span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="do">## [16] c             cbind         diff          drop_units    duplicated   </span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="do">## [21] format        hist          log10         log2          mean         </span></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="do">## [26] median        mixed_units   plot          print         quantile     </span></span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="do">## [31] rbind         rep           seq           set_units     str          </span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="do">## [36] summary       unique        units         units&lt;-       weighted.mean</span></span>
-<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="do">## see &#39;?methods&#39; for accessing help and source code</span></span></code></pre></div>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="do">## [21] format        hist          log10         log2          matrixOps    </span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="do">## [26] mean          median        mixed_units   plot          print        </span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="do">## [31] quantile      rbind         rep           seq           set_units    </span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="do">## [36] str           summary       unique        units         units&lt;-      </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="do">## [41] weighted.mean</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="do">## see &#39;?methods&#39; for accessing help and source code</span></span></code></pre></div>
 <p>where the method groups</p>
 <ul>
 <li><code>Ops</code> include operations that require compatible units,

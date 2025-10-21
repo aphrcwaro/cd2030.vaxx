@@ -1,3 +1,29 @@
+# version 1.0-0
+
+* Breaking change: a new tokenizer fixes longstanding issues with parsing
+  complex unit expressions, but may break existing code that relied on the
+  previous (buggy) behavior. The major change is that now numbers are
+  consistently treated as prefixes, so that units like `ml / min / 1.73m^2`
+  used in physiology are now correctly parsed as `ml / (min * 1.73 * m^2)`.
+  See `?as_units` for details; #416 addressing #221, #383
+
+* Printing: follow NIST recommendations. In particular, numerator and
+  denominator are separated by a single slash, and a parenthesis is used when
+  the denominator contains several symbols (see example above); #86
+
+* Vectorize `ud_*()` helpers; #405 addressing #404
+
+* Loading units no longer initializes the RNG state; #409
+
+* Fix scale training in `ggplot2` scales; #412
+
+* Add `scale_{type}_units()` scales for additional continuous aesthetics
+  (colour, fill, alpha, size, linewidth); #369
+
+* Implement `matrixOps.units`, with support for `%*%` (R >= 4.3.0); #226
+
+* New `convert_to_base()` implements conversion to base units; #132 @jamarav
+
 # version 0.8-7
 
 * Deep copy of `ud_convert()` input to avoid side effects; #403

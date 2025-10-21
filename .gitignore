@@ -12,3 +12,4 @@ vscode.db
 product.overrides.json
 *.snap.actual
 *.tsbuildinfo
+.vite/

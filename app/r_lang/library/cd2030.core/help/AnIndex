@@ -1,4 +1,5 @@
 cd2030.core-package	cd2030.core-package
+.cd2030_indicator_groups	dot-cd2030_indicator_groups
 add_mad_med_columns	add_mad_med_columns
 add_missing_column	add_missing_column
 add_outlier5std_column	add_outlier5std_column
@@ -28,6 +29,7 @@ compute_indicator_numerator	compute_indicator_numerator
 compute_service_utilization	compute_service_utilization
 create_mortality_ratios	create_mortality_ratios
 create_mortality_summary	create_mortality_summary
+detect_indicator_group	detect_indicator_group
 equiplot	equiplot
 equiplot_area	equiplot_area
 equiplot_education	equiplot_education
@@ -64,6 +66,7 @@ init_CacheConnection	init_CacheConnection
 interpret	interpret
 interpret.cd_fpet	interpret.cd_fpet
 is_maternal_indicator	is_maternal_indicator
+list_indicator_groups	list_indicator_groups
 list_outlier_units	list_outlier_units
 load_cache_data	load_cache_data
 load_csection_estimates	load_csection_estimates

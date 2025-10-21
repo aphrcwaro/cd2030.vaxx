@@ -24,6 +24,7 @@
 <p style="text-align: center;">
 <a href="#A">A</a>
 <a href="#C">C</a>
+<a href="#D">D</a>
 <a href="#E">E</a>
 <a href="#F">F</a>
 <a href="#G">G</a>
@@ -98,6 +99,13 @@
 <td>Create Mortality Summary Object</td></tr>
 </table>
 
+<h2><a id="D">-- D --</a></h2>
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="detect_indicator_group.html">detect_indicator_group</a></td>
+<td>Auto-detect the best-matching indicator group from a vector of indicators</td></tr>
+</table>
+
 <h2><a id="E">-- E --</a></h2>
 
 <table style="width: 100%;">
@@ -160,7 +168,7 @@
 <tr><td style="width: 25%;"><a href="get_excel_version.html">get_excel_version</a></td>
 <td>Format Service Utilization Data for Excel Export</td></tr>
 <tr><td style="width: 25%;"><a href="get_indicator_groups.html">get_indicator_groups</a></td>
-<td>Get Indicator Groups</td></tr>
+<td>Get the current indicator group definition</td></tr>
 <tr><td style="width: 25%;"><a href="get_indicator_group_names.html">get_indicator_group_names</a></td>
 <td>Get Indicator Group Names</td></tr>
 <tr><td style="width: 25%;"><a href="get_indicator_without_opd_ipd.html">get_indicator_without_opd_ipd</a></td>
@@ -174,7 +182,7 @@
 <tr><td style="width: 25%;"><a href="get_population_column.html">get_population_column</a></td>
 <td>Get Population Denominator Column Based on Indicator Only</td></tr>
 <tr><td style="width: 25%;"><a href="get_selected_group.html">get_selected_group</a></td>
-<td>Get selected group</td></tr>
+<td>Get the globally selected indicator group</td></tr>
 </table>
 
 <h2><a id="I">-- I --</a></h2>
@@ -193,14 +201,16 @@
 <h2><a id="L">-- L --</a></h2>
 
 <table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="list_indicator_groups.html">list_indicator_groups</a></td>
+<td>List available indicator group names</td></tr>
 <tr><td style="width: 25%;"><a href="list_outlier_units.html">list_outlier_units</a></td>
 <td>Identify Monthly Outliers for a Single Indicator</td></tr>
 <tr><td style="width: 25%;"><a href="load_cache_data.html">load_cache_data</a></td>
-<td>Load Processed Countdown 2030 Data from RDS or DTA File</td></tr>
+<td>Initialize or load a cached Countdown 2030 connection</td></tr>
 <tr><td style="width: 25%;"><a href="load_csection_estimates.html">load_csection_estimates</a></td>
 <td>Load C-section Share Estimates</td></tr>
 <tr><td style="width: 25%;"><a href="load_data.html">load_data</a></td>
-<td>Load Processed Countdown 2030 Data from RDS or DTA File</td></tr>
+<td>Load Countdown 2030 data (Excel or Stata)</td></tr>
 <tr><td style="width: 25%;"><a href="load_equity_data.html">load_equity_data</a></td>
 <td>Load and Filter Equity Data</td></tr>
 <tr><td style="width: 25%;"><a href="load_fpet_data.html">load_fpet_data</a></td>
@@ -223,7 +233,7 @@
 
 <table style="width: 100%;">
 <tr><td style="width: 25%;"><a href="new_countdown.html">new_countdown</a></td>
-<td>Create Countdown 2030 Data Object</td></tr>
+<td>Create a 'cd_data' object from cleaned data and resolve the indicator group</td></tr>
 </table>
 
 <h2><a id="P">-- P --</a></h2>
@@ -301,9 +311,9 @@
 
 <table style="width: 100%;">
 <tr><td style="width: 25%;"><a href="register_indicator_group.html">register_indicator_group</a></td>
-<td>Register or replace an indicator-group override</td></tr>
+<td>Register or override an indicator group (profile)</td></tr>
 <tr><td style="width: 25%;"><a href="reset_indicator_group.html">reset_indicator_group</a></td>
-<td>Reset an override</td></tr>
+<td>Reset (remove) a group override</td></tr>
 <tr><td style="width: 25%;"><a href="robust_max.html">robust_max</a></td>
 <td>Robust Maximum Value Calculation</td></tr>
 </table>
@@ -318,7 +328,7 @@
 <tr><td style="width: 25%;"><a href="save_dhis2_master_data.html">save_dhis2_master_data</a></td>
 <td>Create a Master Dataset from DHIS2 Data</td></tr>
 <tr><td style="width: 25%;"><a href="set_selected_group.html">set_selected_group</a></td>
-<td>Set selected group</td></tr>
+<td>Set the selected indicator group globally</td></tr>
 <tr><td style="width: 25%;"><a href="summarise_completeness_ratio.html">summarise_completeness_ratio</a></td>
 <td>Summarize Completeness-Adjusted Mortality Ratio</td></tr>
 </table>

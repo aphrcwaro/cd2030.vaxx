@@ -48,6 +48,9 @@ create_mortality_ratios
                         Comparison
 create_mortality_summary
                         Create Mortality Summary Object
+detect_indicator_group
+                        Auto-detect the best-matching indicator group
+                        from a vector of indicators
 equiplot                Create Dot Plots for Equity Analysis
 equiplot_area           A Specialized Dot Plot for Area of Residence
                         Analysis
@@ -91,7 +94,7 @@ get_excel_version       Format Service Utilization Data for Excel
                         Export
 get_indicator_group_names
                         Get Indicator Group Names
-get_indicator_groups    Get Indicator Groups
+get_indicator_groups    Get the current indicator group definition
 get_indicator_without_opd_ipd
                         Get Indicators excluding indicators without
                         denominator
@@ -102,20 +105,20 @@ get_plot_admin_column   Determine the Administrative Column to Use for
                         Plotting
 get_population_column   Get Population Denominator Column Based on
                         Indicator Only
-get_selected_group      Get selected group
+get_selected_group      Get the globally selected indicator group
 init_CacheConnection    Create a CacheConnection Object
 interpret               Generic Interpretation Method
 interpret.cd_fpet       Interpret FPET Results with Emphasis on Current
                         Estimates
 is_maternal_indicator   Detemine if an indicator is maternal indicator
+list_indicator_groups   List available indicator group names
 list_outlier_units      Identify Monthly Outliers for a Single
                         Indicator
-load_cache_data         Load Processed Countdown 2030 Data from RDS or
-                        DTA File
+load_cache_data         Initialize or load a cached Countdown 2030
+                        connection
 load_csection_estimates
                         Load C-section Share Estimates
-load_data               Load Processed Countdown 2030 Data from RDS or
-                        DTA File
+load_data               Load Countdown 2030 data (Excel or Stata)
 load_equity_data        Load and Filter Equity Data
 load_fpet_data          Load FPET Data from CSV File or Use Provided
                         Data
@@ -126,7 +129,8 @@ load_un_estimates       Load UN Estimates
 load_un_mortality_data
                         Load and Filter UN Mortality Estimates
 load_wuenic_data        Load WUENIC Immunization Data
-new_countdown           Create Countdown 2030 Data Object
+new_countdown           Create a 'cd_data' object from cleaned data and
+                        resolve the indicator group
 plot.cd_adjustment_values_filtered
                         Plot Adjusted vs. Unadjusted Data for Health
                         Indicators
@@ -191,14 +195,15 @@ prepare_private_sector_plot_data
                         Prepare Private Sector Plot Data
 print.cd_data           Print Method for 'cd_data' Class
 register_indicator_group
-                        Register or replace an indicator-group override
-reset_indicator_group   Reset an override
+                        Register or override an indicator group
+                        (profile)
+reset_indicator_group   Reset (remove) a group override
 robust_max              Robust Maximum Value Calculation
 save_data               Save Processed Countdown 2030 Data to File
 save_dhis2_excel        Save DHIS2 Data to an Excel Workbook
 save_dhis2_master_data
                         Create a Master Dataset from DHIS2 Data
-set_selected_group      Set selected group
+set_selected_group      Set the selected indicator group globally
 summarise_completeness_ratio
                         Summarize Completeness-Adjusted Mortality Ratio
 tbl_sum.cd_adjustment_values

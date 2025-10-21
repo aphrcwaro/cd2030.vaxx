@@ -59,7 +59,6 @@ sum(a)
 min(a)
 max(a)
 range(a)
-make_units(min(m/s, km/h)) # converts to first unit:
 
 ## -----------------------------------------------------------------------------
 a
