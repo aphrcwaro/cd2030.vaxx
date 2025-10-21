@@ -9,7 +9,6 @@ build/node_modules
 coverage/
 vscode.lsif
 vscode.db
-/.profile-oss
 product.overrides.json
 *.snap.actual
 *.tsbuildinfo
