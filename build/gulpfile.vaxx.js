@@ -30,77 +30,42 @@ const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const minimist = require('minimist');
 const { compileBuildWithoutManglingTask, compileBuildWithManglingTask } = require('./gulpfile.compile');
-const { compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileAllExtensionsBuildTask, compileExtensionMediaBuildTask, cleanExtensionsBuildTask } = require('./gulpfile.extensions');
 const { promisify } = require('util');
 const glob = promisify(require('glob'));
 const rcedit = promisify(require('rcedit'));
 
-const vscodeResources = [
+const vaxxResources = [];
 
-	// Excludes
-	'!out-build/vs/code/browser/**',
-	'!out-build/vs/editor/standalone/**',
-	'!out-build/vs/code/**/*-dev.html',
-	'!out-build/vs/workbench/contrib/issue/**/*-dev.html',
-	'!**/test/**'
-];
+const bootstrapEntryPoints = ['out-build/main.js'];
 
-const bootstrapEntryPoints = [
-	'out-build/main.js',
-	'out-build/cli.js',
-	'out-build/bootstrap-fork.js'
-];
-
-const bundleVSCodeTask = task.define('bundle-vscode', task.series(
-	util.rimraf('out-vscode'),
+const bundleVaxxTask = task.define('bundle-vaxx', task.series(
+	util.rimraf('out-vaxx'),
 	// Optimize: bundles source files automatically based on
 	// import statements based on the passed in entry points.
 	// In addition, concat window related bootstrap files into
 	// a single file.
 	optimize.bundleTask(
 		{
-			out: 'out-vscode',
+			out: 'out-vaxx',
 			esm: {
 				src: 'out-build',
 				entryPoints: [
-					...vscodeEntryPoints,
 					...bootstrapEntryPoints
-				],
-				resources: vscodeResources,
-				skipTSBoilerplateRemoval: entryPoint => entryPoint === 'vs/code/electron-browser/workbench/workbench'
+				]//,
+				//resources: vaxxResources
 			}
 		}
 	)
 ));
-gulp.task(bundleVSCodeTask);
+gulp.task(bundleVaxxTask);
 
 const sourceMappingURLBase = `https://main.vscode-cdn.net/sourcemaps/${commit}`;
-const minifyVSCodeTask = task.define('minify-vscode', task.series(
-	bundleVSCodeTask,
-	util.rimraf('out-vscode-min'),
-	optimize.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
+const minifyVaxxTask = task.define('minify-vaxx', task.series(
+	bundleVaxxTask,
+	util.rimraf('out-vaxx-min'),
+	optimize.minifyTask('out-vaxx', `${sourceMappingURLBase}/core`)
 ));
-gulp.task(minifyVSCodeTask);
-
-const coreCI = task.define('core-ci', task.series(
-	gulp.task('compile-build-with-mangling'),
-	task.parallel(
-		gulp.task('minify-vscode'),
-		gulp.task('minify-vscode-reh'),
-		gulp.task('minify-vscode-reh-web'),
-	)
-));
-gulp.task(coreCI);
-
-const coreCIPR = task.define('core-ci-pr', task.series(
-	gulp.task('compile-build-without-mangling'),
-	task.parallel(
-		gulp.task('minify-vscode'),
-		gulp.task('minify-vscode-reh'),
-		gulp.task('minify-vscode-reh-web'),
-	)
-));
-gulp.task(coreCIPR);
+gulp.task(minifyVaxxTask);
 
 /**
  * Compute checksums for some files.
@@ -149,30 +114,20 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const out = sourceFolderName;
 
 		const checksums = computeChecksums(out, [
+			/*
 			'vs/base/parts/sandbox/electron-browser/preload.js',
 			'vs/workbench/workbench.desktop.main.js',
 			'vs/workbench/workbench.desktop.main.css',
-			'vs/workbench/api/node/extensionHostProcess.js',
 			'vs/code/electron-browser/workbench/workbench.html',
 			'vs/code/electron-browser/workbench/workbench.js'
+			*/
 		]);
 
 		const src = gulp.src(out + '/**', { base: '.' })
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + out), 'out'); }))
 			.pipe(util.setExecutableBit(['**/*.sh']));
 
-		const platformSpecificBuiltInExtensionsExclusions = product.builtInExtensions.filter(ext => {
-			if (!ext.platforms) {
-				return false;
-			}
-
-			const set = new Set(ext.platforms);
-			return !set.has(platform);
-		}).map(ext => `!.build/extensions/${ext.name}/**`);
-
-		const extensions = gulp.src(['.build/extensions/**', ...platformSpecificBuiltInExtensionsExclusions], { base: '.build', dot: true });
-
-		const sources = es.merge(src, extensions)
+		const sources = src
 			.pipe(filter(['**', '!**/*.{js,css}.map'], { dot: true }));
 
 		let version = packageJson.version;
@@ -199,21 +154,20 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 
 		let productJsonContents;
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
-			.pipe(json({ commit, date: readISODate('out-build'), checksums, version }))
+			.pipe(json({ commit, date: readISODate('out-build'), /*checksums,*/ version }))
 			.pipe(es.through(function (file) {
 				productJsonContents = file.contents.toString();
 				this.emit('data', file);
 			}));
 
-		const license = gulp.src([product.licenseFileName, 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.', allowEmpty: true });
-
-		// TODO the API should be copied to `out` during compile, not here
-		const api = gulp.src('src/vscode-dts/vscode.d.ts').pipe(rename('out/vscode-dts/vscode.d.ts'));
-
-		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
+		const root = path.resolve(path.join(__dirname, '..'));
+		const licenseGlobs = [product.licenseFileName, 'ThirdPartyNotices.txt'];
+		if (fs.existsSync(path.join(root, 'licenses'))) {
+			licenseGlobs.push('licenses/**');
+		}
+		const license = gulp.src(licenseGlobs, { base: '.', allowEmpty: true });
 
 		const jsFilter = util.filter(data => !data.isDirectory() && /\.js$/.test(data.path));
-		const root = path.resolve(path.join(__dirname, '..'));
 		const productionDependencies = getProductionDependencies(root);
 		const dependenciesSrc = productionDependencies.map(d => path.relative(root, d)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]).flat().concat('!**/*.mk');
 
@@ -227,12 +181,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), [
 				'**/*.node',
 				'**/@vscode/ripgrep/bin/*',
-				'**/node-pty/build/Release/*',
-				'**/node-pty/build/Release/conpty/*',
-				'**/node-pty/lib/worker/conoutSocketWorker.js',
-				'**/node-pty/lib/shared/conout.js',
 				'**/*.wasm',
-				'**/@vscode/vsce-sign/bin/*',
+				'**/@vscode/vsce-sign/bin/*'
 			], [
 				'**/*.mk',
 				'!node_modules/vsda/**' // stay compatible with extensions that depend on us shipping `vsda` into ASAR
@@ -240,57 +190,34 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				'node_modules/vsda/**' // retain copy of `vsda` in node_modules for internal use
 			], 'node_modules.asar'));
 
-		let all = es.merge(
+		const app = gulp.src([
+			'app/**',
+			'!app/**/.git/**',           // optional: skip any nested git data
+			'!app/**/.Rproj.user/**'     // optional: skip RStudio temp state
+		], { base: 'app', dot: true, allowEmpty: true });
+
+		let all = util.mergeStreams(
 			packageJsonStream,
 			productJsonStream,
 			license,
-			api,
-			telemetry,
 			sources,
-			deps
+			deps,
+			app
 		);
 
 		if (platform === 'win32') {
-			all = es.merge(all, gulp.src([
-				'resources/win32/bower.ico',
-				'resources/win32/c.ico',
-				'resources/win32/config.ico',
-				'resources/win32/cpp.ico',
-				'resources/win32/csharp.ico',
-				'resources/win32/css.ico',
-				'resources/win32/default.ico',
-				'resources/win32/go.ico',
-				'resources/win32/html.ico',
-				'resources/win32/jade.ico',
-				'resources/win32/java.ico',
-				'resources/win32/javascript.ico',
-				'resources/win32/json.ico',
-				'resources/win32/less.ico',
-				'resources/win32/markdown.ico',
-				'resources/win32/php.ico',
-				'resources/win32/powershell.ico',
-				'resources/win32/python.ico',
-				'resources/win32/react.ico',
-				'resources/win32/ruby.ico',
-				'resources/win32/sass.ico',
-				'resources/win32/shell.ico',
-				'resources/win32/sql.ico',
-				'resources/win32/typescript.ico',
-				'resources/win32/vue.ico',
-				'resources/win32/xml.ico',
-				'resources/win32/yaml.ico',
+			all = util.mergeStreams(all, gulp.src([
 				'resources/win32/code_70x70.png',
 				'resources/win32/code_150x150.png'
 			], { base: '.' }));
 		} else if (platform === 'linux') {
-			all = es.merge(all, gulp.src('resources/linux/code.png', { base: '.' }));
+			all = util.mergeStreams(all, gulp.src('resources/linux/code.png', { base: '.' }));
 		} else if (platform === 'darwin') {
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(rename('bin/code'));
-			const policyDest = gulp.src('.build/policies/darwin/**', { base: '.build/policies/darwin' })
-				.pipe(rename(f => f.dirname = `policies/${f.dirname}`));
-			all = es.merge(all, shortcut, policyDest);
+			const darwinStreams = [shortcut];
+			all = util.mergeStreams(all, ...darwinStreams);
 		}
 
 		let result = all
@@ -301,56 +228,58 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(filter(['**', '!LICENSE', '!version'], { dot: true }));
 
 		if (platform === 'linux') {
-			result = es.merge(result, gulp.src('resources/completions/bash/code', { base: '.' })
+			result = util.mergeStreams(result, gulp.src('resources/completions/bash/code', { base: '.' })
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(rename(function (f) { f.basename = product.applicationName; })));
 
-			result = es.merge(result, gulp.src('resources/completions/zsh/_code', { base: '.' })
+			result = util.mergeStreams(result, gulp.src('resources/completions/zsh/_code', { base: '.' })
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(rename(function (f) { f.basename = '_' + product.applicationName; })));
 		}
 
 		if (platform === 'win32') {
-			result = es.merge(result, gulp.src('resources/win32/bin/code.js', { base: 'resources/win32', allowEmpty: true }));
+			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.js', { base: 'resources/win32', allowEmpty: true }));
 
-			result = es.merge(result, gulp.src('resources/win32/bin/code.cmd', { base: 'resources/win32' })
+			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.cmd', { base: 'resources/win32' })
 				.pipe(replace('@@NAME@@', product.nameShort))
 				.pipe(rename(function (f) { f.basename = product.applicationName; })));
 
-			result = es.merge(result, gulp.src('resources/win32/bin/code.sh', { base: 'resources/win32' })
+			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.sh', { base: 'resources/win32' })
 				.pipe(replace('@@NAME@@', product.nameShort))
 				.pipe(replace('@@PRODNAME@@', product.nameLong))
 				.pipe(replace('@@VERSION@@', version))
 				.pipe(replace('@@COMMIT@@', commit))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
-				.pipe(replace('@@SERVERDATAFOLDER@@', product.serverDataFolderName || '.vscode-remote'))
 				.pipe(replace('@@QUALITY@@', quality))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
 
-			result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
+			result = util.mergeStreams(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
 				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 
-			result = es.merge(result, gulp.src('.build/policies/win32/**', { base: '.build/policies/win32' })
-				.pipe(rename(f => f.dirname = `policies/${f.dirname}`)));
-
 			if (quality === 'stable' || quality === 'insider') {
-				result = es.merge(result, gulp.src('.build/win32/appx/**', { base: '.build/win32' }));
+				const appxSourcePath = path.join(root, '.build', 'win32', 'appx');
+				if (fs.existsSync(appxSourcePath)) {
+					result = util.mergeStreams(result, gulp.src('.build/win32/appx/**', { base: '.build/win32' }));
+				}
 				const rawVersion = version.replace(/-\w+$/, '').split('.');
 				const appxVersion = `${rawVersion[0]}.0.${rawVersion[1]}.${rawVersion[2]}`;
-				result = es.merge(result, gulp.src('resources/win32/appx/AppxManifest.xml', { base: '.' })
-					.pipe(replace('@@AppxPackageName@@', product.win32AppUserModelId))
-					.pipe(replace('@@AppxPackageVersion@@', appxVersion))
-					.pipe(replace('@@AppxPackageDisplayName@@', product.nameLong))
-					.pipe(replace('@@AppxPackageDescription@@', product.win32NameVersion))
-					.pipe(replace('@@ApplicationIdShort@@', product.win32RegValueName))
-					.pipe(replace('@@ApplicationExe@@', product.nameShort + '.exe'))
-					.pipe(replace('@@FileExplorerContextMenuID@@', quality === 'stable' ? 'OpenWithCode' : 'OpenWithCodeInsiders'))
-					.pipe(replace('@@FileExplorerContextMenuCLSID@@', product.win32ContextMenu[arch].clsid))
-					.pipe(replace('@@FileExplorerContextMenuDLL@@', `${quality === 'stable' ? 'code' : 'code_insider'}_explorer_command_${arch}.dll`))
-					.pipe(rename(f => f.dirname = `appx/manifest`)));
+				const appxManifestPath = path.join(root, 'resources', 'win32', 'appx', 'AppxManifest.xml');
+				if (fs.existsSync(appxManifestPath)) {
+					result = util.mergeStreams(result, gulp.src('resources/win32/appx/AppxManifest.xml', { base: '.' })
+						.pipe(replace('@@AppxPackageName@@', product.win32AppUserModelId))
+						.pipe(replace('@@AppxPackageVersion@@', appxVersion))
+						.pipe(replace('@@AppxPackageDisplayName@@', product.nameLong))
+						.pipe(replace('@@AppxPackageDescription@@', product.win32NameVersion))
+						.pipe(replace('@@ApplicationIdShort@@', product.win32RegValueName))
+						.pipe(replace('@@ApplicationExe@@', product.nameShort + '.exe'))
+						.pipe(replace('@@FileExplorerContextMenuID@@', quality === 'stable' ? 'OpenWithCode' : 'OpenWithCodeInsiders'))
+						.pipe(replace('@@FileExplorerContextMenuCLSID@@', product.win32ContextMenu[arch].clsid))
+						.pipe(replace('@@FileExplorerContextMenuDLL@@', `${quality === 'stable' ? 'code' : 'code_insider'}_explorer_command_${arch}.dll`))
+						.pipe(rename(f => f.dirname = `appx/manifest`)));
+				}
 			}
 		} else if (platform === 'linux') {
-			result = es.merge(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
+			result = util.mergeStreams(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
 				.pipe(replace('@@PRODNAME@@', product.nameLong))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(rename('bin/' + product.applicationName)));
@@ -372,7 +301,8 @@ function patchWin32DependenciesTask(destinationFolderName) {
 	const cwd = path.join(path.dirname(root), destinationFolderName);
 
 	return async () => {
-		const deps = await glob('**/*.node', { cwd, ignore: 'extensions/node_modules/@parcel/watcher/**' });
+		const deps = await glob('**/*.node', { cwd });
+		console.log(deps)
 		const packageJson = JSON.parse(await fs.promises.readFile(path.join(cwd, 'resources', 'app', 'package.json'), 'utf8'));
 		const product = JSON.parse(await fs.promises.readFile(path.join(cwd, 'resources', 'app', 'product.json'), 'utf8'));
 		const baseVersion = packageJson.version.replace(/-.*$/, '');
@@ -383,14 +313,14 @@ function patchWin32DependenciesTask(destinationFolderName) {
 			await rcedit(path.join(cwd, dep), {
 				'file-version': baseVersion,
 				'version-string': {
-					'CompanyName': 'Microsoft Corporation',
+					'CompanyName': 'African Population and Health Research Center',
 					'FileDescription': product.nameLong,
 					'FileVersion': packageJson.version,
 					'InternalName': basename,
-					'LegalCopyright': 'Copyright (C) 2022 Microsoft. All rights reserved',
+					'LegalCopyright': 'Copyright (C) 2025 APHRC. All rights reserved',
 					'OriginalFilename': basename,
 					'ProductName': product.nameLong,
-					'ProductVersion': packageJson.version,
+					'ProductVersion': packageJson.version
 				}
 			});
 		}));
@@ -414,12 +344,11 @@ BUILD_TARGETS.forEach(buildTarget => {
 	const arch = buildTarget.arch;
 	const opts = buildTarget.opts;
 
-	const [vscode, vscodeMin] = ['', 'min'].map(minified => {
-		const sourceFolderName = `out-vscode${dashed(minified)}`;
-		const destinationFolderName = `VSCode${dashed(platform)}${dashed(arch)}`;
+	const [vaxx, vaxxMin] = ['', 'min'].map(minified => {
+		const sourceFolderName = `out-vaxx${dashed(minified)}`;
+		const destinationFolderName = `Vaxx${dashed(platform)}${dashed(arch)}`;
 
 		const tasks = [
-			compileNativeExtensionsBuildTask,
 			util.rimraf(path.join(buildRoot, destinationFolderName)),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
 		];
@@ -428,74 +357,54 @@ BUILD_TARGETS.forEach(buildTarget => {
 			tasks.push(patchWin32DependenciesTask(destinationFolderName));
 		}
 
-		const vscodeTaskCI = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(...tasks));
-		gulp.task(vscodeTaskCI);
-
-		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+		const vaxxTask = task.define(`vaxx${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 			minified ? compileBuildWithManglingTask : compileBuildWithoutManglingTask,
-			cleanExtensionsBuildTask,
-			compileNonNativeExtensionsBuildTask,
-			compileExtensionMediaBuildTask,
-			minified ? minifyVSCodeTask : bundleVSCodeTask,
-			vscodeTaskCI
+			minified ? minifyVaxxTask : bundleVaxxTask,
+			task.series(...tasks)
 		));
-		gulp.task(vscodeTask);
+		gulp.task(vaxxTask);
 
-		return vscodeTask;
+		return vaxxTask;
 	});
 
 	if (process.platform === platform && process.arch === arch) {
-		gulp.task(task.define('vscode', task.series(vscode)));
-		gulp.task(task.define('vscode-min', task.series(vscodeMin)));
+		gulp.task(task.define('vaxx', task.series(vaxx)));
+		gulp.task(task.define('vaxx-min', task.series(vaxxMin)));
 	}
 });
 
 // #region nls
 
 const innoSetupConfig = {
-	'zh-cn': { codePage: 'CP936', defaultInfo: { name: 'Simplified Chinese', id: '$0804', } },
-	'zh-tw': { codePage: 'CP950', defaultInfo: { name: 'Traditional Chinese', id: '$0404' } },
-	'ko': { codePage: 'CP949', defaultInfo: { name: 'Korean', id: '$0412' } },
-	'ja': { codePage: 'CP932' },
-	'de': { codePage: 'CP1252' },
 	'fr': { codePage: 'CP1252' },
-	'es': { codePage: 'CP1252' },
-	'ru': { codePage: 'CP1251' },
-	'it': { codePage: 'CP1252' },
-	'pt-br': { codePage: 'CP1252' },
-	'hu': { codePage: 'CP1250' },
-	'tr': { codePage: 'CP1254' }
+	'pt-br': { codePage: 'CP1252' }
 };
 
 gulp.task(task.define(
-	'vscode-translations-export',
+	'vaxx-translations-export',
 	task.series(
-		coreCI,
-		compileAllExtensionsBuildTask,
 		function () {
 			const pathToMetadata = './out-build/nls.metadata.json';
-			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/i18n/messages.en.isl';
 
-			return es.merge(
+			return util.mergeStreams(
 				gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
-				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
-				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-			).pipe(vfs.dest('../vscode-translations-export'));
+				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl())
+			).pipe(vfs.dest('../vaxx-translations-export'));
 		}
 	)
 ));
 
-gulp.task('vscode-translations-import', function () {
+gulp.task('vaxx-translations-import', function () {
 	const options = minimist(process.argv.slice(2), {
 		string: 'location',
 		default: {
-			location: '../vscode-translations-import'
+			location: '../vaxx-translations-import'
 		}
 	});
-	return es.merge([...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {
+	return util.mergeStreams(...[...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {
 		const id = language.id;
-		return gulp.src(`${options.location}/${id}/vscode-setup/messages.xlf`)
+		return gulp.src(`${options.location}/${id}/vaxx-setup/messages.xlf`)
 			.pipe(i18n.prepareIslFiles(language, innoSetupConfig[language.id]))
 			.pipe(vfs.dest(`./build/win32/i18n`));
 	}));

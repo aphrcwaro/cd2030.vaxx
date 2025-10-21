@@ -1,10 +1,10 @@
 Name:     @@NAME@@
 Version:  @@VERSION@@
 Release:  @@RELEASE@@.el8
-Summary:  Code editing. Redefined.
+Summary:  Data analytics. Redefined.
 Group:    Development/Tools
-Vendor:   Microsoft Corporation
-Packager: Visual Studio Code Team <vscode-linux@microsoft.com>
+Vendor:   Africa Population and Health Research Center
+Packager: APHRC Team <vaxx-linux@aphrc.org>
 License:  @@LICENSE@@
 URL:      https://code.visualstudio.com/
 Icon:     @@NAME@@.xpm

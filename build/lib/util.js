@@ -11,6 +11,7 @@ exports.setExecutableBit = setExecutableBit;
 exports.toFileUri = toFileUri;
 exports.skipDirectories = skipDirectories;
 exports.cleanNodeModules = cleanNodeModules;
+exports.mergeStreams = mergeStreams;
 exports.loadSourcemaps = loadSourcemaps;
 exports.stripSourceMappingURL = stripSourceMappingURL;
 exports.$if = $if;
@@ -33,6 +34,7 @@ const gulp_filter_1 = __importDefault(require("gulp-filter"));
 const gulp_rename_1 = __importDefault(require("gulp-rename"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const stream_1 = require("stream");
 const rimraf_1 = __importDefault(require("rimraf"));
 const url_1 = require("url");
 const ternary_stream_1 = __importDefault(require("ternary-stream"));
@@ -158,6 +160,43 @@ function cleanNodeModules(rulePath) {
     const input = event_stream_1.default.through();
     const output = event_stream_1.default.merge(input.pipe((0, gulp_filter_1.default)(['**', ...excludes])), input.pipe((0, gulp_filter_1.default)(includes)));
     return event_stream_1.default.duplex(input, output);
+}
+function mergeStreams(...streams) {
+    const sources = streams.filter((stream) => !!stream);
+    const merged = new stream_1.PassThrough({ objectMode: true });
+    if (sources.length === 0) {
+        queueMicrotask(() => merged.end());
+        return merged;
+    }
+    let remaining = sources.length;
+    const finalize = () => {
+        remaining--;
+        if (remaining === 0) {
+            merged.end();
+        }
+    };
+    const handleError = (error) => {
+        merged.destroy(error);
+    };
+    for (const source of sources) {
+        const proxy = new stream_1.PassThrough({ objectMode: true });
+        let settled = false;
+        const settle = () => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            proxy.unpipe(merged);
+            finalize();
+        };
+        proxy.on('error', handleError);
+        proxy.once('end', settle);
+        proxy.once('close', settle);
+        source.once('error', handleError);
+        proxy.pipe(merged, { end: false });
+        source.pipe(proxy);
+    }
+    return merged;
 }
 function loadSourcemaps() {
     const input = event_stream_1.default.through();

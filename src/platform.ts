@@ -50,9 +50,9 @@ declare const process: INodeProcess;
 const $globalThis: any = globalThis;
 
 let nodeProcess: INodeProcess | undefined = undefined;
-if (typeof $globalThis.vscode !== 'undefined' && typeof $globalThis.vscode.process !== 'undefined') {
+if (typeof $globalThis.vaxx !== 'undefined' && typeof $globalThis.vaxx.process !== 'undefined') {
 	// Native environment (sandboxed)
-	nodeProcess = $globalThis.vscode.process;
+	nodeProcess = $globalThis.vaxx.process;
 } else if (typeof process !== 'undefined' && typeof process?.versions?.node === 'string') {
 	// Native environment (non-sandboxed)
 	nodeProcess = process;

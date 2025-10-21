@@ -15,6 +15,7 @@ import esbuild from 'esbuild';
 import sourcemaps from 'gulp-sourcemaps';
 import fancyLog from 'fancy-log';
 import ansiColors from 'ansi-colors';
+import { mergeStreams } from './util';
 
 declare module 'gulp-sourcemaps' {
 	interface WriteOptions {
@@ -61,7 +62,6 @@ const DEFAULT_FILE_HEADER = [
 ].join('\n');
 
 function bundleESMTask(opts: IBundleESMTaskOpts): NodeJS.ReadWriteStream {
-	const resourcesStream = es.through(); // this stream will contain the resources
 	const bundlesStream = es.through(); // this stream will contain the bundled files
 
 	const entryPoints = opts.entryPoints.map(entryPoint => {
@@ -184,15 +184,14 @@ function bundleESMTask(opts: IBundleESMTaskOpts): NodeJS.ReadWriteStream {
 
 		// bundle output (JS, CSS, SVG...)
 		es.readArray(output.files).pipe(bundlesStream);
-
-		// forward all resources
-		gulp.src(opts.resources ?? [], { base: `${opts.src}`, allowEmpty: true }).pipe(resourcesStream);
 	});
 
-	const result = es.merge(
-		bundlesStream,
-		resourcesStream
-	);
+	const resourceGlobs = (opts.resources ?? []).filter((pattern): pattern is string => !!pattern);
+	const resourceStreams: NodeJS.ReadWriteStream[] = resourceGlobs.length
+		? [gulp.src(resourceGlobs, { base: `${opts.src}`, allowEmpty: true })]
+		: [];
+
+	const result = mergeStreams(bundlesStream, ...resourceStreams);
 
 	return result
 		.pipe(sourcemaps.write('./', {

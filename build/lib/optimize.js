@@ -54,6 +54,7 @@ const esbuild_1 = __importDefault(require("esbuild"));
 const gulp_sourcemaps_1 = __importDefault(require("gulp-sourcemaps"));
 const fancy_log_1 = __importDefault(require("fancy-log"));
 const ansi_colors_1 = __importDefault(require("ansi-colors"));
+const util_1 = require("./util");
 const REPO_ROOT_PATH = path_1.default.join(__dirname, '../..');
 const DEFAULT_FILE_HEADER = [
     '/*!--------------------------------------------------------',
@@ -61,7 +62,6 @@ const DEFAULT_FILE_HEADER = [
     ' *--------------------------------------------------------*/'
 ].join('\n');
 function bundleESMTask(opts) {
-    const resourcesStream = event_stream_1.default.through(); // this stream will contain the resources
     const bundlesStream = event_stream_1.default.through(); // this stream will contain the bundled files
     const entryPoints = opts.entryPoints.map(entryPoint => {
         if (typeof entryPoint === 'string') {
@@ -167,10 +167,12 @@ function bundleESMTask(opts) {
     bundleAsync().then((output) => {
         // bundle output (JS, CSS, SVG...)
         event_stream_1.default.readArray(output.files).pipe(bundlesStream);
-        // forward all resources
-        gulp_1.default.src(opts.resources ?? [], { base: `${opts.src}`, allowEmpty: true }).pipe(resourcesStream);
     });
-    const result = event_stream_1.default.merge(bundlesStream, resourcesStream);
+    const resourceGlobs = (opts.resources ?? []).filter((pattern) => !!pattern);
+    const resourceStreams = resourceGlobs.length
+        ? [gulp_1.default.src(resourceGlobs, { base: `${opts.src}`, allowEmpty: true })]
+        : [];
+    const result = (0, util_1.mergeStreams)(bundlesStream, ...resourceStreams);
     return result
         .pipe(gulp_sourcemaps_1.default.write('./', {
         sourceRoot: undefined,

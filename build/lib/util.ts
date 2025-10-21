@@ -9,6 +9,7 @@ import _filter from 'gulp-filter';
 import rename from 'gulp-rename';
 import path from 'path';
 import fs from 'fs';
+import { PassThrough } from 'stream';
 import _rimraf from 'rimraf';
 import VinylFile from 'vinyl';
 import { ThroughStream } from 'through';
@@ -184,6 +185,50 @@ export function cleanNodeModules(rulePath: string): NodeJS.ReadWriteStream {
 	);
 
 	return es.duplex(input, output);
+}
+
+export function mergeStreams(...streams: Array<NodeJS.ReadWriteStream | null | undefined>): NodeJS.ReadWriteStream {
+	const sources = streams.filter((stream): stream is NodeJS.ReadWriteStream => !!stream);
+	const merged = new PassThrough({ objectMode: true });
+
+	if (sources.length === 0) {
+		queueMicrotask(() => merged.end());
+		return merged;
+	}
+
+	let remaining = sources.length;
+	const finalize = () => {
+		remaining--;
+		if (remaining === 0) {
+			merged.end();
+		}
+	};
+	const handleError = (error: Error) => {
+		merged.destroy(error);
+	};
+
+	for (const source of sources) {
+		const proxy = new PassThrough({ objectMode: true });
+		let settled = false;
+		const settle = () => {
+			if (settled) {
+				return;
+			}
+			settled = true;
+			proxy.unpipe(merged);
+			finalize();
+		};
+
+		proxy.on('error', handleError);
+		proxy.once('end', settle);
+		proxy.once('close', settle);
+		source.once('error', handleError);
+
+		proxy.pipe(merged, { end: false });
+		source.pipe(proxy);
+	}
+
+	return merged;
 }
 
 type FileSourceMap = VinylFile & { sourceMap: sm.RawSourceMap };
