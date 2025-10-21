@@ -1,0 +1,39 @@
+{
+  "name": "vaxx-dev-build",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "compile": "cd .. && npx tsgo --project build/tsconfig.build.json",
+    "watch": "cd .. && npx tsgo --project build/tsconfig.build.json --watch",
+    "npmCheckJs": "cd .. && npx tsgo --project build/tsconfig.build.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/ansi-colors": "^3.2.0",
+    "@types/fancy-log": "^2.0.2",
+    "@types/gulp": "^4.0.17",
+    "@types/gulp-filter": "^3.0.40",
+    "@types/gulp-json-editor": "^2.2.31",
+    "@types/gulp-rename": "^2.0.6",
+    "@types/gulp-replace": "^0.0.31",
+    "@types/gulp-sort": "^2.0.4",
+    "@types/gulp-sourcemaps": "^0.0.32",
+    "@types/lazy.js": "^0.5.9",
+    "@types/pump": "^1.1.3",
+    "@types/rename": "^1.0.7",
+    "@types/rimraf": "^3.0.2",
+    "@types/through": "^0.0.33",
+    "@types/through2": "^2.0.41",
+    "@types/vinyl": "^2.0.12",
+    "@types/workerpool": "^6.4.7",
+    "ansi-colors": "^4.1.3",
+    "esbuild": "^0.25.11",
+    "gulp-sort": "^2.0.0",
+    "ternary-stream": "^3.0.0",
+    "workerpool": "^6.4.0"
+  },
+  "optionalDependencies": {
+    "vscode-gulp-watch": "^5.0.3"
+  }
+}
