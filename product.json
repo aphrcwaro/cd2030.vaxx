@@ -1,6 +1,7 @@
 {
 	"nameShort": "CD2030 Vaxx",
 	"nameLong": "CD2030 Vaxx",
+	"quality": "insider",
 	"applicationName": "cd2030-vaxx",
 	"dataFolderName": ".cd2030-vaxx",
 	"win32MutexName": "cd2030vaxx",

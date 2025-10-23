@@ -10,5 +10,4 @@ AddToPath=Add to PATH (requires shell restart)
 RunAfter=Run %1 after installation
 Other=Other:
 SourceFile=%1 Source File
-OpenWithCodeContextMenu=Open w&ith %1
 UpdatingVisualStudioCode=Updating CD2030 Vaxx...

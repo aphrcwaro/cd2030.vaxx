@@ -23,7 +23,7 @@ class ProcessError extends Error {
     constructor(message: string) {
         super(message);
         this.name = 'ProcessError';
-        Object.setPrototypeOf(this, ProcessError.prototype); 
+        Object.setPrototypeOf(this, ProcessError.prototype);
     }
 }
 
@@ -69,7 +69,7 @@ class RShinyManager extends EventEmitter {
     private shuttingDown = false;
     private isStarting = false;
     private currentPort?: number;
-    private heartbeat?: NodeJS.Timeout;
+    private heartbeat?: Timeout;
     private healthCheckRunning = false;
     private lastReloadAt = 0;
     private failures = 0;
@@ -137,20 +137,20 @@ class RShinyManager extends EventEmitter {
         this.shuttingDown = true;
         this.stopHeartbeat();
 
-        this.preventSleep(false); 
+        this.preventSleep(false);
 
         // Cleanup: Simplified check
         if (this.rProc) {
             console.log(`Killing R process (PID: ${this.rProc.pid})...`);
 
             try {
-               if (this.abortController) {
+                if (this.abortController) {
                     this.abortController.abort();
                 } else {
-                    this.rProc.kill("SIGTERM"); 
+                    this.rProc.kill("SIGTERM");
                 }
                 // Wait for the process to exit after sending the signal
-                await this.rProc; 
+                await this.rProc;
             } catch (e) {
                 // Ignore the AbortError/CancelError which is expected during teardown
                 const error = e as ExecaError;
@@ -159,7 +159,7 @@ class RShinyManager extends EventEmitter {
                 }
             }
         }
-        
+
         this.rProc = undefined;
         this.abortController = undefined;
         this.currentPort = undefined;
@@ -173,7 +173,7 @@ class RShinyManager extends EventEmitter {
         console.log('--- Process Manager: Attempting Restart ---');
         this.teardown(true)
             .then(() => {
-                setTimeout(() => this.startAndServe(window), 500); 
+                setTimeout(() => this.startAndServe(window), 500);
             })
             .catch(err => console.error('Restart failed during teardown:', err));
     }
@@ -185,7 +185,7 @@ class RShinyManager extends EventEmitter {
     // Refactored: Removed unused 'window' argument
     private async startRAndShinyProcess(): Promise<void> {
         const r = resolvePortableR();
-        
+
         const version = app.getVersion()
 
         const expr = `
@@ -285,7 +285,7 @@ class RShinyManager extends EventEmitter {
                 if (!window.isDestroyed() && now - this.lastReloadAt > 10000) {
                     window.webContents.reloadIgnoringCache();
                     this.lastReloadAt = now;
-                } 
+                }
                 this.failures = 0
             }
         }
@@ -329,7 +329,7 @@ class RShinyManager extends EventEmitter {
         return `http://127.0.0.1:${port}`;
     }
 
-    public bindPowerEvents(window: BrowserWindow) { 
+    public bindPowerEvents(window: BrowserWindow) {
         powerMonitor.on('suspend', () => {
             console.log('System is going to sleep');
             this.suspended = true;
@@ -363,19 +363,19 @@ class RShinyManager extends EventEmitter {
     }
 
     private handleCrash(window: BrowserWindow, code: number | null, sig: string | null) {
-          const msg = `R process crashed (code ${code}, signal ${sig ?? 'none'})`
+        const msg = `R process crashed (code ${code}, signal ${sig ?? 'none'})`
 
-          this.emit('crashed', code, sig); 
-          this.emit('status', 'error');
+        this.emit('crashed', code, sig);
+        this.emit('status', 'error');
 
         if (!this.isStarting && window && !window.isDestroyed()) {
             showCrashPage(window, msg);
         }
 
-        this.teardown(true).catch(e => console.error("Teardown error after crash:", e)); 
+        this.teardown(true).catch(e => console.error("Teardown error after crash:", e));
     }
 
-    private wait (ms: number): Promise<void> {
+    private wait(ms: number): Promise<void> {
         return new Promise(r => setTimeout(r, ms));
     }
 

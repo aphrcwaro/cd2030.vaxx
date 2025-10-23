@@ -256,28 +256,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			result = util.mergeStreams(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
 				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 
-			if (quality === 'stable' || quality === 'insider') {
-				const appxSourcePath = path.join(root, '.build', 'win32', 'appx');
-				if (fs.existsSync(appxSourcePath)) {
-					result = util.mergeStreams(result, gulp.src('.build/win32/appx/**', { base: '.build/win32' }));
-				}
-				const rawVersion = version.replace(/-\w+$/, '').split('.');
-				const appxVersion = `${rawVersion[0]}.0.${rawVersion[1]}.${rawVersion[2]}`;
-				const appxManifestPath = path.join(root, 'resources', 'win32', 'appx', 'AppxManifest.xml');
-				if (fs.existsSync(appxManifestPath)) {
-					result = util.mergeStreams(result, gulp.src('resources/win32/appx/AppxManifest.xml', { base: '.' })
-						.pipe(replace('@@AppxPackageName@@', product.win32AppUserModelId))
-						.pipe(replace('@@AppxPackageVersion@@', appxVersion))
-						.pipe(replace('@@AppxPackageDisplayName@@', product.nameLong))
-						.pipe(replace('@@AppxPackageDescription@@', product.win32NameVersion))
-						.pipe(replace('@@ApplicationIdShort@@', product.win32RegValueName))
-						.pipe(replace('@@ApplicationExe@@', product.nameShort + '.exe'))
-						.pipe(replace('@@FileExplorerContextMenuID@@', quality === 'stable' ? 'OpenWithCode' : 'OpenWithCodeInsiders'))
-						.pipe(replace('@@FileExplorerContextMenuCLSID@@', product.win32ContextMenu[arch].clsid))
-						.pipe(replace('@@FileExplorerContextMenuDLL@@', `${quality === 'stable' ? 'code' : 'code_insider'}_explorer_command_${arch}.dll`))
-						.pipe(rename(f => f.dirname = `appx/manifest`)));
-				}
-			}
 		} else if (platform === 'linux') {
 			result = util.mergeStreams(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
 				.pipe(replace('@@PRODNAME@@', product.nameLong))

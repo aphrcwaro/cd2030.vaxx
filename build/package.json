@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@types/ansi-colors": "^3.2.0",
+    "@types/debounce": "^1.2.4",
     "@types/fancy-log": "^2.0.2",
     "@types/glob": "^7.1.3",
     "@types/gulp": "^4.0.17",
@@ -21,7 +22,7 @@
     "@types/gulp-sort": "^2.0.4",
     "@types/gulp-sourcemaps": "^0.0.32",
     "@types/lazy.js": "^0.5.9",
-    "@types/minimatch": "^3.0.3",
+    "@types/minimatch": "^3.0.5",
     "@types/pump": "^1.1.3",
     "@types/rename": "^1.0.7",
     "@types/rimraf": "^3.0.2",
@@ -37,6 +38,7 @@
     "gulp-merge-json": "^2.2.1",
     "gulp-sort": "^2.0.0",
     "ternary-stream": "^3.0.0",
+    "vscode-universal-bundler": "^0.1.3",
     "workerpool": "^6.4.0"
   },
   "optionalDependencies": {

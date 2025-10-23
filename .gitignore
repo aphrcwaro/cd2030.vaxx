@@ -7,8 +7,8 @@ node_modules/
 /out*/
 build/node_modules
 coverage/
-vscode.lsif
-vscode.db
+vaxx.lsif
+vaxx.db
 product.overrides.json
 *.snap.actual
 *.tsbuildinfo
