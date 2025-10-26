@@ -39,13 +39,13 @@ RemoteHost: api.github.com
 RemoteRepo: cd2030.core
 RemoteUsername: damurka
 RemoteRef: HEAD
-RemoteSha: c0ecb8a5bb675a193d6d0da47a9f7ab02db4cf34
+RemoteSha: 703a031f6f076bdb9d81f2607ab7595e4d55a53c
 GithubRepo: cd2030.core
 GithubUsername: damurka
 GithubRef: HEAD
-GithubSHA1: c0ecb8a5bb675a193d6d0da47a9f7ab02db4cf34
+GithubSHA1: 703a031f6f076bdb9d81f2607ab7595e4d55a53c
 NeedsCompilation: no
-Packaged: 2025-10-21 07:18:20 UTC; Murage
+Packaged: 2025-10-26 07:16:38 UTC; Murage
 Author: David Kariuki [aut, cre] (ORCID:
     <https://orcid.org/0009-0003-6159-1107>),
   Martin Mutua [aut],
@@ -54,4 +54,4 @@ Author: David Kariuki [aut, cre] (ORCID:
   Rornald Muhumuza [aut],
   African Population and Health Research Center (APHRC) [cph, fnd]
 Maintainer: David Kariuki <hello@damurka.com>
-Built: R 4.5.0; ; 2025-10-21 07:18:49 UTC; windows
+Built: R 4.5.0; ; 2025-10-26 07:16:53 UTC; windows

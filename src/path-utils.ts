@@ -12,5 +12,8 @@ export function assetPath(...parts: string[]): string {
   const p3 = path.join(app.getAppPath(), '..', 'app', ...parts);
   if (fs.existsSync(p3)) return p3;
 
+  const p4 = path.join(app.getAppPath(), '..', '..', 'app', ...parts);
+  if (fs.existsSync(p3)) return p4;
+
   throw new Error(`Asset not found: ${parts.join('/')}`);
 }

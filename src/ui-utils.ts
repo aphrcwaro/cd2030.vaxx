@@ -1,5 +1,5 @@
 // ui-utils.ts
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { assetPath } from './path-utils.js';
 
 // Main Process helper functions
@@ -36,12 +36,12 @@ export const IPC_CHANNELS = {
 
 // Renderer script functionality
 export function registerUiListeners(onRetry: () => void) {
-  /*
+
   // Listener for general error messages sent from the main process
-  ipcRenderer.on(IPC_CHANNELS.SET_ERROR_MESSAGE, (event, { error, retryAvailable }) => {
+  ipcMain.on(IPC_CHANNELS.SET_ERROR_MESSAGE, (event, { error, retryAvailable }) => {
     const errorMessageElement = document.getElementById('error-message');
     if (errorMessageElement) {
-        errorMessageElement.innerText = error;
+      errorMessageElement.innerText = error;
     }
 
     const retryButton = document.getElementById('retry-button');
@@ -57,20 +57,20 @@ export function registerUiListeners(onRetry: () => void) {
   // Listener for R process crashed specifically (if using a distinct channel)
   // If you want separate logic for R crashes vs. general errors, use this.
   // Otherwise, the existing SET_ERROR_MESSAGE listener can handle it.
-  ipcRenderer.on(IPC_CHANNELS.R_PROCESS_CRASHED, (event, message) => {
+  ipcMain.on(IPC_CHANNELS.R_PROCESS_CRASHED, (event, message) => {
     // This could trigger a specific R crash UI state,
     // or simply call showErrorPage equivalent logic in the renderer.
     console.error("Renderer received R process crash:", message);
     const errorMessageElement = document.getElementById('error-message');
     if (errorMessageElement) {
-        errorMessageElement.innerText = message; // Update message
+      errorMessageElement.innerText = message; // Update message
     }
     const retryButton = document.getElementById('retry-button');
     if (retryButton) {
-        retryButton.style.display = 'block'; // Show retry button
+      retryButton.style.display = 'block'; // Show retry button
     }
   });
-  */
+
 
   // Event listener for the retry button click
   document.getElementById('retry-button')?.addEventListener('click', onRetry);

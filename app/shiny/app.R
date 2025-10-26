@@ -18,7 +18,6 @@ pacman::p_load(
   future,
   htmltools,
   openxlsx,
-  khisr,
   plotly,
   purrr,
   promises,

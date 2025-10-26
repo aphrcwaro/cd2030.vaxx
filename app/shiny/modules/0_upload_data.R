@@ -1,12 +1,10 @@
 source('modules/0_upload_data/upload_box.R')
-source('modules/0_upload_data/dhis2_box.R')
 
 uploadDataUI <- function(id, i18n) {
   ns <- NS(id)
 
   fluidRow(
-    uploadBoxUI(ns('upload_box'), i18n) # ,
-    # dhis2BoxUI(ns('dhis2_box'), i18n)
+    uploadBoxUI(ns('upload_box'), i18n)
   )
 }
 

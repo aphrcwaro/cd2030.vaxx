@@ -22,7 +22,7 @@
     "@types/gulp-sort": "^2.0.4",
     "@types/gulp-sourcemaps": "^0.0.32",
     "@types/lazy.js": "^0.5.9",
-    "@types/minimatch": "^3.0.5",
+    "@types/minimatch": "^3.0.3",
     "@types/pump": "^1.1.3",
     "@types/rename": "^1.0.7",
     "@types/rimraf": "^3.0.2",

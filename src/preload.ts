@@ -1,13 +1,21 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-import { contextBridge, ipcRenderer } from 'electron';
-import type { IUiApi, PickFileOptions } from './typings/electron-api.js';
-import { IPC_CHANNELS } from './ui-utils.js';
+(function () {
 
-const uiApi: IUiApi = {
-    retry: async () => await ipcRenderer.invoke(IPC_CHANNELS.RETRY_START_SHINY),
-    pickFile: async (opts?: PickFileOptions) => ipcRenderer.invoke(IPC_CHANNELS.PICK_FILE, opts ?? {})
-};
+    const { contextBridge, ipcRenderer } = require('electron');
+    //const IPC_CHANNELS = require('./ui-utils.js');
+    type IUiApi = import('./typings/electron-api.d.js').IUiApi;
+    type PickFileOptions = import('./typings/electron-api.d.js').PickFileOptions;
 
-// Expose the API to the renderer process
-contextBridge.exposeInMainWorld('uiApi', uiApi);
+    const uiApi: IUiApi = {
+        retry: async () => await ipcRenderer.invoke(/*IPC_CHANNELS.RETRY_START_SHINY*/'cd2030:retry-start-shiny'),
+        pickFile: async (opts?: PickFileOptions) => await ipcRenderer.invoke(/*IPC_CHANNELS.PICK_FILE*/'cd2030:pick-file', opts ?? {})
+    };
+
+    try {
+        // Expose the API to the renderer process
+        contextBridge.exposeInMainWorld('uiApi', uiApi);
+    } catch (error) {
+        console.error(error);
+    }
+
+}());
+

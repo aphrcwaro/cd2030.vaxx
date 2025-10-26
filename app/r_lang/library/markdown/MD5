@@ -1,4 +1,4 @@
-84e8742a3318e2ad7856b6c16e0c6516 *DESCRIPTION
+af164d8651651bf1a0e15a0a79a31170 *DESCRIPTION
 07b648e46602a7532f49eed72119dfb6 *INDEX
 309ce96fc5f60de8f8040e36efadd724 *LICENSE
 21cae02b57600d022b187ca75c633ed4 *Meta/Rd.rds
@@ -6,7 +6,7 @@
 7ae056179866e274331235b03d1ee25c *Meta/hsearch.rds
 68feb47e31f3628abfc9b08bdd6ce8dc *Meta/links.rds
 856cf955d369dd9b669b92e5f38702bf *Meta/nsInfo.rds
-02dce3cc9ce84d763722e1f6bd505f2d *Meta/package.rds
+7b6084b9a16089b5277a2dd825aee28a *Meta/package.rds
 ebc2ca8cb04db681f86468dc592e3ceb *NAMESPACE
 de4639de27e4205cf4549b0103e3b3e9 *NEWS.md
 d6c68f1fe41ced6e98a766a3757313da *R/markdown
@@ -15,9 +15,9 @@ d6c68f1fe41ced6e98a766a3757313da *R/markdown
 f3b37bbd673bcf06084e889820f07b41 *examples/render-options.R
 8a0dc73960be93df055a6f8c3890b2dc *help/AnIndex
 5e3d0900d334b74d82cfa8b15cf60137 *help/aliases.rds
-d07b36cd3841ba296021550f971aa504 *help/markdown.rdb
-92d173fa4c872232e09bfc734176611c *help/markdown.rdx
-d7bdb30574c4b1586d0c00a41f2e2728 *help/paths.rds
+613178515cb944e56e1acc471c2e7054 *help/markdown.rdb
+ea9b35667241424095e9507eb5e033d3 *help/markdown.rdx
+3ccaff2267329f5413dc4ab4d6493581 *help/paths.rds
 79f5a07f8828e140bf6189d62678e00b *html/00Index.html
 8b9362669af13540a86a3ac6cf22f99d *html/R.css
 b928e2242853fb4fcaca53b0d9b2ccbd *resources/default.css

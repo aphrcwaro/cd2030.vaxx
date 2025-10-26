@@ -1,5 +1,5 @@
 cf1d077dd7e8d918645b6bdeb54ded66 *CITATION
-ff4b457de22e3bb6927956edddae7f50 *DESCRIPTION
+a7c889044552fa3f7ee1d84e459ec621 *DESCRIPTION
 fd2b012020e4ad6f328c69bb411c9dfc *INDEX
 b2f69b82a0badcf81c1e0397c0a4a2c5 *Meta/Rd.rds
 594c017be61fb34cc6cc48424350c76f *Meta/demo.rds
@@ -7,7 +7,7 @@ b2f69b82a0badcf81c1e0397c0a4a2c5 *Meta/Rd.rds
 ecf209a77d93ef26eb331b0e301e7b11 *Meta/hsearch.rds
 33da73de9f2a08f1357f4906a5f25961 *Meta/links.rds
 1c2d46ea212258f9ef8a90ca8c9e27cd *Meta/nsInfo.rds
-a98272269678ea33234da5cd5dc86a47 *Meta/package.rds
+750eb60e89fce7def6946ec2d83743ee *Meta/package.rds
 5ecf73f729c85f24089cececdb98503e *Meta/vignette.rds
 69e875b6cc73a3b998779f170a166d31 *NAMESPACE
 df7527239b22796ffcf83b248573975c *NEWS.md
@@ -26,13 +26,13 @@ a3401de1acc3a0ee1e5e97383f41977a *doc/measurement_units_in_R.R
 95e6bc5d804d12aa41cfa02a83d4d70c *doc/units.html
 3e86020737e89aaf2c51c9004c7c9163 *help/AnIndex
 ad0e0d797178c1d85c8b12cb3f868967 *help/aliases.rds
-32008cc608693688f276e7271b2f0a05 *help/paths.rds
-a4d0b97760a4cfc06a57b93d5dca7b2f *help/units.rdb
-9b45c89c2d9963db215b3023907fc88d *help/units.rdx
+35490cdba77214dd61a6565e5e7c8148 *help/paths.rds
+6ebfc1f2bb54673ab6f750cf91d51fc7 *help/units.rdb
+60fcd8e92fee49ac2a909875457ac447 *help/units.rdx
 0309880c99747a56d2ce624e4697411b *html/00Index.html
 8b9362669af13540a86a3ac6cf22f99d *html/R.css
 003bf6c6b0995e440d65d29a3d482b84 *libs/x64/symbols.rds
-c2a6768a9a1fe416a65751c4cffd4db4 *libs/x64/units.dll
+e1798c538129412722c7b22f4d26f7dd *libs/x64/units.dll
 26f28956899a13203f9d11baf0f03a1d *share/udunits/udunits2-accepted.xml
 cf5342a71d0250353fda59ad83c35a9e *share/udunits/udunits2-base.xml
 3048eb714b4ef1405b5e00e00f857626 *share/udunits/udunits2-common.xml
