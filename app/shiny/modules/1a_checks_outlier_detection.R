@@ -6,9 +6,9 @@ outlierDetectionUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_outlier'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_reporting_rate_options'),
-      column(3, indicatorSelect(ns('indicator'), i18n)),
+    countdownOptions(
+      title = i18n$t('title_options'),
+      column(3, indicatorSelect(ns('indicator'), i18n, tooltip = 'tooltip_indicator_outlier')),
       column(3, adminLevelInputUI(ns('admin_level'), i18n)),
       column(3, regionInputUI(ns('region'), i18n))
     ),
@@ -72,8 +72,8 @@ outlierDetectionServer <- function(id, cache, i18n) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
-      indicator <- indicatorSelectServer('indicator', cache)
+
+      indicator <- indicatorSelectServer('indicator')
       admin_level <- adminLevelInputServer('admin_level')
       region <- regionInputServer('region', cache, admin_level, i18n, allow_select_all = TRUE, show_district = FALSE)
 
@@ -105,14 +105,8 @@ outlierDetectionServer <- function(id, cache, i18n) {
       })
 
       observe({
-        req(data())
-
-        years <- data() %>%
-          distinct(year) %>%
-          arrange(desc(year)) %>%
-          pull(year)
-
-        updateSelectizeInput(session, 'year', choices = years)
+        req(cache()$data_years)
+        updateSelectizeInput(session, 'year', choices = cache()$data_years)
       })
 
       output$district_outlier_summary <- renderReactable({

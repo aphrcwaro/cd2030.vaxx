@@ -70,13 +70,8 @@ removeYearsServer <- function(id, cache, i18n) {
       })
 
       observe({
-        req(cache())
-
-        years <- data() %>%
-          distinct(year) %>%
-          pull(year)
-
-        updateSelectInput(session, 'year_to_remove', choices = years)
+        req(cache()$data_years)
+        updateSelectInput(session, 'year_to_remove', choices = cache()$data_years)
       })
 
       observeEvent(excluded_years(), {

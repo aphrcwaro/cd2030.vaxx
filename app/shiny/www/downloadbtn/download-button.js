@@ -1,7 +1,7 @@
-$(function(){
+$(function () {
   if (!window.Shiny || !Shiny.addCustomMessageHandler) return
 
-  Shiny.addCustomMessageHandler("starting_download", function(msg){
+  Shiny.addCustomMessageHandler("starting_download", function (msg) {
     var $btn = $("#" + msg.id)
     if (!$btn.length) return
 
@@ -20,7 +20,7 @@ $(function(){
       .css({ "pointer-events": "none", opacity: 0.6 })
   })
 
-  Shiny.addCustomMessageHandler("end_download", function(msg){
+  Shiny.addCustomMessageHandler("end_download", function (msg) {
     var $btn = $("#" + msg.id)
     if (!$btn.length) return
 
@@ -33,4 +33,8 @@ $(function(){
       .removeAttr("aria-busy aria-disabled")
       .css({ "pointer-events": "auto", opacity: 1 })
   })
+})
+
+Shiny.addCustomMessageHandler('reinit-tooltips', function (ms) {
+  $('body').tooltip({ selector: '[data-toggle=\"tooltip\"]', html: false, container: 'body' });
 })

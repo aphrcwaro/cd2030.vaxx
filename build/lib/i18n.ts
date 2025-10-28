@@ -322,19 +322,19 @@ function stripComments(content: string): string {
 }
 
 function processCoreBundleFormat(base: string, fileHeader: string, languages: Language[], json: NLSKeysFormat, emitter: ThroughStream) {
-	const languageDirectory = path.join(REPO_ROOT_PATH, '..', 'vaxx-loc', 'i18n');
+	const languageDirectory = path.join(REPO_ROOT_PATH, '..', 'cd2030-loc', 'i18n');
 	if (!fs.existsSync(languageDirectory)) {
-		log(`No Vaxx localization repository found. Looking at ${languageDirectory}`);
-		log(`To bundle translations please check out the vaxx-loc repository as a sibling of the vaxx repository.`);
+		log(`No cd2030 localization repository found. Looking at ${languageDirectory}`);
+		log(`To bundle translations please check out the cd2030-loc repository as a sibling of the cd2030 repository.`);
 	}
 	const sortedLanguages = sortLanguages(languages);
 	sortedLanguages.forEach((language) => {
-		if (process.env['VAXX_BUILD_VERBOSE']) {
+		if (process.env['CD2030_BUILD_VERBOSE']) {
 			log(`Generating nls bundles for: ${language.id}`);
 		}
 
 		const languageFolderName = language.translationId || language.id;
-		const i18nFile = path.join(languageDirectory, `vaxx-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
+		const i18nFile = path.join(languageDirectory, `cd2030-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
 		let allMessages: I18nFormat | undefined;
 		if (fs.existsSync(i18nFile)) {
 			const content = stripComments(fs.readFileSync(i18nFile, 'utf8'));
@@ -353,8 +353,8 @@ function processCoreBundleFormat(base: string, fileHeader: string, languages: La
 
 		emitter.queue(new File({
 			contents: Buffer.from(`${fileHeader}
-globalThis._VAXX_NLS_MESSAGES=${JSON.stringify(nlsResult)};
-globalThis._VAXX_NLS_LANGUAGE=${JSON.stringify(language.id)};`),
+globalThis._CD2030_NLS_MESSAGES=${JSON.stringify(nlsResult)};
+globalThis._CD2030_NLS_LANGUAGE=${JSON.stringify(language.id)};`),
 			base,
 			path: `${base}/nls.messages.${language.id}.js`
 		}));
@@ -379,12 +379,12 @@ export function processNlsFiles(opts: { out: string; fileHeader: string; languag
 	});
 }
 
-const workbenchProject: string = 'vaxx-workbench',
-	setupProject: string = 'vaxx-setup';
+const workbenchProject: string = 'cd2030-workbench',
+	setupProject: string = 'cd2030-setup';
 
 export function getResource(sourceFile: string): Resource {
-	if (/^vaxx/.test(sourceFile)) {
-		return { name: 'vaxx/platform', project: workbenchProject };
+	if (/^cd2030/.test(sourceFile)) {
+		return { name: 'cd2030/platform', project: workbenchProject };
 	}
 
 	throw new Error(`Could not identify the XLF bundle for ${sourceFile}`);
@@ -570,7 +570,7 @@ export function prepareI18nPackFiles(resultingTranslationPaths: TranslationPath[
 					throw errors;
 				}
 				const translatedMainFile = createI18nFile('./main', mainPack);
-				resultingTranslationPaths.push({ id: 'vaxx', resourceName: 'main.i18n.json' });
+				resultingTranslationPaths.push({ id: 'cd2030', resourceName: 'main.i18n.json' });
 
 				this.queue(translatedMainFile);
 				this.queue(null);

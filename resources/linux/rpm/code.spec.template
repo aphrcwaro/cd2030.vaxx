@@ -4,7 +4,7 @@ Release:  @@RELEASE@@.el8
 Summary:  Data analytics. Redefined.
 Group:    Development/Tools
 Vendor:   Africa Population and Health Research Center
-Packager: APHRC Team <vaxx-linux@aphrc.org>
+Packager: APHRC Team <cd2030-linux@aphrc.org>
 License:  @@LICENSE@@
 URL:      https://code.visualstudio.com/
 Icon:     @@NAME@@.xpm

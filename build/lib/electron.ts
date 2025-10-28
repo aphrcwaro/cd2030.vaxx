@@ -108,8 +108,8 @@ export const config = {
 	darwinIcon: 'resources/darwin/code.icns',
 	darwinBundleIdentifier: product.darwinBundleIdentifier,
 	darwinApplicationCategoryType: 'public.app-category.developer-tools',
-	darwinHelpBookFolder: 'Vaxx HelpBook',
-	darwinHelpBookName: 'Vaxx HelpBook',
+	darwinHelpBookFolder: 'cd2030 HelpBook',
+	darwinHelpBookName: 'cd2030 HelpBook',
 	darwinBundleDocumentTypes: [
 		...darwinBundleDocumentTypes({ 'C header file': 'h', 'C source code': 'c' }, 'c'),
 		...darwinBundleDocumentTypes({ 'Git configuration file': ['gitattributes', 'gitconfig', 'gitignore'] }, 'config'),
@@ -150,7 +150,7 @@ export const config = {
 		// Default icon with specified names
 		...darwinBundleDocumentTypes({
 			'Clojure source code': ['clj', 'cljs', 'cljx', 'clojure'],
-			'Vaxx workspace file': 'code-workspace',
+			'cd2030 workspace file': 'code-workspace',
 			'CoffeeScript source code': 'coffee',
 			'Comma Separated Values': 'csv',
 			'CMake script': 'cmake',

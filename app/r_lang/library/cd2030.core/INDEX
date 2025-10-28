@@ -86,6 +86,9 @@ generate_report         Generate and Export Checks Report
 get_admin_columns       Determine Grouping Columns for Administrative
                         Levels
 get_all_indicators      Get All Indicators
+get_analysis_indicators
+                        Get Indicators excluding indicators without
+                        denominator
 get_country_iso3        Get Country ISO3 Code
 get_country_name        Get Country Name
 get_country_shapefile   Load Country Shapefile for Mapping
@@ -95,9 +98,6 @@ get_excel_version       Format Service Utilization Data for Excel
 get_indicator_group_names
                         Get Indicator Group Names
 get_indicator_groups    Get the current indicator group definition
-get_indicator_without_opd_ipd
-                        Get Indicators excluding indicators without
-                        denominator
 get_mapping_data        Get Mapping Data for Subnational Coverage
                         Analysis
 get_named_indicators    Get Named Indicator Vector
@@ -114,6 +114,10 @@ is_maternal_indicator   Detemine if an indicator is maternal indicator
 list_indicator_groups   List available indicator group names
 list_outlier_units      Identify Monthly Outliers for a Single
                         Indicator
+list_tracer_vaccines    List Tracer Vaccines
+list_vaccine_indicators
+                        List All Vaccine and Related Coverage
+                        Indicators
 load_cache_data         Initialize or load a cached Countdown 2030
                         connection
 load_csection_estimates

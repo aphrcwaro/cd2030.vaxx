@@ -1,3 +1,6 @@
+source('modules/3_national_inequality/inequality.R')
+source('modules/3_national_inequality/mapping.R')
+
 nationalInequalityUI <- function(id, i18n) {
   ns <- NS(id)
 
@@ -6,26 +9,16 @@ nationalInequalityUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_national_inequality'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_analysis_options'),
+    countdownOptions(
+      title = i18n$t('title_options'),
       column(3, adminLevelInputUI(ns('admin_level'), i18n)),
-      column(3, denominatorInputUI(ns('denominator'), i18n))
+      column(3, denominatorInputUI(ns('denominator'), i18n)),
+      column(3, selectizeInput(ns('years'), label = i18n$t("title_select_years"), choice = NULL, multiple = TRUE)),
+      column(3, selectizeInput(ns('palette'), label = i18n$t("title_palette"), choices = c('Greens', 'Blues', 'Reds')))
     ),
-
-    tabBox(
-      title = i18n$t('title_national_inequality'),
-      width = 12,
-
-      tabPanel(title = i18n$t('opt_penta3'), downloadCoverageUI(ns('penta3'))),
-      tabPanel(title = i18n$t('opt_mcv1'), downloadCoverageUI(ns('measles1'))),
-      tabPanel(
-        title = i18n$t('opt_custom_check'),
-        fluidRow(
-          column(3, indicatorSelect(ns('indicator'), i18n))
-        ),
-        downloadCoverageUI(ns('custom'))
-      )
-    )
+    
+    inequalityUI(ns('inequality'), i18n),
+    subnationalMappingUI(ns('map'), i18n)
   )
 }
 
@@ -36,56 +29,22 @@ nationalInequalityServer <- function(id, cache, i18n) {
     id = id,
     module = function(input, output, session) {
 
-      indicator <- indicatorSelectServer('indicator', cache)
       denominatorInputServer('denominator', cache, i18n)
       admin_level <- adminLevelInputServer('admin_level')
-
-      inequalities <- reactive({
-        req(cache(), cache()$check_inequality_params, admin_level())
-        cache()$calculate_inequality(admin_level = admin_level())
+      
+      inequalityServer('inequality', cache, admin_level, i18n)
+      subnationalMappingServer('map', cache, reactive(input$palette), i18n)
+      
+      observe({
+        req(cache()$data_years)
+        survey_years <- c('All years' = '', cache()$data_years)
+        updateSelectizeInput(session, 'years', choices = survey_years, selected = years())
       })
-
-      penta3_inequality <- reactive({
-        req(inequalities())
-        inequalities() %>%
-          filter_inequality(indicator = 'penta3', denominator = cache()$get_denominator('penta3'))
+      
+      observeEvent(input$years, {
+        req(cache())
+        cache()$set_mapping_years(as.integer(input$years))
       })
-
-      measles1_inequality <- reactive({
-        req(inequalities())
-        inequalities() %>%
-          filter_inequality(indicator = 'measles1', denominator = cache()$get_denominator('measles1'))
-      })
-
-      custom_inequality <- reactive({
-        req(inequalities(), indicator())
-        inequalities() %>%
-          filter_inequality(indicator = indicator(), denominator = cache()$get_denominator(indicator()))
-      })
-
-      downloadCoverageServer(
-        id = 'measles1',
-        filename = reactive(paste0('measles1_', admin_level(), '_inequality_', cache()$get_denominator('measles1'))),
-        data_fn = measles1_inequality,
-        i18n = i18n,
-        sheet_name = reactive(i18n$t('title_mcv1_inequality'))
-      )
-
-      downloadCoverageServer(
-        id = 'penta3',
-        filename = reactive(paste0('penta3', admin_level(), '_inequality_', cache()$get_denominator('penta3'))),
-        data_fn = penta3_inequality,
-        i18n = i18n,
-        sheet_name = reactive(i18n$t('title_penta3_inequality'))
-      )
-
-      downloadCoverageServer(
-        id = 'custom',
-        filename = reactive(paste0(indicator(), '_', admin_level(), '_inequality_', cache()$get_denominator(indicator()))),
-        data_fn = custom_inequality,
-        i18n = i18n,
-        sheet_name = reactive(paste0(indicator(), ' Inequality'))
-      )
 
       countdownHeaderServer(
         'national_inequality',

@@ -34,38 +34,41 @@ const { promisify } = require('util');
 const glob = promisify(require('glob'));
 const rcedit = promisify(require('rcedit'));
 
-const vaxxResources = [];
+const cd2030Resources = [
+	// Electron Preload
+	'out-build/preload.js'
+];
 
 const bootstrapEntryPoints = ['out-build/main.js'];
 
-const bundleVaxxTask = task.define('bundle-vaxx', task.series(
-	util.rimraf('out-vaxx'),
+const bundlecd2030Task = task.define('bundle-cd2030', task.series(
+	util.rimraf('out-cd2030'),
 	// Optimize: bundles source files automatically based on
 	// import statements based on the passed in entry points.
 	// In addition, concat window related bootstrap files into
 	// a single file.
 	optimize.bundleTask(
 		{
-			out: 'out-vaxx',
+			out: 'out-cd2030',
 			esm: {
 				src: 'out-build',
 				entryPoints: [
 					...bootstrapEntryPoints
-				]//,
-				//resources: vaxxResources
+				],
+				resources: cd2030Resources
 			}
 		}
 	)
 ));
-gulp.task(bundleVaxxTask);
+gulp.task(bundlecd2030Task);
 
 const sourceMappingURLBase = `https://main.vscode-cdn.net/sourcemaps/${commit}`;
-const minifyVaxxTask = task.define('minify-vaxx', task.series(
-	bundleVaxxTask,
-	util.rimraf('out-vaxx-min'),
-	optimize.minifyTask('out-vaxx', `${sourceMappingURLBase}/core`)
+const minifycd2030Task = task.define('minify-cd2030', task.series(
+	bundlecd2030Task,
+	util.rimraf('out-cd2030-min'),
+	optimize.minifyTask('out-cd2030', `${sourceMappingURLBase}/core`)
 ));
-gulp.task(minifyVaxxTask);
+gulp.task(minifycd2030Task);
 
 /**
  * Compute checksums for some files.
@@ -112,8 +115,10 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const json = require('gulp-json-editor');
 
 		const out = sourceFolderName;
+		console.log(out)
 
 		const checksums = computeChecksums(out, [
+			'preload.js'
 			/*
 			'vs/base/parts/sandbox/electron-browser/preload.js',
 			'vs/workbench/workbench.desktop.main.js',
@@ -238,29 +243,11 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		}
 
 		if (platform === 'win32') {
-			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.js', { base: 'resources/win32', allowEmpty: true }));
-
-			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.cmd', { base: 'resources/win32' })
-				.pipe(replace('@@NAME@@', product.nameShort))
-				.pipe(rename(function (f) { f.basename = product.applicationName; })));
-
-			result = util.mergeStreams(result, gulp.src('resources/win32/bin/code.sh', { base: 'resources/win32' })
-				.pipe(replace('@@NAME@@', product.nameShort))
-				.pipe(replace('@@PRODNAME@@', product.nameLong))
-				.pipe(replace('@@VERSION@@', version))
-				.pipe(replace('@@COMMIT@@', commit))
-				.pipe(replace('@@APPNAME@@', product.applicationName))
-				.pipe(replace('@@QUALITY@@', quality))
-				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
-
 			result = util.mergeStreams(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
 				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
 
 		} else if (platform === 'linux') {
-			result = util.mergeStreams(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
-				.pipe(replace('@@PRODNAME@@', product.nameLong))
-				.pipe(replace('@@APPNAME@@', product.applicationName))
-				.pipe(rename('bin/' + product.applicationName)));
+
 		}
 
 		result = inlineMeta(result, {
@@ -322,9 +309,9 @@ BUILD_TARGETS.forEach(buildTarget => {
 	const arch = buildTarget.arch;
 	const opts = buildTarget.opts;
 
-	const [vaxx, vaxxMin] = ['', 'min'].map(minified => {
-		const sourceFolderName = `out-vaxx${dashed(minified)}`;
-		const destinationFolderName = `Vaxx${dashed(platform)}${dashed(arch)}`;
+	const [cd2030, cd2030Min] = ['', 'min'].map(minified => {
+		const sourceFolderName = `out-cd2030${dashed(minified)}`;
+		const destinationFolderName = `cd2030${dashed(platform)}${dashed(arch)}`;
 
 		const tasks = [
 			util.rimraf(path.join(buildRoot, destinationFolderName)),
@@ -335,19 +322,19 @@ BUILD_TARGETS.forEach(buildTarget => {
 			tasks.push(patchWin32DependenciesTask(destinationFolderName));
 		}
 
-		const vaxxTask = task.define(`vaxx${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+		const cd2030Task = task.define(`cd2030${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 			minified ? compileBuildWithManglingTask : compileBuildWithoutManglingTask,
-			minified ? minifyVaxxTask : bundleVaxxTask,
+			minified ? minifycd2030Task : bundlecd2030Task,
 			task.series(...tasks)
 		));
-		gulp.task(vaxxTask);
+		gulp.task(cd2030Task);
 
-		return vaxxTask;
+		return cd2030Task;
 	});
 
 	if (process.platform === platform && process.arch === arch) {
-		gulp.task(task.define('vaxx', task.series(vaxx)));
-		gulp.task(task.define('vaxx-min', task.series(vaxxMin)));
+		gulp.task(task.define('cd2030', task.series(cd2030)));
+		gulp.task(task.define('cd2030-min', task.series(cd2030Min)));
 	}
 });
 
@@ -359,7 +346,7 @@ const innoSetupConfig = {
 };
 
 gulp.task(task.define(
-	'vaxx-translations-export',
+	'cd2030-translations-export',
 	task.series(
 		function () {
 			const pathToMetadata = './out-build/nls.metadata.json';
@@ -368,21 +355,21 @@ gulp.task(task.define(
 			return util.mergeStreams(
 				gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl())
-			).pipe(vfs.dest('../vaxx-translations-export'));
+			).pipe(vfs.dest('../cd2030-translations-export'));
 		}
 	)
 ));
 
-gulp.task('vaxx-translations-import', function () {
+gulp.task('cd2030-translations-import', function () {
 	const options = minimist(process.argv.slice(2), {
 		string: 'location',
 		default: {
-			location: '../vaxx-translations-import'
+			location: '../cd2030-translations-import'
 		}
 	});
 	return util.mergeStreams(...[...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {
 		const id = language.id;
-		return gulp.src(`${options.location}/${id}/vaxx-setup/messages.xlf`)
+		return gulp.src(`${options.location}/${id}/cd2030-setup/messages.xlf`)
 			.pipe(i18n.prepareIslFiles(language, innoSetupConfig[language.id]))
 			.pipe(vfs.dest(`./build/win32/i18n`));
 	}));

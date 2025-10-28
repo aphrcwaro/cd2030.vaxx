@@ -9,13 +9,13 @@ AppId={#AppId}
 AppName={#NameLong}
 AppVerName={#NameVersion}
 AppPublisher=African Population and Health Research Center
-AppPublisherURL=https://code.visualstudio.com/
-AppSupportURL=https://code.visualstudio.com/
-AppUpdatesURL=https://code.visualstudio.com/
+AppPublisherURL=https://aphrc.org/
+AppSupportURL=https://aphrc.org/
+AppUpdatesURL=https://aphrc.org/
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
-OutputBaseFilename=VaxxSetup
+OutputBaseFilename=DataSuiteSetup
 Compression=lzma2
 LZMAUseSeparateProcess=yes
 SolidCompression=yes
@@ -37,8 +37,8 @@ ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
 WizardStyle=modern
 
 // We've seen an uptick on broken installations from updates which were unable
-// to shutdown Vaxx. We rely on the fact that the update signals
-// that Vaxx is ready to be shutdown, so we're good to use `force` here.
+// to shutdown cd2030. We rely on the fact that the update signals
+// that cd2030 is ready to be shutdown, so we're good to use `force` here.
 CloseApplications=force
 
 #ifdef Sign
@@ -72,7 +72,6 @@ Type: filesandordirs; Name: "{app}\_"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
-Name: "addtopath"; Description: "{cm:AddToPath}"; GroupDescription: "{cm:Other}"
 Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{cm:Other}"; Check: WizardSilent
 
 [Dirs]
@@ -122,8 +121,6 @@ Root: {#SoftwareClassesRootKey}; Subkey: "Software\Classes\Applications\{#ExeBas
 #define Uninstall32RootKey "HKLM32"
 #endif
 
-Root: {#EnvironmentRootKey}; Subkey: "{#EnvironmentKey}"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:AddToPath|{app}\bin}"; Tasks: addtopath; Check: NeedsAddToPath(ExpandConstant('{app}\bin'))
-
 [Code]
 function IsBackgroundUpdate(): Boolean;
 begin
@@ -144,7 +141,7 @@ begin
 
   #if "user" == InstallTarget
     if not WizardSilent() and IsAdmin() then begin
-      if MsgBox('This User Installer is not meant to be run as an Administrator. If you would like to install Vaxx for all users in this system, download the System Installer instead from https://code.visualstudio.com. Are you sure you want to continue?', mbError, MB_OKCANCEL) = IDCANCEL then begin
+      if MsgBox('This User Installer is not meant to be run as an Administrator. If you would like to install cd2030 for all users in this system, download the System Installer instead from https://code.visualstudio.com. Are you sure you want to continue?', mbError, MB_OKCANCEL) = IDCANCEL then begin
         Result := False;
       end;
     end;
@@ -184,7 +181,7 @@ begin
   Result := '';
 end;
 
-// Vaxx will create a flag file before the update starts (/update=C:\foo\bar)
+// cd2030 will create a flag file before the update starts (/update=C:\foo\bar)
 // - if the file exists at this point, the user quit Code before the update finished, so don't start Code after update
 // - otherwise, the user has accepted to apply the update and Code should start
 function LockFileExists(): Boolean;
@@ -280,34 +277,10 @@ begin
   until Length(Text)=0;
 end;
 
-function NeedsAddToPath(Vaxx: string): boolean;
-var
-  OrigPath: string;
-begin
-  if not RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', OrigPath)
-  then begin
-    Result := True;
-    exit;
-  end;
-  Result := Pos(';' + Vaxx + ';', ';' + OrigPath + ';') = 0;
-end;
-
-function AddToPath(Vaxx: string): string;
-var
-  OrigPath: string;
-begin
-  RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', OrigPath)
-
-  if (Length(OrigPath) > 0) and (OrigPath[Length(OrigPath)] = ';') then
-    Result := OrigPath + Vaxx
-  else
-    Result := OrigPath + ';' + Vaxx
-end;
-
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Path: string;
-  VaxxPath: string;
+  cd2030Path: string;
   Parts: TArrayOfString;
   NewPath: string;
   i: Integer;
@@ -320,10 +293,10 @@ begin
     exit;
   end;
   NewPath := '';
-  VaxxPath := ExpandConstant('{app}\bin')
+  cd2030Path := ExpandConstant('{app}\bin')
   Explode(Parts, Path, ';');
   for i:=0 to GetArrayLength(Parts)-1 do begin
-    if CompareText(Parts[i], VaxxPath) <> 0 then begin
+    if CompareText(Parts[i], cd2030Path) <> 0 then begin
       NewPath := NewPath + Parts[i];
 
       if i < GetArrayLength(Parts) - 1 then begin

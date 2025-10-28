@@ -52,8 +52,7 @@ uploadBoxServer <- function(id, i18n) {
         }
 
         tryCatch({
-          print(paste0('upload box: ', file_path))
-          cache_instance <- load_cache_data(file_path, 'vaccine')$reactive()
+          cache_instance <- load_cache_data(file_path, indicator_group = 'vaccine', create_cache = TRUE)$reactive()
           
           messageBox$update_message('msg_upload_success', 'success', list(file_name = file_name))
 
@@ -61,7 +60,6 @@ uploadBoxServer <- function(id, i18n) {
         },
         error = function(e) {
           clean_message <- clean_error_message(e)
-          print(clean_message)
           messageBox$update_message('error_upload_failed', 'error', list(clean_message = clean_message))
           NULL
         })

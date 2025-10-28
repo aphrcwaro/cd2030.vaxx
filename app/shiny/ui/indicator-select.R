@@ -1,22 +1,17 @@
-indicatorSelect <- function(id, i18n, label = NULL) {
+source('ui/select-input.R')
+
+indicatorSelect <- function(id, i18n, label = NULL, tooltip = NULL, indicators = NULL) {
   ns <- NS(id)
-  selectizeInput(ns('select'),
-                 label = if (is.null(label)) i18n$t('title_indicator') else i18n$t(label),
-                 choices = c('Select Indicator' = '', get_all_indicators()))
+  label <- if (is.null(label)) 'title_indicator' else label
+  indicators <- indicators %||% get_all_indicators()
+  selectTooltipInput(ns('indicator'), i18n = i18n, label = label, tooltip = tooltip, choices = indicators)
 }
 
-indicatorSelectServer <- function(id, cache) {
-  stopifnot(is.reactive(cache))
-  
-  moduleServer(
-    id = id,
-    module = function(input, output, session) {
-      observe({
-        req(cache())
-        updateSelectizeInput(session, 'select', choices = c('Select Indicator' = '', get_all_indicators()))
-      })
-      
-      return(reactive(input$select))
-    }
+indicatorSelectServer <- function(id) {
+  moduleServer(id = id, module = function(input, output, session) {
+    selected <- selectTooltipServer('indicator')
+    return(selected)
+  }
   )
 }
+

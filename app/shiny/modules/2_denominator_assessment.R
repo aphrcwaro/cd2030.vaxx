@@ -5,26 +5,39 @@ denominatorAssessmentUI <- function(id, i18n) {
     dashboardId = ns('denominator_assessment'),
     dashboardTitle = i18n$t('title_denominator_assessment'),
     i18n = i18n,
-
+    
+    countdownOptions = countdownOptions(
+      title = i18n$t('title_options'),
+      column(3, populationSelect(ns('derivation_population'), i18n))
+    ),
+    
     tabBox(
-        title = i18n$t("title_denominator_assessment"),
-        width = 12,
-        tabPanel(
-          title = i18n$t("opt_total_population"),
-          fluidRow(
-            column(12, plotCustomOutput(ns('population'))),
-            column(4, downloadButtonUI(ns('population_plot')))
-          )
-        ),
-
-        tabPanel(
-          title = i18n$t("opt_births"),
-          fluidRow(
-            column(12, plotCustomOutput(ns('births'))),
-            column(4, downloadButtonUI(ns('births_plot')))
-          )
+      title = i18n$t("title_population_comparison"),
+      width = 12,
+      tabPanel(
+        title = i18n$t("opt_total_population"),
+        fluidRow(
+          column(12, plotCustomOutput(ns('population'))),
+          column(4, downloadButtonUI(ns('population_plot')))
+        )
+      ),
+      
+      tabPanel(
+        title = i18n$t("opt_births"),
+        fluidRow(
+          column(12, plotCustomOutput(ns('births'))),
+          column(4, downloadButtonUI(ns('births_plot')))
+        )
+      ),
+      
+      tabPanel(
+        title = i18n$t("opt_under1"),
+        fluidRow(
+          column(12, plotCustomOutput(ns('under1'))),
+          column(4, downloadButtonUI(ns('under1_plot')))
         )
       )
+    )
   )
 }
 
@@ -34,29 +47,36 @@ denominatorAssessmentServer <- function(id, cache, i18n) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-
+      
+      populationSelectServer('derivation_population', cache)
+      
       un_estimates <- reactive({
         req(cache())
         cache()$un_estimates
       })
-
+      
       denominators <- reactive({
         req(cache(), cache()$adjusted_data, un_estimates())
-
+        
         cache()$adjusted_data %>%
           prepare_population_metrics(un_estimates = un_estimates())
       })
-
+      
       output$population <- renderCustomPlot({
         req(denominators())
         plot(denominators(), 'population')
       })
-
+      
       output$births <- renderCustomPlot({
         req(denominators())
         plot(denominators(), 'births')
       })
-
+      
+      output$under1 <- renderCustomPlot({
+        req(denominators())
+        plot(denominators(), 'under1')
+      })
+      
       downloadPlot(
         id = 'population_plot',
         filename = reactive('population_plot'),
@@ -66,7 +86,7 @@ denominatorAssessmentServer <- function(id, cache, i18n) {
           plot(denominators(), 'population')
         }
       )
-
+      
       downloadPlot(
         id = 'births_plot',
         filename = reactive('births_plot'),
@@ -75,6 +95,24 @@ denominatorAssessmentServer <- function(id, cache, i18n) {
         plot_function = function() {
           plot(denominators(), 'births')
         }
+      )
+      
+      downloadPlot(
+        id = 'under1_plot',
+        filename = reactive('under1_plot'),
+        data = denominators,
+        i18n = i18n,
+        plot_function = function() {
+          plot(denominators(), 'under1')
+        }
+      )
+      
+      countdownHeaderServer(
+        'denominator_assessment',
+        cache = cache,
+        path = 'denominator-assessment',
+        section = 'sec-denominator-assessment',
+        i18n = i18n
       )
 
       countdownHeaderServer(

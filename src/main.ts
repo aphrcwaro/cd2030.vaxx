@@ -176,7 +176,6 @@ ipcMain.handle(IPC_CHANNELS.RETRY_START_SHINY, async (event: IpcMainInvokeEvent)
 });
 
 ipcMain.handle(IPC_CHANNELS.PICK_FILE, async (event: IpcMainInvokeEvent, opts?: PickFileOptions) => {
-    console.log('invoked')
     const window = BrowserWindow.fromWebContents(event.sender) || mainWindow;
     if (!window) {
         return null;

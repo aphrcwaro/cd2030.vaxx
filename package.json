@@ -1,5 +1,5 @@
 {
-  "name": "cd2030-vaxx",
+  "name": "cd2030-datasuite",
   "version": "2.0.0",
   "description": "A cross-platform desktop tool to analyze, visualize, and monitor vaccine data and key indicators for the Countdown 2030 initiative.",
   "author": {
@@ -92,10 +92,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aphrcwaro/cd2030.vaxx.git"
+    "url": "https://github.com/aphrcwaro/datasuite.git"
   },
   "bugs": {
-    "url": "https://github.com/aphrcwaro/cd2030.vaxx/issues"
+    "url": "https://github.com/aphrcwaro/datasuite/issues"
   },
   "optionalDependencies": {
     "windows-foreground-love": "0.5.0"

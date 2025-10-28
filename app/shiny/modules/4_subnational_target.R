@@ -6,8 +6,8 @@ subnationalTargetUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_global_coverage'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_analysis_options'),
+    countdownOptions(
+      title = i18n$t('title_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n)),
       column(3, regionInputUI(ns('region'), i18n))
     ),
@@ -16,9 +16,8 @@ subnationalTargetUI <- function(id, i18n) {
       title = i18n$t('title_global_coverage'),
       width = 12,
 
-      tabPanel(title = i18n$t("opt_anc4"), downloadCoverageUI(ns('anc4'))),
-      tabPanel(title = i18n$t("opt_ideliv"), downloadCoverageUI(ns('ideliv'))),
-      tabPanel(title = i18n$t("opt_vaccine_coverage"), downloadCoverageUI(ns('vaccine')))
+      tabPanel(title = i18n$t("opt_vaccine_coverage"), downloadCoverageUI(ns('vaccine'))),
+      tabPanel(title = i18n$t("dropout"), downloadCoverageUI(ns('dropout')))
     ),
 
     box(
@@ -27,7 +26,7 @@ subnationalTargetUI <- function(id, i18n) {
       collapsible = TRUE,
       width = 6,
       fluidRow(
-        column(3, selectizeInput(ns('indicator'), label = i18n$t('title_indicator'), choice = get_indicator_without_opd_ipd())),
+        column(3, selectizeInput(ns('indicator'), label = i18n$t('title_indicator'), choice = get_analysis_indicators())),
         column(3, offset = 6, downloadButtonUI(ns('download_regions'))),
         column(12, withSpinner(reactableOutput(ns('district_low_reporting'))))
       )
@@ -48,19 +47,16 @@ subnationalTargetServer <- function(id, cache, i18n) {
 
       indicator_coverage <- reactive({
         req(cache(), cache()$check_inequality_params)
-        cache()$calculate_indicator_coverage('adminlevel_1', region())
+        if (is.null(region())) {
+          cache()$indicator_coverage_admin1
+        } else {
+          cache()$calculate_indicator_coverage('adminlevel_1', region())
+        }
       })
-
-      anc4_threshold <- reactive({
-        req(indicator_coverage(), cache()$maternal_denominator)
-        indicator_coverage() %>%
-          calculate_threshold(indicator = 'anc4', denominator = cache()$maternal_denominator)
-      })
-
-      ideliv_threshold <- reactive({
-        req(indicator_coverage(), cache()$maternal_denominator)
-        indicator_coverage() %>%
-          calculate_threshold(indicator = 'instdeliveries', denominator = cache()$maternal_denominator)
+      
+      denominator <- reactive({
+        req(input$indicator)
+        cache()$get_denominator(input$indicator)
       })
 
       vaccine_threshold <- reactive({
@@ -68,20 +64,18 @@ subnationalTargetServer <- function(id, cache, i18n) {
         indicator_coverage() %>%
           calculate_threshold(indicator = 'vaccine', denominator = cache()$denominator)
       })
+      
+      dropout_threshold <- reactive({
+        req(indicator_coverage(), cache()$denominator)
+        indicator_coverage() %>%
+          calculate_threshold(indicator = 'dropout', denominator = cache()$denominator)
+      })
 
       downloadCoverageServer(
-        id = 'anc4',
-        filename = reactive(paste0('anc4_target_', cache()$maternal_denominator)),
-        data_fn = anc4_threshold,
-        sheet_name = reactive(i18n$t("opt_anc4")),
-        i18n = i18n
-      )
-
-      downloadCoverageServer(
-        id = 'ideliv',
-        filename = reactive(paste0('ideliv_target_', cache()$maternal_denominator)),
-        data_fn = ideliv_threshold,
-        sheet_name = reactive(i18n$t("opt_maternal_coverage")),
+        id = 'dropout',
+        filename = reactive(paste0('droput_target_', cache()$maternal_denominator)),
+        data_fn = dropout_threshold,
+        sheet_name = reactive(i18n$t("opt_dropout")),
         i18n = i18n
       )
 
@@ -94,12 +88,9 @@ subnationalTargetServer <- function(id, cache, i18n) {
       )
 
       district_coverage_rate <- reactive({
-        req(indicator_coverage(), input$indicator)
-
-        denominator <- cache()$get_denominator(input$indicator)
-
+        req(indicator_coverage(), denominator())
         indicator_coverage() %>%
-          filter_high_performers(indicator = input$indicator, denominator = denominator)
+          filter_high_performers(indicator = input$indicator, denominator = denominator())
       })
 
       output$district_low_reporting <- renderReactable({

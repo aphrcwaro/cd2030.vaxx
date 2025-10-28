@@ -11,7 +11,7 @@ import { makeUniversalApp } from 'vscode-universal-bundler';
 const root = path.dirname(path.dirname(__dirname));
 
 async function main(buildDir?: string) {
-	const arch = process.env['VAXX_ARCH'];
+	const arch = process.env['CD2030_ARCH'];
 
 	if (!buildDir) {
 		throw new Error('Build dir not provided');
@@ -19,10 +19,10 @@ async function main(buildDir?: string) {
 
 	const product = JSON.parse(fs.readFileSync(path.join(root, 'product.json'), 'utf8'));
 	const appName = product.nameLong + '.app';
-	const x64AppPath = path.join(buildDir, 'Vaxx-darwin-x64', appName);
-	const arm64AppPath = path.join(buildDir, 'Vaxx-darwin-arm64', appName);
+	const x64AppPath = path.join(buildDir, 'cd2030-darwin-x64', appName);
+	const arm64AppPath = path.join(buildDir, 'cd2030-darwin-arm64', appName);
 	const asarRelativePath = path.join('Contents', 'Resources', 'app', 'node_modules.asar');
-	const outAppPath = path.join(buildDir, `Vaxx-darwin-${arch}`, appName);
+	const outAppPath = path.join(buildDir, `cd2030-darwin-${arch}`, appName);
 	const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
 
 	const filesToSkip = [

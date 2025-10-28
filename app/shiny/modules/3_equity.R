@@ -6,8 +6,8 @@ equityUI <- function(id, i18n) {
     dashboardTitle = i18n$t("title_equity_assessment"),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t("title_analysis_options"),
+    countdownOptions(
+      title = i18n$t("title_options"),
       column(3, selectizeInput(ns('type'), label = i18n$t("title_equity_type"),
                                choices = c('Area' = 'area',
                                            'Maternal Education' = 'meduc',
@@ -39,7 +39,7 @@ equityUI <- function(id, i18n) {
       tabPanel(
         i18n$t("opt_custom_check"),
         fluidRow(
-          column(3, indicatorSelect(ns('indicator'), i18n))
+          column(3, indicatorSelect(ns('indicator'), i18n, indicators = get_analysis_indicators()))
         ),
         fluidRow(
           column(12, plotCustomOutput(ns('custom_check'))),
@@ -57,8 +57,8 @@ equityServer <- function(id, cache, i18n) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
-      indicator <- indicatorSelectServer('indicator', cache)
+
+      indicator <- indicatorSelectServer('indicator')
 
       wiq <- reactive({
         req(cache())

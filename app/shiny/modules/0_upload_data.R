@@ -15,13 +15,7 @@ uploadDataServer <- function(id, i18n) {
 
       cache <- reactiveVal()
 
-      dhis2_dt <- dhis2BoxServer('dhis2_box', i18n)
       upload_dt <- uploadBoxServer('upload_box', i18n)
-
-      observeEvent(dhis2_dt(), {
-        req(dhis2_dt())
-        cache(dhis2_dt())
-      })
 
       observeEvent(upload_dt(), {
         req(upload_dt())

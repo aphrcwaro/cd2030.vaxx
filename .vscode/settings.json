@@ -48,7 +48,7 @@
 		"build/**/*.js": true,
 		"out/**": true,
 		"out-build/**": true,
-		"out-vaxx/**": true
+		"out-cd2030/**": true
 	},
 	"files.readonlyExclude": {
 		"build/npm/*.js": true,
@@ -61,7 +61,7 @@
 		".build/**": true,
 		"out/**": true,
 		"out-build/**": true,
-		"out-vaxx/**": true,
+		"out-cd2030/**": true,
 		"i18n/**": true,
 		"build/loader.min": true,
 		"**/*.snap": true,
@@ -85,7 +85,7 @@
 			"fileMatch": [
 				"cglicenses.json"
 			],
-			"url": "./.vaxx/cglicenses.schema.json"
+			"url": "./.cd2030/cglicenses.schema.json"
 		}
 	],
 	"css.format.spaceAroundSelectorSeparator": true,

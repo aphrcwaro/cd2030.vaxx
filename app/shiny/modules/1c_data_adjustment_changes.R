@@ -13,9 +13,9 @@ adjustmentChangesUI <- function(id, i18n) {
       width = 12,
 
       tabPanel(title = i18n$t("opt_live_births"), downloadCoverageUI(ns('live_births'))),
-      tabPanel(title = i18n$t("opt_penta1"), downloadCoverageUI(ns('penta1'))),
       tabPanel(title = i18n$t("opt_bcg"), downloadCoverageUI(ns('bcg'))),
       tabPanel(title = i18n$t("opt_measles"), downloadCoverageUI(ns('measles1'))),
+      tabPanel(title = i18n$t("opt_penta1"), downloadCoverageUI(ns('penta1'))),
       tabPanel(
         title = i18n$t("opt_custom_check"),
         fluidRow(
@@ -34,7 +34,7 @@ adjustmentChangesServer <- function(id, cache, i18n) {
     id = id,
     module = function(input, output, session) {
       
-      indicator <- indicatorSelectServer('indicator', cache)
+      indicator <- indicatorSelectServer('indicator')
 
       data <- reactive({
         req(cache())

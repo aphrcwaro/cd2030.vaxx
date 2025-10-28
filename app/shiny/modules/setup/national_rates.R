@@ -98,14 +98,13 @@ nationalRatesServer <- function(id, cache) {
         estimates <- cache()$survey_estimates
         new_estimates <- c(
           anc1 = as.numeric(input$anc1_prop),
-          anc4 = unname(estimates['anc4']),
           penta1 = as.numeric(input$penta1_prop),
           penta3 = unname(estimates['penta3']),
           measles1 = unname(estimates['measles1']),
           bcg = unname(estimates['bcg']),
           ideliv = unname(estimates['ideliv']),
-          lbw = unname(estimates['lbw']),
-          csection = unname(estimates['csection'])
+          opv1 = unname(estimates['opv1']),
+          opv3 = unname(estimates['opv3'])
         )
 
         cache()$set_survey_estimates(new_estimates)

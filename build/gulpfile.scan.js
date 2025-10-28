@@ -34,8 +34,8 @@ BUILD_TARGETS.forEach(buildTarget => {
 	const platform = buildTarget.platform;
 	const arch = buildTarget.arch;
 
-	const destinationExe = path.join(path.dirname(root), 'scanbin', `Vaxx${dashed(platform)}${dashed(arch)}`, 'bin');
-	const destinationPdb = path.join(path.dirname(root), 'scanbin', `Vaxx${dashed(platform)}${dashed(arch)}`, 'pdb');
+	const destinationExe = path.join(path.dirname(root), 'scanbin', `cd2030${dashed(platform)}${dashed(arch)}`, 'bin');
+	const destinationPdb = path.join(path.dirname(root), 'scanbin', `cd2030${dashed(platform)}${dashed(arch)}`, 'pdb');
 
 	const tasks = [];
 
