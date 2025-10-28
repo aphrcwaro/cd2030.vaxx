@@ -1,71 +1,200 @@
-import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
-import path from 'node:path';
-import { updateElectronApp } from 'update-electron-app'
-import started from 'electron-squirrel-startup';
-import { rShinyManager } from './rshiny';
-import { IPC_CHANNELS } from './ui-utils';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { app, BrowserWindow, dialog, ipcMain, Menu, IpcMainInvokeEvent, MenuItemConstructorOptions, shell } from 'electron';
+import { rShinyManager } from './rshiny.js';
+import { IPC_CHANNELS } from './ui-utils.js';
+import { setUnexpectedErrorHandler } from './errors.js';
+import { LifecycleMainService, LifecycleMainPhase, ShutdownEvent } from './lifecycleMainService.js';
+import { SaveStrategy, StateService } from './stateService.js';
+import type { PickFileOptions } from './typings/electron-api.d.js';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (started) {
-  app.quit();
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-updateElectronApp()
+// --- Services --------------------------------------------------------------------------------------------------------
 
-const createWindow = async () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      webSecurity: true,
-      nodeIntegration: false,
-    },
-  });
+const stateService = new StateService({ saveStrategy: SaveStrategy.DELAYED });
+const lifecycleMainService = new LifecycleMainService(stateService);
 
-  // Listen for the window reload event
-  mainWindow.webContents.on('did-start-loading', async () => {
-    if (mainWindow.webContents.getURL() !== 'about:blank') {
-      console.log('Window reload detected. Restarting R process...');
-      await rShinyManager.startAndServe(mainWindow);
-    }
-  });
+lifecycleMainService.onWillShutdown(({ join }: ShutdownEvent) => {
+    join('rshiny-teardown', (async () => {
+        try {
+            await rShinyManager.teardown();
+        } catch (error) {
+            console.error('Failed to teardown R Shiny during shutdown:', error);
+        }
+    })());
+});
 
-  // Initial start of RShiny
-  await rShinyManager.startAndServe(mainWindow);
+setUnexpectedErrorHandler((err: unknown) => console.error(err));
+
+// --- Globals --------------------------------------------------------------------------------------------------------
+
+let mainWindow: BrowserWindow | null = null;
+
+// --- Helpers --------------------------------------------------------------------------------------------------------
+
+const buildMenu = (): void => {
+    const template: MenuItemConstructorOptions[] = [
+        {
+            label: 'File',
+            submenu: [
+                { label: 'New Window', accelerator: 'CmdOrCtrl+Shift+N', click: async () => { await createWindow(); } },
+                { type: 'separator' },
+                {
+                    label: 'Open File…',
+                    accelerator: 'CmdOrCtrl+O',
+                    click: async () => {
+                        if (!mainWindow) {
+                            return;
+                        }
+                        await dialog.showOpenDialog(mainWindow, {});
+                    }
+                },
+                {
+                    label: 'Open Folder…',
+                    click: async () => {
+                        if (!mainWindow) {
+                            return;
+                        }
+                        await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] });
+                    }
+                },
+                { type: 'separator' },
+                { label: 'Exit', accelerator: 'CmdOrCtrl+Q', role: 'quit' as const }
+            ]
+        },
+        {
+            label: 'Edit',
+            submenu: [
+                { label: 'Undo', role: 'undo' },
+                { label: 'Redo', role: 'redo' },
+                { type: 'separator' },
+                { label: 'Cut', role: 'cut' },
+                { label: 'Copy', role: 'copy' },
+                { label: 'Paste', role: 'paste' }
+            ]
+        },
+        {
+            label: 'View',
+            submenu: [
+                { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: () => mainWindow?.webContents.reload() },
+                { label: 'Toggle Full Screen', role: 'togglefullscreen' },
+                { type: 'separator' },
+                { label: 'Toggle Developer Tools', accelerator: 'CmdOrCtrl+Shift+I', click: () => mainWindow?.webContents.toggleDevTools() }
+            ]
+        },
+        {
+            label: 'Help',
+            submenu: [
+                { label: 'GitHub Repository', click: async () => shell.openExternal('https://github.com/your-repo-link') },
+                { type: 'separator' },
+                {
+                    label: `${app.getName()} About`,
+                    click: () => dialog.showMessageBox({ title: 'About', message: `${app.getName()} v${app.getVersion()}` })
+                }
+            ]
+        }
+    ];
+
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+const createWindow = async (): Promise<void> => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.focus();
+        return;
+    }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', async () => {
-  await rShinyManager.teardown();
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    const preloadPath = path.join(__dirname, 'preload.js').replace(/\//g, '\\');;
+    if (fs.existsSync(preloadPath)) {
+        console.log(preloadPath + ' exists');
+    } else {
+        console.log(preloadPath + ' does not exists');
+    }
+
+    mainWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        titleBarOverlay: true,
+        webPreferences: {
+            preload: preloadPath,
+            sandbox: true,
+        }
+    });
+
+    mainWindow.webContents.on('did-start-loading', async () => {
+        if (mainWindow && mainWindow.webContents.getURL() !== 'about:blank') {
+            console.log('Window content change detected. Ensuring R process is running...');
+            await rShinyManager.startAndServe(mainWindow);
+        }
+    });
+
+    rShinyManager.bindPowerEvents(mainWindow);
+    await rShinyManager.startAndServe(mainWindow);
+
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+    });
+
+    lifecycleMainService.phase = LifecycleMainPhase.AfterWindowOpen;
+    setTimeout(() => {
+        lifecycleMainService.phase = LifecycleMainPhase.Eventually;
+    }, 2500);
+};
+
+// --- Startup -------------------------------------------------------------------------------------------------------
+
+
+//Menu.setApplicationMenu(null);
+
+app.on('ready', async () => {
+    buildMenu();
+
+    await stateService.initialize();
+    lifecycleMainService.phase = LifecycleMainPhase.Ready;
+
+    await createWindow();
 });
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+app.on('activate', async () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        await createWindow();
+    }
 });
 
-// Ensure R process is shut down before quitting completely
-app.on('before-quit', rShinyManager.teardown);
+// --- IPC -----------------------------------------------------------------------------------------------------------
 
 ipcMain.handle(IPC_CHANNELS.RETRY_START_SHINY, async (event: IpcMainInvokeEvent) => {
-  const window = BrowserWindow.fromWebContents(event.sender);
-  if (window) {
-    await rShinyManager.startAndServe(window);
-  }
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (window) {
+        console.log('IPC: Retrying Shiny startup...');
+        await rShinyManager.startAndServe(window);
+    }
+});
+
+ipcMain.handle(IPC_CHANNELS.PICK_FILE, async (event: IpcMainInvokeEvent, opts?: PickFileOptions) => {
+    const window = BrowserWindow.fromWebContents(event.sender) || mainWindow;
+    if (!window) {
+        return null;
+    }
+
+    const filters = Array.isArray(opts?.accept) && opts.accept.length
+        ? [{ name: 'Allowed', extensions: opts.accept }]
+        : [{ name: 'All Files', extensions: ['*'] }];
+
+    const properties: ('multiSelections' | 'openFile' | 'openDirectory')[] = [];
+    if (opts?.multiple) {
+        properties.push('multiSelections');
+    }
+    properties.push('openFile');
+
+    const { canceled, filePaths } = await dialog.showOpenDialog(window, { properties, filters });
+    if (canceled) {
+        return null;
+    }
+
+    return opts?.multiple ? filePaths : filePaths[0];
 });

@@ -6,13 +6,11 @@ outlierDetectionUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_outlier'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_reporting_rate_options'),
-      column(3, selectizeInput(ns('indicator'),
-                                   label = i18n$t('title_indicator'),
-                                   choice = c('Select Indicator' = '', get_all_indicators()))),
-          column(3, adminLevelInputUI(ns('admin_level'), i18n)),
-          column(3, regionInputUI(ns('region'), i18n))
+    countdownOptions(
+      title = i18n$t('title_options'),
+      column(3, indicatorSelect(ns('indicator'), i18n, tooltip = 'tooltip_indicator_outlier')),
+      column(3, adminLevelInputUI(ns('admin_level'), i18n)),
+      column(3, regionInputUI(ns('region'), i18n))
     ),
 
     tabBox(
@@ -75,6 +73,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
     id = id,
     module = function(input, output, session) {
 
+      indicator <- indicatorSelectServer('indicator')
       admin_level <- adminLevelInputServer('admin_level')
       region <- regionInputServer('region', cache, admin_level, i18n, allow_select_all = TRUE, show_district = FALSE)
 
@@ -98,30 +97,24 @@ outlierDetectionServer <- function(id, cache, i18n) {
       })
 
       outlier_districts <- reactive({
-        req(data(), admin_level(), input$indicator, input$year)
+        req(data(), admin_level(), indicator(), input$year)
 
         data() %>%
-          list_outlier_units(input$indicator, admin_level(), region()) %>%
+          list_outlier_units(indicator(), admin_level(), region()) %>%
           filter(year == as.integer(input$year), if (!is.null(region())) adminlevel_1 == region() else TRUE)
       })
 
       observe({
-        req(data())
-
-        years <- data() %>%
-          distinct(year) %>%
-          arrange(desc(year)) %>%
-          pull(year)
-
-        updateSelectizeInput(session, 'year', choices = years)
+        req(cache()$data_years)
+        updateSelectizeInput(session, 'year', choices = cache()$data_years)
       })
 
       output$district_outlier_summary <- renderReactable({
         req(outlier_districts())
 
         outlier_units <- outlier_districts() %>%
-          filter(!!sym(paste0(input$indicator, '_outlier5std')) == 1) %>%
-          select(-!!sym(paste0(input$indicator, '_outlier5std')))
+          filter(!!sym(paste0(indicator(), '_outlier5std')) == 1) %>%
+          select(-!!sym(paste0(indicator(), '_outlier5std')))
 
         outlier_units %>%
           reactable(
@@ -150,17 +143,17 @@ outlierDetectionServer <- function(id, cache, i18n) {
 
       output$district_outlier_heatmap <- renderPlotly({
         req(outlier_summary())
-        ggplotly(plot(outlier_summary(), 'heat_map', input$indicator))
+        ggplotly(plot(outlier_summary(), 'heat_map', indicator()))
       })
 
       output$region_bar_graph <- renderCustomPlot({
-        req(outlier_summary(), input$indicator)
-        plot(outlier_summary(), 'region', input$indicator)
+        req(outlier_summary(), indicator())
+        plot(outlier_summary(), 'region', indicator())
       })
 
       output$indicator_bar_graph <- renderCustomPlot({
         req(outlier_summary())
-        plot(outlier_summary(), 'indicator', input$indicator)
+        plot(outlier_summary(), 'indicator', indicator())
       })
 
       output$district_trend <- renderCustomPlot({
@@ -174,7 +167,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
         data = outlier_summary,
         i18n = i18n,
         plot_function = function(data) {
-          plot(data, 'heat_map', input$indicator)
+          plot(data, 'heat_map', indicator())
         }
       )
 
@@ -184,7 +177,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
         data = outlier_summary,
         i18n = i18n,
         plot_function = function(data) {
-          plot(data, 'indicator', input$indicator)
+          plot(data, 'indicator', indicator())
         }
       )
 
@@ -194,7 +187,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
         data = outlier_summary,
         i18n = i18n,
         plot_function = function(data) {
-          plot(data, 'region', input$indicator)
+          plot(data, 'region', indicator())
         }
       )
 
@@ -222,7 +215,7 @@ outlierDetectionServer <- function(id, cache, i18n) {
 
       downloadExcel(
         id = 'download_outliers',
-        filename = reactive(paste0('checks_outlier_districts_', input$indicator, '_', input$year)),
+        filename = reactive(paste0('checks_outlier_districts_', indicator(), '_', input$year)),
         data = outlier_districts,
         i18n = i18n,
         excel_write_function = function(wb, data) {

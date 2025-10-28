@@ -6,8 +6,8 @@ overallScoreUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_overall'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_overall_score_options'),
+    countdownOptions(
+      title = i18n$t('title_options'),
       column(3, regionInputUI(ns('region'), i18n))
     ),
 
@@ -39,7 +39,7 @@ overallScoreServer <- function(id, cache, i18n) {
       output$overall_score <- renderUI({
         req(data())
 
-        years <- unique(data()$year)
+        years <- cache()$data_years
         threshold <- cache()$performance_threshold
 
         dt <- data() %>%

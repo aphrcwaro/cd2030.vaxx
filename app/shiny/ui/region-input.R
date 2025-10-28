@@ -28,7 +28,7 @@ regionInputServer <- function(id, cache, admin_level, i18n, allow_select_all = F
       })
 
       output$region_ui <- renderUI({
-        req(admin_level())
+        req(cache(), admin_level())
         if (show_select()) {
           select_input <- selectizeInput(
             ns('region'),
@@ -45,7 +45,7 @@ regionInputServer <- function(id, cache, admin_level, i18n, allow_select_all = F
 
       data <- reactive({
         req(cache())
-        cache()$countdown_data
+        cache()$subnational_regions
       })
 
       region <- reactive({

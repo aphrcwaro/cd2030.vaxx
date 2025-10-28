@@ -3,16 +3,16 @@ reportingRateUI <- function(id, i18n) {
 
   countdownDashboard(
     dashboardId = ns('reporting_rate'),
-    dashboardTitle = i18n$t('title_reporting_rate'),
+    dashboardTitle = i18n$t('title_reporting'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_reporting_rate_options'),
-      column(3, selectInput(ns('indicator'),
-                              label = i18n$t("title_indicator"),
-                              choices = c('ANC' = 'anc_rr',
-                                          'Institutional Delivery' = 'idelv_rr',
-                                          'Vaccination' = 'vacc_rr'))),
+    countdownOptions(
+      title = i18n$t('title_options'),
+      column(3, indicatorSelect(ns('indicator'), i18n, 
+                                tooltip = 'tooltip_indicator_reporting',
+                                indicators = c('ANC' = 'anc_rr',
+                                               'Institutional Delivery' = 'idelv_rr',
+                                               'Vaccination' = 'vacc_rr'))),
         column(3, numericInput(ns('threshold'), label = i18n$t("title_performance_threshold"), value = 90)),
         column(3, adminLevelInputUI(ns('admin_level'), i18n)),
         column(3, regionInputUI(ns('region'), i18n))
@@ -75,6 +75,7 @@ reportingRateServer <- function(id, cache, i18n) {
       ns <- session$ns
 
       state <- reactiveValues(loaded = FALSE)
+      indicator <- indicatorSelectServer('indicator')
       admin_level <- adminLevelInputServer('admin_level')
       region <- regionInputServer('region', cache, admin_level, i18n, allow_select_all = TRUE, show_district = FALSE)
 
@@ -89,11 +90,11 @@ reportingRateServer <- function(id, cache, i18n) {
       })
 
       subnational_rr <- reactive({
-        req(data(), input$indicator, admin_level(), threshold())
+        req(data(), indicator(), admin_level())
 
         data() %>%
           calculate_average_reporting_rate(admin_level(), region = region()) %>%
-          select(any_of(c('adminlevel_1', 'district', 'year', input$indicator)))
+          select(any_of(c('adminlevel_1', 'district', 'year', indicator())))
       })
 
       district_rr <- reactive({
@@ -104,10 +105,10 @@ reportingRateServer <- function(id, cache, i18n) {
       })
 
       district_low_rr <- reactive({
-        req(subnational_rr(), input$year, input$indicator)
+        req(subnational_rr(), input$year, indicator())
 
         subnational_rr() %>%
-          filter(year == as.integer(input$year), !!sym(input$indicator) < threshold())
+          filter(year == as.integer(input$year), !!sym(indicator()) < threshold())
       })
 
       observeEvent(data(), {
@@ -127,14 +128,8 @@ reportingRateServer <- function(id, cache, i18n) {
       })
 
       observe({
-        req(data())
-
-        years <- data() %>%
-          distinct(year) %>%
-          arrange(desc(year)) %>%
-          pull(year)
-
-        updateSelectizeInput(session, 'year', choices = years)
+        req(cache()$data_years)
+        updateSelectizeInput(session, 'year', choices = cache()$data_years)
       })
 
       output$district_rr_title <- renderUI({
@@ -147,18 +142,18 @@ reportingRateServer <- function(id, cache, i18n) {
       })
 
       output$district_missing_heatmap <- renderPlotly({
-        req(subnational_rr(), input$indicator, threshold())
+        req(subnational_rr(), indicator(), threshold())
         ggplotly(plot(subnational_rr(),
                       plot_type = 'heat_map',
-                      indicator = input$indicator,
+                      indicator = indicator(),
                       threshold = threshold()))
       })
 
       output$district_missing_bar <- renderCustomPlot({
-        req(subnational_rr(), input$indicator, threshold())
+        req(subnational_rr(), indicator(), threshold())
         plot(subnational_rr(),
              plot_type = 'bar',
-             indicator = input$indicator,
+             indicator = indicator(),
              threshold = threshold())
       })
 
@@ -198,7 +193,7 @@ reportingRateServer <- function(id, cache, i18n) {
         plot_function = function(data) {
           plot(data,
                plot_type = 'heat_map',
-               indicator = input$indicator,
+               indicator = indicator(),
                threshold = threshold())
         }
       )
@@ -211,7 +206,7 @@ reportingRateServer <- function(id, cache, i18n) {
         plot_function = function(data) {
           plot(data,
                plot_type = 'bar',
-               indicator = input$indicator,
+               indicator = indicator(),
                threshold = threshold())
         }
       )

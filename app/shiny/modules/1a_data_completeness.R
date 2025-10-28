@@ -2,15 +2,13 @@ dataCompletenessUI <- function(id, i18n) {
   ns <- NS(id)
 
   countdownDashboard(
-    dashboardId = ns('outlier_detection'),
-    dashboardTitle = i18n$t('title_outlier'),
+    dashboardId = ns('data_completeness'),
+    dashboardTitle = i18n$t('title_completeness'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_completeness_options'),
-      column(3, selectizeInput(ns('indicator'),
-                                   label = i18n$t('title_indicator'),
-                                   choice = c('Select Indicator' = '', get_all_indicators()))),
+    countdownOptions(
+      title = i18n$t('title_options'),
+      column(3, indicatorSelect(ns('indicator'), i18n, tooltip = 'tooltip_title_indicator_missing')),
       column(3, adminLevelInputUI(ns('admin_level'), i18n)),
       column(3, regionInputUI(ns('region'), i18n))
     ),
@@ -64,6 +62,7 @@ dataCompletenessServer <- function(id, cache, i18n) {
     id = id,
     module = function(input, output, session) {
 
+      indicator <- indicatorSelectServer('indicator')
       admin_level <- adminLevelInputServer('admin_level')
       region <- regionInputServer('region', cache, admin_level, i18n, allow_select_all = TRUE, show_district = FALSE)
 
@@ -80,21 +79,15 @@ dataCompletenessServer <- function(id, cache, i18n) {
       })
 
       incomplete_district <- reactive({
-        req(data(), input$indicator, input$year)
+        req(data(), indicator(), input$year)
 
-        list_missing_units(data(), input$indicator, region()) %>%
+        list_missing_units(data(), indicator(), region()) %>%
           filter(year == as.integer(input$year))
       })
 
       observe({
-        req(data())
-
-        years <- data() %>%
-          distinct(year) %>%
-          arrange(desc(year)) %>%
-          pull(year)
-
-        updateSelectizeInput(session, 'year', choices = years)
+        req(cache()$data_years)
+        updateSelectizeInput(session, 'year', choices = cache()$data_years)
       })
 
       output$incomplete_district <- renderReactable({
@@ -128,16 +121,16 @@ dataCompletenessServer <- function(id, cache, i18n) {
       output$district_missing_heatmap <- renderCustomPlot({
         req(completeness_summary())
         # ggplotly(
-          plot(completeness_summary(), input$indicator)
+          plot(completeness_summary(), indicator())
         # )
       })
 
       output$complete_vaccines <- renderReactable({
-        req(data(), input$indicator)
+        req(data(), indicator())
 
         data() %>%
           calculate_district_completeness_summary(region()) %>%
-          select(year, contains(input$indicator)) %>%
+          select(year, contains(indicator())) %>%
           reactable(
             filterable = FALSE,
             minRows = 10
@@ -198,7 +191,7 @@ dataCompletenessServer <- function(id, cache, i18n) {
 
       downloadExcel(
         id = 'download_incompletes',
-        filename = reactive(paste0('checks_incomplete_districts_', input$indicator, '_', input$year)),
+        filename = reactive(paste0('checks_incomplete_districts_', indicator(), '_', input$year)),
         data = incomplete_district,
         i18n = i18n,
         excel_write_function = function(wb, data) {

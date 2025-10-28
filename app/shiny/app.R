@@ -7,6 +7,8 @@ options(shiny.fullstacktrace = TRUE)
 # options(shiny.trace = TRUE)
 # options(shiny.trace = FALSE)
 
+options(cd2030.selected_group = 'vaccine')
+
 pacman::p_load(
   shiny,
   shinydashboard,
@@ -18,7 +20,6 @@ pacman::p_load(
   future,
   htmltools,
   openxlsx,
-  khisr,
   plotly,
   purrr,
   promises,
@@ -51,11 +52,15 @@ source('ui/download/download_button.R')
 source('ui/download/download_coverage.R')
 source('ui/download/download_helper.R')
 source('ui/download_report.R')
+source('ui/file-picker.R')
+source('ui/indicator-select.R')
 source('ui/help_button.R')
 source('ui/message_box.R')
+source('ui/population-select.R')
 source('ui/render-plot.R')
 source('ui/region-input.R')
 source('ui/report_button.R')
+source('ui/tooltips.R')
 source('ui/save_cache.R')
 
 source('modules/introduction.R')
@@ -63,9 +68,8 @@ source('modules/introduction.R')
 source('modules/0_upload_data.R')
 source('modules/1a_checks_reporting_rate.R')
 source('modules/1a_checks_outlier_detection.R')
-source('modules/1a_consistency_check.R')
 source('modules/1a_data_completeness.R')
-source('modules/1a_calculate_ratios.R')
+source('modules/1a_internal_consistency.R')
 source('modules/1a_overall_score.R')
 
 source('modules/1b_remove_years.R')
@@ -77,11 +81,9 @@ source('modules/setup.R')
 
 source('modules/2_denominator_assessment.R')
 source('modules/2_denominator_selection.R')
-source('modules/2_derived_coverage.R')
 
 source('modules/3_national_coverage.R')
 source('modules/3_national_inequality.R')
-source('modules/3_subnational_mapping.R')
 source('modules/3_national_target.R')
 source('modules/3_equity.R')
 
@@ -96,8 +98,8 @@ version <- getOption("app.version", "dev")
 
 ui <- dashboardPage(
   skin = 'green',
-  title = 'Vaxx',
-  header = dashboardHeader(title = HTML(paste0('VAXX<sup>', version, '</sup>'))),
+  title = 'DataSuite',
+  header = dashboardHeader(title = HTML(paste0('DataSuite<sup>', version, '</sup>'))),
   sidebar = dashboardSidebar(
     usei18n(i18n),
     selectInput(
@@ -120,15 +122,12 @@ ui <- dashboardPage(
                menuSubItem(i18n$t('title_outlier'),
                            tabName = 'outlier_detection',
                            icon = icon('exclamation-triangle')),
-               menuSubItem(i18n$t('title_consistency'),
-                           tabName = 'consistency_check',
-                           icon = icon('tasks')),
                menuSubItem(i18n$t('title_completeness'),
                            tabName = 'data_completeness',
                            icon = icon('check-square')),
-               menuSubItem(i18n$t('title_calculate_ratios'),
-                           tabName = 'calculate_ratios',
-                           icon = icon('percent')),
+               menuSubItem(i18n$t('title_consistency'),
+                           tabName = 'internal_consistency',
+                           icon = icon('tasks')),
                menuSubItem(i18n$t('title_overall'),
                            tabName = 'overall_score',
                            icon = icon('star'))
@@ -148,15 +147,12 @@ ui <- dashboardPage(
       menuItem(i18n$t('title_denominator_selection'),
                tabName = 'denom_assess',
                icon = icon('calculator'),
-               menuSubItem(i18n$t('title_denominator_assessment'),
+               menuSubItem(i18n$t('title_population_trend'),
                            tabName = 'denominator_assessment',
                            icon = icon('calculator')),
                menuSubItem(i18n$t('title_denominator_selection'),
                            tabName = 'denominator_selection',
-                           icon = icon('filter')),
-               menuSubItem(i18n$t('title_derived_coverage'),
-                           tabName = 'derived_coverage',
-                           icon = icon('chart-line'))
+                           icon = icon('filter'))
                ),
       menuItem(i18n$t('title_national_analysis'),
                tabName = 'national_analysis',
@@ -170,9 +166,6 @@ ui <- dashboardPage(
                menuSubItem(i18n$t('title_national_inequality'),
                            tabName = 'national_inequality',
                            icon = icon('balance-scale-right')),
-               menuSubItem(i18n$t('title_subnational_mapping'),
-                           tabName = 'subnational_mapping',
-                           icon = icon('map')),
                menuSubItem(i18n$t('title_equity_assessment'),
                            tabName = 'equity_assessment',
                            icon = icon('balance-scale'))
@@ -234,6 +227,7 @@ ui <- dashboardPage(
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'rmd-styles.css'),
       tags$link(rel = 'stylesheet', type = 'text/css', href = 'bootstrap-icons.css'),
       tags$script(src = "jquery.slimscroll.min.js"),
+      tags$script(src = "header-brand.js"),
       tags$script(HTML("
         $(function() {
           $('body, html, ' + '.wrapper').css({
@@ -257,15 +251,13 @@ ui <- dashboardPage(
       tabItem(tabName = 'upload_data', uploadDataUI('upload_data', i18n = i18n)),
       tabItem(tabName = 'reporting_rate', reportingRateUI('reporting_rate', i18n = i18n)),
       tabItem(tabName = 'data_completeness', dataCompletenessUI('data_completeness', i18n = i18n)),
-      tabItem(tabName = 'consistency_check', consistencyCheckUI('consistency_check', i18n = i18n)),
+      tabItem(tabName = 'internal_consistency', internalConsistencyUI('internal_consistency', i18n = i18n)),
       tabItem(tabName = 'outlier_detection', outlierDetectionUI('outlier_detection', i18n = i18n)),
-      tabItem(tabName = 'calculate_ratios', calculateRatiosUI('calculate_ratios', i18n = i18n)),
       tabItem(tabName = 'overall_score', overallScoreUI('overall_score', i18n = i18n)),
       tabItem(tabName = 'remove_years', removeYearsUI('remove_years', i18n = i18n)),
       tabItem(tabName = 'data_adjustment', dataAjustmentUI('data_adjustment', i18n = i18n)),
       tabItem(tabName = 'data_adjustment_changes', adjustmentChangesUI('data_adjustment_changes', i18n = i18n)),
       tabItem(tabName = 'setup', setupUI('setup', i18n = i18n)),
-      tabItem(tabName = 'derived_coverage', derivedCoverageUI('derived_coverage', i18n = i18n)),
       tabItem(tabName = 'denominator_assessment', denominatorAssessmentUI('denominator_assessment', i18n = i18n)),
       tabItem(tabName = 'denominator_selection', denominatorSelectionUI('denominator_selection', i18n = i18n)),
       tabItem(tabName = 'national_coverage', nationalCoverageUI('national_coverage', i18n = i18n)),
@@ -274,10 +266,8 @@ ui <- dashboardPage(
       tabItem(tabName = 'subnational_inequality', subnationalInequalityUI('subnational_inequality', i18n = i18n)),
       tabItem(tabName = 'national_target', nationalTargetUI('national_target', i18n = i18n)),
       tabItem(tabName = 'subnational_target', subnationalTargetUI('subnational_target', i18n = i18n)),
-      tabItem(tabName = 'subnational_mapping', subnationalMappingUI('subnational_mapping', i18n = i18n)),
       tabItem(tabName = 'equity_assessment', equityUI('equity_assessment', i18n = i18n))
-    ),
-    tags$script(src = 'script.js')
+    )
   )
 )
 
@@ -291,10 +281,7 @@ server <- function(input, output, session) {
     req(cache())
 
     update_lang(cache()$language)
-
-    # shinyjs::delay(500, {
     updateHeader(cache()$country, i18n)
-    # })
   })
 
   observeEvent(input$selected_language, {
@@ -305,19 +292,18 @@ server <- function(input, output, session) {
       cache()$set_language(input$selected_language)
       updateSelectizeInput(session, cache()$language)
     }
+    session$sendCustomMessage("reinit-tooltips", TRUE)
   })
 
   reportingRateServer('reporting_rate', cache, i18n)
   dataCompletenessServer('data_completeness', cache, i18n)
-  consistencyCheckServer('consistency_check', cache, i18n)
+  internalConsistencyServer('internal_consistency', cache, i18n)
   outlierDetectionServer('outlier_detection', cache, i18n)
-  calculateRatiosServer('calculate_ratios', cache, i18n)
   overallScoreServer('overall_score', cache, i18n)
   removeYearsServer('remove_years', cache, i18n)
   dataAdjustmentServer('data_adjustment', cache, i18n)
   adjustmentChangesServer('data_adjustment_changes', cache, i18n)
   setupServer('setup', cache, i18n)
-  derivedCoverageServer('derived_coverage', cache, i18n)
   denominatorAssessmentServer('denominator_assessment', cache, i18n)
   denominatorSelectionServer('denominator_selection', cache, i18n)
   nationalCoverageServer('national_coverage', cache, i18n)
@@ -326,12 +312,11 @@ server <- function(input, output, session) {
   subnationalInequalityServer('subnational_inequality', cache, i18n)
   nationalTargetServer('national_target', cache, i18n)
   subnationalTargetServer('subnational_target', cache, i18n)
-  subnationalMappingServer('subnational_mapping', cache, i18n)
   equityServer('equity_assessment', cache, i18n)
   downloadReportServer('download_report', cache, i18n)
   saveCacheServe('save_cache', cache, i18n)
 
-  session$onSessionEnded(stopApp)
+  # session$onSessionEnded(stopApp)
 
   onFlushed(function() {
     hostess$close()
@@ -339,32 +324,9 @@ server <- function(input, output, session) {
   }, once = TRUE)
 
   updateHeader <- function(country, i18n) {
-
-    header_title <- div(
-      class = 'navbar-header',
-      h4(HTML(paste0(country, ' &mdash; ', i18n$t('title_countdown'))), class = 'navbar-brand')
-    )
-
-    # Dynamically update the header
-    header <- htmltools::tagQuery(
-      dashboardHeader(
-        title = HTML(paste0('VAXX<sup>', version, '</sup>')),
-        saveCacheUI('save_cache'),
-        downloadReportUI('download_report', i18n)
-      )
-    )
-    header <- header$
-      find('.navbar.navbar-static-top')$      # find the header right side
-      append(header_title)$                     # inject dynamic content
-      allTags()
-
-    removeUI(selector = 'header.main-header', immediate = TRUE)
-
-    # Replace the header in the UI
-    insertUI(
-      selector = 'body',
-      where = 'afterBegin',
-      ui = header
+    session$sendCustomMessage(
+      'setHeaderBrand',
+      list(html = str_glue("{country} &mdash; {i18n$t('title_countdown')}"))
     )
   }
 }

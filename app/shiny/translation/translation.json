@@ -97,16 +97,28 @@
       "pt": "Configuração da análise"
     },
     {
+      "key": "title_denominator_assessment",
+      "en": "Denominator Assessment",
+      "fr": "Évaluation du dénominateur",
+      "pt": "Avaliação do denominador"
+    },
+    {
       "key": "title_denominator_selection",
       "en": "Denominator Selection",
       "fr": "Sélection du dénominateur",
       "pt": "Seleção do denominador"
     },
     {
-      "key": "title_denominator_assessment",
-      "en": "Denominator Assessment",
-      "fr": "Évaluation du dénominateur",
-      "pt": "Avaliação do denominador"
+      "key": "title_population_trend",
+      "en": "Population Trend",
+      "fr": "Tendance de la population",
+      "pt": "Tendência populacional"
+    },
+    {
+      "key": "title_population_comparison",
+      "en": "Population Comparison",
+      "fr": "Comparaison de la population",
+      "pt": "Comparação populacional"
     },
     {
       "key": "title_national_analysis",
@@ -215,12 +227,6 @@
   "en": "The necessary data for generating the report is not available. Please ensure that the data is uploaded and processed correctly.",
   "fr": "Les données nécessaires à la génération du rapport ne sont pas disponibles. Veuillez vous assurer que les données sont correctement téléchargées et traitées.",
   "pt": "Os dados necessários para gerar o relatório não estão disponíveis. Verifique se os dados foram carregados e processados corretamente."
-},
-{
-  "key": "title_download_options",
-  "en": "Download Options",
-  "fr": "Options de téléchargement",
-  "pt": "Opções de download"
 },
 {
   "key": "title_report_type",
@@ -691,18 +697,6 @@
   "pt": " até "
 },
 {
-  "key": "title_overall_score_options",
-  "en": "Overall Score Options",
-  "fr": "Options de score global",
-  "pt": "Opções de Pontuação Geral"
-},
-{
-  "key": "title_reporting_rate_options",
-  "en": "Reporting Rate Options",
-  "fr": "Options de taux de notification",
-  "pt": "Opções de Taxa de Notificação"
-},
-{
   "key": "title_performance_threshold",
   "en": "Performance Threshold",
   "fr": "Seuil de performance",
@@ -716,7 +710,7 @@
 },
 {
   "key": "opt_admin_level_1",
-  "en": "Admin Level 1",
+  "en": "Admin 1",
   "fr": "Niveau administratif 1",
   "pt": "Nível Administrativo 1"
 },
@@ -961,12 +955,6 @@
   "pt": "Eixo Y"
 },
 {
-  "key": "title_completeness_options",
-  "en": "Completeness Options",
-  "fr": "Options de complétude",
-  "pt": "Opções de Completude"
-},
-{
   "key": "title_completeness_indicators",
   "en": "Indicators with Missing Data",
   "fr": "Indicateurs avec des données manquantes",
@@ -1037,12 +1025,6 @@
   "en": "Percent of districts with complete data by vaccine",
   "fr": "Pourcentage de districts avec des données complètes par vaccin",
   "pt": "Percentual de distritos com dados completos por vacina"
-},
-{
-  "key": "title_ratio_options",
-  "en": "Ratio Options",
-  "fr": "Options de ratio",
-  "pt": "Opções de Razão"
 },
 {
   "key": "title_anc1_coverage",
@@ -1447,6 +1429,12 @@
   "pt": "Nascimentos"
 },
 {
+  "key": "opt_under1",
+  "en": "Under 1",
+  "fr": "Moins de 1 an",
+  "pt": "Menores de 1 ano"
+},
+{
   "key": "opt_penta3",
   "en": "Penta 3",
   "fr": "Penta 3",
@@ -1465,34 +1453,10 @@
   "pt": "Sarampo 2"
 },
 {
-  "key": "opt_anc4",
-  "en": "ANC 4",
-  "fr": "CPN 4",
-  "pt": "CPN 4"
-},
-{
-  "key": "opt_lbw",
-  "en": "Low Birth Weight",
-  "fr": "Faible poids à la naissance",
-  "pt": "Baixo Peso ao Nascer"
-},
-{
-  "key": "title_analysis_options",
-  "en": "Analysis Options",
-  "fr": "Options d'analyse",
-  "pt": "Opções de Análise"
-},
-{
   "key": "title_denominator",
-  "en": "Select Best Vaccination Denominator",
+  "en": "Select Best Denominator",
   "fr": "Sélectionner le meilleur dénominateur de vaccination",
   "pt": "Selecionar o melhor denominador de vacinação"
-},
-{
-  "key": "title_maternal_denominator",
-  "en": "Select Best Maternal Denominator",
-  "fr": "Sélectionner le meilleur dénominateur maternel",
-  "pt": "Selecionar o melhor denominador materno"
 },
 {
   "key": "title_survey_data_year",
@@ -1603,22 +1567,10 @@
   "pt": "Nível de Cobertura/Utilização"
 },
 {
-  "key": "title_distribution_of_anc4",
-  "en": "Distribution of ANC4 in {country()} by Regions",
-  "fr": "Répartition de la CPN 4 en {country()} par région",
-  "pt": "Distribuição do CPN4 em {country()} por regiões"
-},
-{
   "key": "title_distribution_of_ideliv",
   "en": "Distribution of Institutional Deliveries in {country()} by Regions",
   "fr": "Répartition des accouchements en établissement en {country()} par région",
   "pt": "Distribuição dos Partos Institucionais em {country()} por regiões"
-},
-{
-  "key": "title_distribution_of_lbw",
-  "en": "Distribution of Low Birth Weight in {country()} by Regions",
-  "fr": "Répartition des cas de faible poids à la naissance en {country()} par région",
-  "pt": "Distribuição de Baixo Peso ao Nascer em {country()} por regiões"
 },
 {
   "key": "title_distribution_of_penta1",
@@ -2149,328 +2101,76 @@
   "pt": "Baixar"
 },
 {
-  "key": "title_derived_coverage",
-  "en": "Population growth derived coverage",
-  "fr": "Couverture dérivée de la croissance démographique",
-  "pt": "Cobertura derivada do crescimento populacional"
-},
-{
-  "key": "title_national_health_system",
-  "en": "National Health System",
-  "fr": "Système de santé national",
-  "pt": "Sistema Nacional de Saúde"
-},
-{
-  "key": "title_subnational_health_system",
-  "en": "Sub-National Health System",
-  "fr": "Système de santé infranational",
-  "pt": "Sistema Subnacional de Saúde"
-},
-{
-  "key": "title_health_system_comparison",
-  "en": "Health System Comparison",
-  "fr": "Comparaison des systèmes de santé",
-  "pt": "Comparação dos Sistemas de Saúde"
-},
-{
-  "key": "opt_health_system_performance",
-  "en": "Health System Performance",
-  "fr": "Performance du système de santé",
-  "pt": "Desempenho do Sistema de Saúde"
-},
-{
-  "key": "opt_health_system_density",
-  "en": "Health system Indicators",
-  "fr": "Indicateurs du système de santé",
-  "pt": "Indicadores do Sistema de Saúde"
-},
-{
-  "key": "opt_score_total",
-  "en": "Overall",
-  "fr": "Performance globale",
-  "pt": "Geral"
-},
-{
-  "key": "opt_score_infrastructure",
-  "en": "Health Infrastructure",
-  "fr": "Infrastructure sanitaire",
-  "pt": "Infraestrutura de Saúde"
-},
-{
-  "key": "opt_score_workforce",
-  "en": "Health Workforce",
-  "fr": "Personnel de santé",
-  "pt": "Força de Trabalho em Saúde"
-},
-{
-  "key": "opt_score_utilization",
-  "en": "Service Utilization",
-  "fr": "Utilisation des services",
-  "pt": "Utilização de Serviços"
-},
-{
-  "key": "opt_ratio_fac_pop",
-  "en": "Health Facility Density",
-  "fr": "Densité des établissements de santé",
-  "pt": "Densidade de Unidades de Saúde"
-},
-{
-  "key": "opt_ratio_hos_pop",
-  "en": "Hospital Density/10,000 population",
-  "fr": "Densité des hôpitaux pour 10 000 habitants",
-  "pt": "Densidade Hospitalar por 10.000 habitantes"
-},
-{
-  "key": "opt_ratio_hstaff_pop",
-  "en": "Workforce Density",
-  "fr": "Densité du personnel de santé",
-  "pt": "Densidade da Força de Trabalho"
-},
-{
-  "key": "opt_ratio_bed_pop",
-  "en": "Bed Density",
-  "fr": "Densité des lits d’hôpital",
-  "pt": "Densidade de Leitos"
-},
-{
-  "key": "opt_ratio_opd_pop",
-  "en": "OPD Visits",
-  "fr": "Consultations externes (OPD)",
-  "pt": "Consultas Ambulatoriais (OPD)"
-},
-{
-  "key": "opt_ratio_ipd_pop",
-  "en": "IPD Admissions",
-  "fr": "Admissions en hospitalisation (IPD)",
-  "pt": "Internações Hospitalares (IPD)"
-},
-{
-  "key": "opt_ratio_opd_u5_pop",
-  "en": "Under 5 OPD Visits",
-  "fr": "Consultations externes des moins de 5 ans",
-  "pt": "Consultas OPD para menores de 5 anos"
-},
-{
-  "key": "opt_ratio_ipd_u5_bed",
-  "en": "Under 5 IPD/Bed",
-  "fr": "Hospitalisations des <5 ans/Lit",
-  "pt": "Internações <5 anos por Leito"
-},
-{
-  "key": "opt_ratio_ipd_u5_hos",
-  "en": "IPD Under 5/Hospitals",
-  "fr": "Hospitalisations <5 ans/Hôpitaux",
-  "pt": "Internações <5 anos/Hospitais"
-},
-{
-  "key": "opt_cov_instdeliveries_hstaff",
-  "en": "Deliveries/Workforce",
-  "fr": "Accouchements/Personnel de santé",
-  "pt": "Partos/Profissionais de saúde"
-},
-{
-  "key": "opt_ratio_opd_u5_hstaff",
-  "en": "OPD Under 5/Workforce",
-  "fr": "Consultations externes <5 ans/Personnel",
-  "pt": "OPD <5 anos/Profissionais de Saúde"
-},
-{
-  "key": "title_service_utilization",
-  "en": "Service Utilization",
-  "fr": "Utilisation des services",
-  "pt": "Utilização dos Serviços"
-},
-{
-  "key": "title_national_utilization",
-  "en": "National Utilization",
-  "fr": "Utilisation des services nationales",
-  "pt": "Utilização Nacional dos Serviços"
-},
-{
-  "key": "title_subnational_utilization",
-  "en": "Sub-National Utilization",
-  "fr": "Utilisation des services infranationales",
-  "pt": "Utilização Subnacional dos Serviços"
-},
-{
-  "key": "opt_opd_map",
-  "en": "OPD Map",
-  "fr": "Carte des consultations externes",
-  "pt": "Mapa de consultas ambulatoriais"
-},
-{
-  "key": "opt_ipd_map",
-  "en": "IPD Map",
-  "fr": "Carte des hospitalisations",
-  "pt": "Mapa de internações hospitalares"
-},
-{
-  "key": "opt_opd_visits",
-  "en": "OPD Visits",
-  "fr": "Consultations externes",
-  "pt": "Consultas OPD"
-},
-{
-  "key": "opt_ipd_admissions",
-  "en": "IPD Admissions",
-  "fr": "Admissions hospitalières",
-  "pt": "Internações IPD"
-},
-{
-  "key": "opt_under5",
-  "en": "Under 5",
-  "fr": "Enfants de moins de 5 ans",
-  "pt": "Menores de 5 anos"
-},
-{
-  "key": "opt_cfr",
-  "en": "Case Fatality Rate",
-  "fr": "Taux de létalité",
-  "pt": "Taxa de Letalidade"
-},
-    {
-  "key": "opt_deaths",
-  "en": "Deaths",
-  "fr": "Décès",
-  "pt": "Óbitos"
-},
-{
-  "key": "title_mortality",
-  "en": "Mortality",
-  "fr": "Mortalité",
-  "pt": "Mortalidade"
-},
-{
-  "key": "title_mortality_institutional",
-  "en": "Institutional Mortality",
-  "fr": "Mortalité institutionnelle",
-  "pt": "Mortalidade institucional"
-},
-{
-  "key": "title_mortality_mapping",
-  "en": "Mortality Mapping",
-  "fr": "Cartographie de la mortalité",
-  "pt": "Mapeamento da mortalidade"
-},
-{
-  "key": "title_mortality_completeness",
-  "en": "Mortality Completeness",
-  "fr": "Complétude des données de mortalité",
-  "pt": "Completude dos dados de mortalidade"
-},
-{
-  "key": "opt_mmr_inst",
-  "en": "Maternal Mortality",
-  "fr": "Mortalité maternelle",
-  "pt": "Mortalidade Materna"
-},
-{
-  "key": "opt_ratio_md_sb",
-  "en": "SBR to Maternal Death Ratio",
-  "fr": "Ratio mortinatalité/décès maternels",
-  "pt": "Razão entre nascimentos mortos e mortes maternas"
-},
-{
-  "key": "opt_sbr_inst",
-  "en": "Still Birth Rate",
-  "fr": "Taux de mortinatalité",
-  "pt": "Taxa de Natimortalidade"
-},
-{
-  "key": "opt_nn_inst",
-  "en": "Neonatal Deaths",
-  "fr": "Décès néonatals",
-  "pt": "Óbitos Neonatais"
-},
-{
-  "key": "opt_mmr_ratio",
-  "en": "Institutional MMR",
-  "fr": "Taux de mortalité maternelle institutionnelle",
-  "pt": "Razão de Mortalidade Materna Institucional"
-},
-{
-  "key": "opt_sbr_ratio",
-  "en": "Institutional SBR",
-  "fr": "Taux de mortinaissance institutionnelle",
-  "pt": "Taxa Institucional de Natimortalidade"
-},
-{
-  "key": "opt_maternal_coverage",
-  "en": "Maternal Indicators",
-  "fr": "Indicateurs de santé maternelle",
-  "pt": "Indicadores Maternos"
-},
-{
   "key": "opt_vaccine_coverage",
   "en": "Vaccine Indicators",
   "fr": "Indicateurs de vaccination",
   "pt": "Indicadores de Vacinação"
 },
 {
-  "key": "title_anc4_survey",
-  "en": "ANC4",
-  "fr": "4 visites prénatales",
-  "pt": "4 consultas pré-natais"
+  "key": "tooltip_indicator_reporting",
+  "en": "Select indicator to assess proportion of expected reports submitted.",
+  "fr": "Sélectionnez un indicateur pour évaluer la proportion de rapports attendus soumis.",
+  "pt": "Selecione o indicador para avaliar a proporção de relatórios esperados enviados."
 },
 {
-  "key": "title_ideliv_survey",
-  "en": "Institutional Delivery",
-  "fr": "Accouchement en établissement",
-  "pt": "Parto institucional"
+  "key": "tooltip_indicator_outlier",
+  "en": "Select indicator to identify extreme or inconsistent values over time.",
+  "fr": "Sélectionnez un indicateur pour identifier les valeurs extrêmes ou incohérentes dans le temps.",
+  "pt": "Selecione o indicador para identificar valores extremos ou inconsistentes ao longo do tempo."
 },
 {
-  "key": "title_lbw_survey",
-  "en": "Low Birth Weight",
-  "fr": "Faible poids à la naissance",
-  "pt": "Baixo peso ao nascer"
+  "key": "tooltip_title_indicator_missing",
+  "en": "Select indicator to check missing values or incomplete entries.",
+  "fr": "Sélectionnez un indicateur pour vérifier les valeurs manquantes ou les entrées incomplètes.",
+  "pt": "Selecione o indicador para verificar valores ausentes ou entradas incompletas."
 },
-{
-  "key": "title_csection_survey",
-  "en": "Caesarean Section",
-  "fr": "Césarienne",
-  "pt": "Cesárea"
-},
-{
-  "key": "title_family_planning",
-  "en": "Family Planning",
-  "fr": "Planification familiale",
-  "pt": "Planejamento Familiar"
-},
-{
-  "key": "title_fpet",
-  "en": "FPET FP Projection",
-  "fr": "Projection de la PF par FPET",
-  "pt": "Projeção de PF com FPET"
-},
-{
-  "key": "btn_upload_fpet_data",
-  "en": "Upload FPET data",
-  "fr": "Téléverser les données FPET",
-  "pt": "Carregar dados do FPET"
-},
-{
-  "key": "fpet_projection_option",
-  "en": "FPET Projections Options",
-  "fr": "Options de projection FPET",
-  "pt": "Opções de Projeção do FPET"
+    {
+      "key": "tooltip_amin_level",
+      "en": "Select admin level to aggregate the data across charts and tables.",
+      "fr": "Sélectionnez le niveau administratif pour agréger les données dans les graphiques et les tableaux.",
+      "pt": "Selecione o nível administrativo para agregar os dados em gráficos e tabelas."
     },
     {
-  "key": "title_private_sector",
-  "en": "Public/Private Share",
-  "fr": "Part publique/privée",
-  "pt": "Participação pública/privada"
-},
-{
-  "key": "opt_private_national",
-  "en": "National",
-  "fr": "National",
-  "pt": "Nacional"
-},
-{
-  "key": "opt_private_area",
-  "en": "Urban/Rural",
-  "fr": "Urbain/Rural",
-  "pt": "Urbano/Rural"
-}
+      "key": "title_options",
+      "en": "Options",
+      "fr": "Options",
+      "pt": "Opções"
+    },
+    {
+      "key": "title_population_select",
+      "en": "Select Best Population",
+      "fr": "Sélectionner la meilleure population",
+      "pt": "Selecionar a melhor população"
+    },
+    {
+      "key": "tooltip_population_select",
+      "en": "Select the population source that provides the most reliable denominator for analyses and charts.",
+      "fr": "Sélectionnez la source de population qui fournit le dénominateur le plus fiable pour les analyses et les graphiques.",
+      "pt": "Selecione a fonte populacional que fornece o denominador mais confiável para análises e gráficos."
+    },
+    {
+      "key": "title_opv1_coverage_pct",
+      "en": "OPV1 Coverage (%)",
+      "fr": "Couverture OPV1 (%)",
+      "pt": "Cobertura OPV1 (%)"
+    },
+    {
+      "key": "title_opv3_coverage_pct",
+      "en": "OPV3 Coverage (%)",
+      "fr": "Couverture OPV3 (%)",
+      "pt": "Cobertura OPV3 (%)"
+    },
+    {
+      "key": "title_opv1_survey",
+      "en": "OPV1 (Survey)",
+      "fr": "OPV1 (Enquête)",
+      "pt": "OPV1 (Inquérito)"
+    },
+    {
+      "key": "title_opv3_survey",
+      "en": "OPV3 (Survey)",
+      "fr": "OPV3 (Enquête)",
+      "pt": "OPV3 (Inquérito)"
+    }
   ]
 }

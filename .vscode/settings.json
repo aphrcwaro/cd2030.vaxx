@@ -1,0 +1,175 @@
+{
+	// --- Editor ---
+	"editor.insertSpaces": false,
+	"editor.experimental.asyncTokenization": true,
+	"editor.experimental.asyncTokenizationVerification": true,
+	"editor.occurrencesHighlightDelay": 0,
+	// "editor.experimental.preferTreeSitter.typescript": true,
+	// "editor.experimental.preferTreeSitter.regex": true,
+	// "editor.experimental.preferTreeSitter.css": true,
+
+	// --- Language Specific ---
+	"[plaintext]": {
+		"files.insertFinalNewline": false
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+		"editor.formatOnSave": true
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+		"editor.formatOnSave": true
+	},
+	"[github-issues]": {
+		"editor.wordWrap": "on"
+	},
+
+	// --- Files ---
+	"files.trimTrailingWhitespace": true,
+	"files.insertFinalNewline": true,
+	"files.exclude": {
+		".git": true,
+		".build": true,
+		"**/.DS_Store": true,
+		"build/**/*.js.map": true,
+		"build/**/*.js": {
+			"when": "$(basename).ts"
+		}
+	},
+	"files.associations": {
+		"cglicenses.json": "jsonc",
+		"*.tst": "typescript"
+	},
+	"files.readonlyInclude": {
+		"**/node_modules/**/*.*": true,
+		"**/yarn.lock": true,
+		"**/package-lock.json": true,
+		"**/Cargo.lock": true,
+		"build/**/*.js": true,
+		"out/**": true,
+		"out-build/**": true,
+		"out-cd2030/**": true
+	},
+	"files.readonlyExclude": {
+		"build/npm/*.js": true,
+		"build/*.js": true
+	},
+
+	// --- Search ---
+	"search.exclude": {
+		"**/node_modules": true,
+		".build/**": true,
+		"out/**": true,
+		"out-build/**": true,
+		"out-cd2030/**": true,
+		"i18n/**": true,
+		"build/loader.min": true,
+		"**/*.snap": true,
+	},
+
+	// --- TypeScript ---
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.preferences.importModuleSpecifier": "relative",
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.tsc.autoDetect": "off",
+
+	// --- Languages ---
+	"json.schemas": [
+		{
+			"fileMatch": [
+				"cgmanifest.json"
+			],
+			"url": "https://www.schemastore.org/component-detection-manifest.json",
+		},
+		{
+			"fileMatch": [
+				"cglicenses.json"
+			],
+			"url": "./.cd2030/cglicenses.schema.json"
+		}
+	],
+	"css.format.spaceAroundSelectorSeparator": true,
+
+	// --- Git ---
+	"git.ignoreLimitWarning": true,
+	"git.branchProtection": [
+		"main",
+		"distro",
+		"release/*"
+	],
+	"git.branchProtectionPrompt": "alwaysCommitToNewBranch",
+	"git.branchRandomName.enable": true,
+	"git.pullBeforeCheckout": true,
+	"git.mergeEditor": true,
+	"git.diagnosticsCommitHook.enabled": true,
+	"git.diagnosticsCommitHook.sources": {
+		"*": "error",
+		"ts": "warning",
+		"eslint": "warning"
+	},
+
+	// --- GitHub ---
+	"githubPullRequests.experimental.createView": true,
+	"githubPullRequests.assignCreated": "${user}",
+	"githubPullRequests.defaultMergeMethod": "squash",
+	"githubPullRequests.ignoredPullRequestBranches": [
+		"main"
+	],
+	"githubPullRequests.codingAgent.enabled": true,
+	"githubPullRequests.codingAgent.uiIntegration": true,
+
+	// --- Testing & Debugging ---
+	"testing.autoRun.mode": "rerun",
+	"debug.javascript.terminalOptions": {
+		"outFiles": [
+			"${workspaceFolder}/out/**/*.js",
+			"${workspaceFolder}/build/**/*.js"
+		]
+	},
+
+	// --- Coverage ---
+	"lcov.path": [
+		"./.build/coverage/lcov.info",
+		"./.build/coverage-single/lcov.info"
+	],
+	"lcov.watch": [
+		{
+			"pattern": "**/*.test.js",
+			"command": "${workspaceFolder}/scripts/test.sh --coverage --run ${file}",
+			"windows": {
+				"command": "${workspaceFolder}\\scripts\\test.bat --coverage --run ${file}"
+			}
+		}
+	],
+
+	// --- Tools ---
+	"npm.exclude": "**/extensions/**",
+	"eslint.useFlatConfig": true,
+	"emmet.excludeLanguages": [],
+	"gulp.autoDetect": "off",
+	"rust-analyzer.linkedProjects": [
+		"cli/Cargo.toml"
+	],
+	"conventionalCommits.scopes": [
+		"tree",
+		"scm",
+		"grid",
+		"splitview",
+		"table",
+		"list",
+		"git",
+		"sash"
+	],
+
+	// --- Workbench ---
+	// "application.experimental.rendererProfiling": true, // https://github.com/microsoft/vscode/issues/265654
+
+	"editor.aiStats.enabled": true, // Team selfhosting on ai stats
+	"chat.checkpoints.showFileChanges": true,
+	"chat.emptyState.history.enabled": true,
+	"github.copilot.chat.advanced.taskTools.enabled": true,
+	"chat.promptFilesRecommendations": {
+		"plan-fast": true,
+		"plan-deep": true
+	}
+}

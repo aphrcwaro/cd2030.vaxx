@@ -14,6 +14,12 @@ surveySetupUI <- function(id, i18n) {
                              min = 0, max = 100, value = NA, step = 1))
     ),
     fluidRow(
+      column(4, numericInput(ns('opv1_prop'), i18n$t("title_opv1_survey"),
+                             min = 0, max = 100, value = NA, step = 1)),
+      column(4, numericInput(ns('opv3_prop'), i18n$t("title_opv3_survey"),
+                             min = 0, max = 100, value = NA, step = 1))
+    ),
+    fluidRow(
       column(4, numericInput(ns('survey_year'), i18n$t("title_survey_year"),
                              min = 2015, max = 2030, value = NA, step = 1)),
       column(4, uiOutput(ns('survey_start_ui')))
@@ -47,6 +53,8 @@ surveySetupServer <- function(id, cache, i18n) {
         new_estimates <- c(
           anc1 = unname(estimates['anc1']),
           penta1 = unname(estimates['penta1']),
+          opv1 = as.numeric(input$opv1_prop),
+          opv3 = as.numeric(input$opv3_prop),
           penta3 = as.numeric(input$penta3_prop),
           measles1 = as.numeric(input$measles1_prop),
           bcg = as.numeric(input$bcg_prop)

@@ -1,4 +1,4 @@
-4311073dc6046758f66c7f5887855fe7 *DESCRIPTION
+a37b56316f787a46a72cc45b0f86ad9d *DESCRIPTION
 dd9d78ae413db50753b105af55da4f78 *INDEX
 1ee0683cce6d3479250337954c075d63 *LICENSE
 f406b0edce7bbd707fadf70806fb10bd *Meta/Rd.rds
@@ -6,7 +6,7 @@ f406b0edce7bbd707fadf70806fb10bd *Meta/Rd.rds
 f065cd10bdef399843cb3537c0af4ed0 *Meta/hsearch.rds
 f838ab6c74d57e13c48d1b986cdd8d18 *Meta/links.rds
 0978bdb9fda8188cf1ca46e36b23405c *Meta/nsInfo.rds
-306652b1772b6a3acdf1eacb8d1e3a60 *Meta/package.rds
+40694204c981cdd5e79ec1f711c1b33c *Meta/package.rds
 151c78c6510bc95a7ee0dda1c7324701 *NAMESPACE
 d27deea19beca866d0c6229f1411f627 *NEWS
 d6c68f1fe41ced6e98a766a3757313da *R/spelling
@@ -15,9 +15,9 @@ d6c68f1fe41ced6e98a766a3757313da *R/spelling
 80f21503dddc391bb76ee403b82031a2 *WORDLIST
 ed7538ab54143acae1c843cf3d9025cd *help/AnIndex
 12e466e6d9b53c256965214cb5277482 *help/aliases.rds
-d3238d9e003f37b927111488ce531c4c *help/paths.rds
-f8da8d9c6c5b8e1b4f7000cdbe3ffb41 *help/spelling.rdb
-208ae1fe78c04de8e935c98c785673ba *help/spelling.rdx
+c5f69787f308b78036746fbacfcf7c91 *help/paths.rds
+a464d55911fe77fe142b38247d9fafb6 *help/spelling.rdb
+81cafd6685b0ef937e486e15e7c73b38 *help/spelling.rdx
 8d14e02c8d6c6691d9d9dbcd1bbb3c2b *html/00Index.html
 8b9362669af13540a86a3ac6cf22f99d *html/R.css
 221eb7751a0c8a4ef7b3ec62a43b6f0c *templates/spelling.Rout.save

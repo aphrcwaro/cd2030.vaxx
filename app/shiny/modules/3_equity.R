@@ -6,8 +6,8 @@ equityUI <- function(id, i18n) {
     dashboardTitle = i18n$t("title_equity_assessment"),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t("title_analysis_options"),
+    countdownOptions(
+      title = i18n$t("title_options"),
       column(3, selectizeInput(ns('type'), label = i18n$t("title_equity_type"),
                                choices = c('Area' = 'area',
                                            'Maternal Education' = 'meduc',
@@ -39,9 +39,7 @@ equityUI <- function(id, i18n) {
       tabPanel(
         i18n$t("opt_custom_check"),
         fluidRow(
-          column(3, selectizeInput(ns('indicator'),
-                                   label = i18n$t("title_indicator"),
-                                   choices =  c('Select' = '', get_all_indicators())))
+          column(3, indicatorSelect(ns('indicator'), i18n, indicators = get_analysis_indicators()))
         ),
         fluidRow(
           column(12, plotCustomOutput(ns('custom_check'))),
@@ -59,6 +57,8 @@ equityServer <- function(id, cache, i18n) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
+
+      indicator <- indicatorSelectServer('indicator')
 
       wiq <- reactive({
         req(cache())
@@ -94,12 +94,12 @@ equityServer <- function(id, cache, i18n) {
       })
 
       custom_equiplot <- reactive({
-        req(wiq(), area(), meduc(), input$type, input$indicator)
+        req(wiq(), area(), meduc(), input$type, indicator())
 
         switch(input$type,
-               'area' = equiplot_area(area(), input$indicator),
-               'meduc' = equiplot_education(meduc(), input$indicator),
-               'wiq' = equiplot_wealth(wiq(), input$indicator))
+               'area' = equiplot_area(area(), indicator()),
+               'meduc' = equiplot_education(meduc(), indicator()),
+               'wiq' = equiplot_wealth(wiq(), indicator()))
       })
 
       output$penta3 <- renderCustomPlot({
@@ -135,7 +135,7 @@ equityServer <- function(id, cache, i18n) {
 
       downloadPlot(
         id = 'custom_download',
-        filename = reactive(paste0(input$indicator, '_', input$type, '_equity')),
+        filename = reactive(paste0(indicator(), '_', input$type, '_equity')),
         data = custom_equiplot,
         i18n = i18n,
         plot_function = function(plot) plot

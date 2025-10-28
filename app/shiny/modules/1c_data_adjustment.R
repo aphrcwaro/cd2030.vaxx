@@ -99,7 +99,7 @@ dataAdjustmentServer <- function(id, cache, i18n) {
         k['vacc'] <- as.numeric(input$k_vaccines)
 
         cache()$set_k_factors(k)
-      })
+      }, ignoreInit  = TRUE)
 
       observe({
         req(cache(), !state$loaded)

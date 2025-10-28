@@ -6,8 +6,8 @@ nationalCoverageUI <- function(id, i18n) {
     dashboardTitle = i18n$t('title_national_coverage'),
     i18n = i18n,
 
-    countdownOptions = countdownOptions(
-      title = i18n$t('title_analysis_options'),
+    countdownOptions(
+      title = i18n$t('title_options'),
       column(3, denominatorInputUI(ns('denominator'), i18n))
     ),
 
@@ -15,16 +15,14 @@ nationalCoverageUI <- function(id, i18n) {
       title = i18n$t('title_national_coverage'),
       width = 12,
 
-      tabPanel(title = i18n$t("opt_anc4"), downloadCoverageUI(ns('anc4'))),
-      tabPanel(title = i18n$t("opt_livebirths"), downloadCoverageUI(ns('livebirths'))),
-      tabPanel(title = i18n$t("opt_lbw"), downloadCoverageUI(ns('lbw'))),
       tabPanel(title = i18n$t("opt_penta3"), downloadCoverageUI(ns('penta3'))),
       tabPanel(title = i18n$t("opt_mcv1"), downloadCoverageUI(ns('measles1'))),
+      tabPanel(title = i18n$t("title_penta13_dropout"), downloadCoverageUI(ns('dropout_penta13'))),
+      tabPanel(title = i18n$t("title_penta3_mcv1_dropout"), downloadCoverageUI(ns('dropout_penta3mcv1'))),
       tabPanel(
         title = i18n$t("opt_custom_check"),
         fluidRow(
-          column(3, selectizeInput(ns('indicator'), label = i18n$t("title_indicator"),
-                                   choices = c('Select' = '', get_indicator_without_opd_ipd())))
+          column(3, indicatorSelect(ns('indicator'), i18n), indicators = get_analysis_indicators())
         ),
         downloadCoverageUI(ns('custom'))
       )
@@ -39,29 +37,12 @@ nationalCoverageServer <- function(id, cache, i18n) {
     id = id,
     module = function(input, output, session) {
 
+      indicator <- indicatorSelectServer('indicator')
       denominatorInputServer('denominator', cache, i18n)
 
       coverage <- reactive({
         req(cache(), cache()$check_coverage_params)
         cache()$calculate_coverage('national')
-      })
-
-      anc4_coverage <- reactive({
-        req(coverage())
-        coverage() %>%
-          filter_coverage('anc4', denominator = cache()$get_denominator('anc4'))
-      })
-
-      livebirths_coverage <- reactive({
-        req(coverage())
-        coverage() %>%
-          filter_coverage('instlivebirths', denominator = cache()$get_denominator('instlivebirths'))
-      })
-
-      lbw_coverage <- reactive({
-        req(coverage())
-        coverage() %>%
-          filter_coverage('low_bweight', denominator = cache()$get_denominator('low_bweight'))
       })
 
       penta3_coverage <- reactive({
@@ -75,36 +56,24 @@ nationalCoverageServer <- function(id, cache, i18n) {
         coverage() %>%
           filter_coverage('measles1', denominator = cache()$get_denominator('measles1'))
       })
-
-      custom_coverage <- reactive({
-        req(coverage(), input$indicator)
+      
+      dropout_penta13 <- reactive({
+        req(coverage())
         coverage() %>%
-          filter_coverage(input$indicator, denominator = cache()$get_denominator(input$indicator))
+          filter_coverage('dropout_penta13', denominator = cache()$get_denominator('dropout_penta13'))
+      })
+      
+      dropout_penta3mcv1 <- reactive({
+        req(coverage())
+        coverage() %>%
+          filter_coverage('dropout_penta3mcv1', denominator = cache()$get_denominator('dropout_penta3mcv1'))
       })
 
-      downloadCoverageServer(
-        id = 'anc4',
-        filename = reactive(paste0('anc4_survey_', cache()$get_denominator('anc4'))),
-        data_fn = anc4_coverage,
-        sheet_name = reactive(i18n$t("title_anc4")),
-        i18n = i18n
-      )
-
-      downloadCoverageServer(
-        id = 'livebirths',
-        filename = reactive(paste0('livebirths_survey_', cache()$get_denominator('instlivebirths'))),
-        data_fn = livebirths_coverage,
-        sheet_name = reactive(i18n$t("title_livebirths_coverage")),
-        i18n = i18n
-      )
-
-      downloadCoverageServer(
-        id = 'lbw',
-        filename = reactive(paste0('lbw_survey_', cache()$get_denominator('low_bweight'))),
-        data_fn = lbw_coverage,
-        sheet_name = reactive(i18n$t("title_lbw_coverage")),
-        i18n = i18n
-      )
+      custom_coverage <- reactive({
+        req(coverage(), indicator())
+        coverage() %>%
+          filter_coverage(indicator(), denominator = cache()$get_denominator(indicator()))
+      })
 
       downloadCoverageServer(
         id = 'penta3',
@@ -121,12 +90,28 @@ nationalCoverageServer <- function(id, cache, i18n) {
         sheet_name = reactive(i18n$t("title_mcv1_coverage")),
         i18n = i18n
       )
+      
+      downloadCoverageServer(
+        id = 'dropout_penta13',
+        filename = reactive(paste0('dropout_penta13_survey_', cache()$get_denominator('dropout_penta13'))),
+        data_fn = dropout_penta13,
+        sheet_name = reactive(i18n$t("title_penta13_dropout")),
+        i18n = i18n
+      )
+      
+      downloadCoverageServer(
+        id = 'dropout_penta3mcv1',
+        filename = reactive(paste0('dropout_penta3mcv1_survey_', cache()$get_denominator('dropout_penta3mcv1'))),
+        data_fn = dropout_penta3mcv1,
+        sheet_name = reactive(i18n$t("title_penta3_mcv1_dropout")),
+        i18n = i18n
+      )
 
       downloadCoverageServer(
         id = 'custom',
-        filename = reactive(paste0(input$indicator, '_survey_', cache()$get_denominator(input$indicator))),
+        filename = reactive(paste0(indicator(), '_survey_', cache()$get_denominator(indicator()))),
         data_fn = custom_coverage,
-        sheet_name = reactive(paste(input$indicator, i18n$t("title_coverage"))),
+        sheet_name = reactive(paste(indicator(), i18n$t("title_coverage"))),
         i18n = i18n
       )
 
