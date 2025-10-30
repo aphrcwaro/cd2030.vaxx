@@ -1,4 +1,4 @@
-﻿/**
+/**
  * This pagination style shows Previous/Next buttons, and page numbers only
  * for "known" pages that are visited at least once time using [Next>] button.
  * Initially only Prev/Next buttons are shown (Prev is initially disabled).
